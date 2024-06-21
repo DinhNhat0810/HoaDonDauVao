@@ -1,0 +1,32 @@
+#root {
+  width: 100%;
+}
+
+td {
+  vertical-align: top;
+}
+
+th {
+  text-align: center !important;
+}
+
+.line-clamp-400-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  width: 400px;
+}
+
+.compose2 .ant-table-cell .ant-radio-inner {
+  border-color: #001529 !important;
+}
+
+.compose2 .ant-upload-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.compose2 .ant-upload-wrapper > div:first-child {
+  margin-right: 10px;
+}

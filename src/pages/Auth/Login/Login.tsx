@@ -59,15 +59,21 @@ const Login = () => {
     setLoadCapcha(!loadCapcha);
     setLoading(true);
     try {
-      const url =
-        "https://hoadondientu.gdt.gov.vn:30000/security-taxpayer/authenticate";
+      // const url =
+      //   "https://hoadondientu.gdt.gov.vn:30000/security-taxpayer/authenticate";
 
-      const res = await axios.post(url, {
-        username: values.username,
-        password: values.password,
-        cvalue: values.cvalue,
-        ckey: captcha.key,
-      });
+      // const res = await axios.post(url, {
+      //   username: values.username,
+      //   password: values.password,
+      //   cvalue: values.cvalue,
+      //   ckey: captcha.key,
+      // });
+
+      const res = {
+        data: {
+          token: "123",
+        },
+      };
 
       if (!isEmpty(res.data.token)) {
         setTimeout(() => {
@@ -77,6 +83,7 @@ const Login = () => {
             JSON.stringify({
               token: res.data.token,
               mst: values.username,
+              expiredAt: new Date().getTime() + 3600000,
             })
           );
           setIsAuthenticated(true);

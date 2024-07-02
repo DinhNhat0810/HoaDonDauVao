@@ -133,7 +133,7 @@ const HoaDon = () => {
     dataIndex: any
   ) => {
     confirm();
-    setSearchText(selectedKeys[0]);
+    setSearchText(selectedKeys[0]?.trim());
     setSearchedColumn(dataIndex);
   };
 
@@ -218,14 +218,14 @@ const HoaDon = () => {
               .toString()
               .trim()
               .toLowerCase()
-              .includes((value as string).toLowerCase())
+              .includes((value as string)?.trim()?.toLowerCase())
           );
         } else {
           return record[dataIndex]
             .toString()
             .trim()
             .toLowerCase()
-            .includes((value as string).toLowerCase());
+            .includes((value as string)?.trim()?.toLowerCase());
         }
       },
       onFilterDropdownOpenChange: (visible) => {
@@ -289,43 +289,42 @@ const HoaDon = () => {
         title: "Thông tin người bán",
         dataIndex: "thongTinNguoiBan",
         width: "15%",
-        // render: (value: any) => (
-        //   <ListData
-        //     // width="200px"
-        //     fields={[
-        //       {
-        //         label: "MST",
-        //         field: "mst",
-        //         value: value,
-        //       },
-        //       {
-        //         label: "Tên người bán",
-        //         field: "nbten",
-        //         value: value,
-        //       },
-        //       {
-        //         label: "Địa chỉ người bán",
-        //         field: "nbdchi",
-        //         value: value,
-        //       },
-        //     ]}
-        //   />
-        // ),
+        render: (value: any) => (
+          <ListData
+            fields={[
+              {
+                label: "MST",
+                field: "mst",
+                value: value,
+              },
+              {
+                label: "Tên người bán",
+                field: "nbten",
+                value: value,
+              },
+              {
+                label: "Địa chỉ người bán",
+                field: "nbdchi",
+                value: value,
+              },
+            ]}
+          />
+        ),
 
-        ...getColumnSearchProps("thongTinNguoiBan", [
-          {
-            label: "MST",
-            field: "mst",
-          },
-          {
-            label: "Tên người bán",
-            field: "nbten",
-          },
-          {
-            label: "Địa chỉ người bán",
-            field: "nbdchi",
-          },
-        ]),
+        // ...getColumnSearchProps("thongTinNguoiBan", [
+        //   {
+        //     label: "MST",
+        //     field: "mst",
+        //   },
+        //   {
+        //     label: "Tên người bán",
+        //     field: "nbten",
+        //   },
+        //   {
+        //     label: "Địa chỉ người bán",
+        //     field: "nbdchi",
+        //   },
+        // ]),
       },
 
       {
@@ -348,19 +347,19 @@ const HoaDon = () => {
             field: "thdon",
           },
           {
-            label: " Ký hiệu mẫu số",
+            label: "Mẫu số",
             field: "khmshdon",
           },
           {
-            label: "Ký hiệu hóa đơn",
+            label: "Ký hiệu",
             field: "khhdon",
           },
           {
-            label: "Số hóa đơn",
+            label: "Số HĐ",
             field: "shdon",
           },
           {
-            label: "Người tạo hóa đơn",
+            label: "Ngày lập",
             field: "ntao",
           },
         ]),
@@ -383,34 +382,39 @@ const HoaDon = () => {
         title: "Thông tin người mua",
         dataIndex: "thongTinNguoiMua",
         width: "12%",
-        render: (value: any) => (
-          <ListData
-            // width="180px"
-            fields={[
-              {
-                label: "MST",
-                field: "nmmst",
-                value: value,
-              },
-              {
-                label: "Tên đơn vị",
-                field: "nmten",
-                value: value,
-              },
-              {
-                label: "Ký hiệu hóa đơn",
-                field: "khhdon",
-                value: value,
-              },
-            ]}
-          />
-        ),
+        // render: (value: any) => (
+        //   <ListData
+        //     fields={[
+        //       {
+        //         label: "MST",
+        //         field: "nmmst",
+        //         value: value,
+        //       },
+        //       {
+        //         label: "Tên đơn vị",
+        //         field: "nmten",
+        //         value: value,
+        //       },
+        //     ]}
+        //   />
+        // ),
+        ...getColumnSearchProps("thongTinNguoiMua", [
+          {
+            label: "MST",
+            field: "nmmst",
+          },
+          {
+            label: "Tên đơn vị",
+            field: "nmten",
+          },
+        ]),
       },
 
       {
         title: "Tổng trước thuế",
         dataIndex: "tongTruocThue",
         width: "10%",
+        ...getColumnSearchProps("tongTruocThue"),
       },
 
       {
@@ -503,18 +507,22 @@ const HoaDon = () => {
       {
         title: "Số lượng",
         dataIndex: "SLuong",
+        align: "right",
       },
       {
         title: "Đơn giá",
         dataIndex: "DGia",
+        align: "right",
       },
       {
         title: "Thành tiền",
         dataIndex: "ThTien",
+        align: "right",
       },
       {
         title: "Thuế suất",
         dataIndex: "TSuat",
+        align: "right",
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -732,16 +740,12 @@ const HoaDon = () => {
       return {
         STT: (index + 1).toString(),
         "Thông tin người bán": `MST: ${item?.thongTinNguoiBan?.mst}\nTên người bán: ${item?.thongTinNguoiBan?.nbten}\nĐịa chỉ người bán: ${item?.thongTinNguoiBan?.nbdchi}`,
-        "Thông tin hóa đơn": `Tên hóa đơn: ${item?.thongTinHoaDon?.thdon}\nKý hiệu mẫu số: ${item?.thongTinHoaDon?.khmshdon}\nKý hiệu hóa đơn: ${item?.thongTinHoaDon?.khhdon}\nSố hóa đơn: ${item?.thongTinHoaDon?.shdon}\nNgười tạo hóa đơn: ${item?.thongTinHoaDon?.ntao}`,
+        "Thông tin hóa đơn": `Tên hóa đơn: ${item?.thongTinHoaDon?.thdon}\nKý hiệu mẫu số: ${item?.thongTinHoaDon?.khmshdon}\nKý hiệu hóa đơn: ${item?.thongTinHoaDon?.khhdon}\nSố hóa đơn: ${item?.thongTinHoaDon?.shdon}\nNgày lập: ${item?.thongTinHoaDon?.ntao}`,
         "Ngày ký": item?.nky,
         "Ngày cấp mã": item?.ncma,
-
-        "Thông tin người mua": `MST: ${item?.thongTinNguoiMua?.nmmst}\nTên đơn vị: ${item?.thongTinNguoiMua?.nmten}\nKý hiệu hóa đơn: ${item?.thongTinNguoiMua?.khhdon}`,
-
+        "Thông tin người mua": `MST: ${item?.thongTinNguoiMua?.nmmst}\nTên đơn vị: ${item?.thongTinNguoiMua?.nmten}`,
         "Tổng trước thuế": item?.tongTruocThue?.toString(),
-
         "Thuế suất": `Thành tiền: ${item?.thueSuat?.thtien}\nThuế suất: ${item?.thueSuat?.tsuat}\nTiền thuế: ${item?.thueSuat?.tthue}`,
-
         "Tổng thuế": item?.tongThue?.toString(),
         "Tổng thanh toán": item?.tongThanhToan?.toString(),
         "Bằng chữ": item?.bangChu,
@@ -832,6 +836,7 @@ const HoaDon = () => {
               controlItemBgHover: "#fff",
               headerBorderRadius: 4,
               padding: 8,
+              borderColor: "#d5d5d5",
             },
           },
         }}

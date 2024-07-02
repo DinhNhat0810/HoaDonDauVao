@@ -6,6 +6,7 @@ type AppContextType = {
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   mst?: string;
   token?: string;
+  expiredAt?: number;
 };
 
 const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -17,6 +18,7 @@ const inititalAppContext: AppContextType = {
   setIsAuthenticated: () => null,
   mst: user?.mst,
   token: user?.token,
+  expiredAt: user?.expiredAt,
 };
 
 export const AppContext = createContext<AppContextType>(inititalAppContext);
@@ -26,6 +28,19 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     inititalAppContext.isAuthenticated
   );
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (user?.expiredAt < Date.now()) {
+        localStorage.removeItem("user");
+        setIsAuthenticated(false);
+      }
+    }, 10000);
+
+    return () => clearInterval(interval);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.expiredAt]);
+
   return (
     <AppContext.Provider
       value={{
@@ -33,6 +48,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         setIsAuthenticated,
         mst: user?.mst,
         token: user?.token,
+        expiredAt: user?.expiredAt,
       }}
     >
       {children}

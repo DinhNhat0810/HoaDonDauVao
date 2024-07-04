@@ -74,7 +74,7 @@ const MainLayout = ({ children }: Props) => {
               backgroundColor: "#001529",
             }}
           >
-            NACENCOMN
+            NACENCOMM
           </h2>
         ) : (
           <div style={{ height: "84px" }}></div>

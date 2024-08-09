@@ -44,7 +44,7 @@ export const NotificationProvider = ({
     api[type]({
       message: message,
       description: description,
-      duration: 0,
+      duration: 3,
     });
   };
 

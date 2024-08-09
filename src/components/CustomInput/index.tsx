@@ -1,4 +1,5 @@
 import { ConfigProvider, DatePicker, Form, Input } from "antd";
+import locale from "antd/locale/vi_VN";
 
 const CustomInput = ({
   value,
@@ -21,6 +22,7 @@ const CustomInput = ({
 }) => {
   return (
     <ConfigProvider
+      locale={locale}
       theme={{
         token: {
           borderRadius: configBoderRadius,

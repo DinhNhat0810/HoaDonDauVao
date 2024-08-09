@@ -20,7 +20,7 @@ const ProtectedRoute = () => {
 const RejectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext);
 
-  return !isAuthenticated ? <Outlet /> : <Navigate to={ROUTE.HOME} />;
+  return !isAuthenticated ? <Outlet /> : <Navigate to={ROUTE.HDMV_TatCa} />;
 };
 
 export default function useRouteElement() {
@@ -31,6 +31,145 @@ export default function useRouteElement() {
       children: [
         {
           path: ROUTE.HOME,
+          element: <Navigate to={ROUTE.HDMV_TatCa} replace />,
+        },
+        {
+          path: ROUTE.HDMV,
+          element: <Navigate to={ROUTE.HDMV_TatCa} replace />,
+        },
+        {
+          path: ROUTE.HDMV_TatCa,
+          element: (
+            <MainLayout>
+              <HoaDon />
+            </MainLayout>
+          ),
+        },
+        {
+          path: ROUTE.HDMV_Huy,
+          element: (
+            <MainLayout>
+              <HoaDon />
+            </MainLayout>
+          ),
+        },
+
+        {
+          path: ROUTE.HDMV_ThayThe,
+          element: (
+            <MainLayout>
+              <HoaDon />
+            </MainLayout>
+          ),
+        },
+
+        {
+          path: ROUTE.HDMV_DaDC,
+          element: (
+            <MainLayout>
+              <HoaDon />
+            </MainLayout>
+          ),
+        },
+
+        {
+          path: ROUTE.HDMV_XuatBangKe,
+          element: (
+            <MainLayout>
+              <HoaDon />
+            </MainLayout>
+          ),
+        },
+
+        {
+          path: ROUTE.HDMV,
+          element: <Navigate to={ROUTE.HDMV_TatCa} replace />,
+        },
+        {
+          path: ROUTE.HDMV_TatCa,
+          element: (
+            <MainLayout>
+              <HoaDon />
+            </MainLayout>
+          ),
+        },
+        {
+          path: ROUTE.HDMV_Huy,
+          element: (
+            <MainLayout>
+              <HoaDon />
+            </MainLayout>
+          ),
+        },
+
+        {
+          path: ROUTE.HDMV_ThayThe,
+          element: (
+            <MainLayout>
+              <HoaDon />
+            </MainLayout>
+          ),
+        },
+
+        {
+          path: ROUTE.HDMV_DaDC,
+          element: (
+            <MainLayout>
+              <HoaDon />
+            </MainLayout>
+          ),
+        },
+
+        {
+          path: ROUTE.HDMV_XuatBangKe,
+          element: (
+            <MainLayout>
+              <HoaDon />
+            </MainLayout>
+          ),
+        },
+
+        {
+          path: ROUTE.HDBR,
+          element: <Navigate to={ROUTE.HDBR_TatCa} replace />,
+        },
+        {
+          path: ROUTE.HDBR_TatCa,
+          element: (
+            <MainLayout>
+              <HoaDon />
+            </MainLayout>
+          ),
+        },
+        {
+          path: ROUTE.HDBR_Huy,
+          element: (
+            <MainLayout>
+              <HoaDon />
+            </MainLayout>
+          ),
+        },
+
+        {
+          path: ROUTE.HDBR_ThayThe,
+          element: (
+            <MainLayout>
+              <HoaDon />
+            </MainLayout>
+          ),
+        },
+
+        {
+          path: ROUTE.HDBR_DaDC,
+          element: (
+            <MainLayout>
+              <HoaDon />
+            </MainLayout>
+          ),
+        },
+
+        {
+          path: ROUTE.HDBR_XuatBangKe,
           element: (
             <MainLayout>
               <HoaDon />

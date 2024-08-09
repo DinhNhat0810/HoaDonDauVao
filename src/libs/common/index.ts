@@ -18,3 +18,12 @@ export function convertXmlToJson(xmlData: string) {
   const parser = new XMLParser();
   return parser.parse(xmlData, options);
 }
+
+export const convertToVnd = (value: number) => {
+  if (!value || value === 0) return "0";
+
+  return value.toLocaleString("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
+};

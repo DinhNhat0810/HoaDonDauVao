@@ -29,9 +29,58 @@ const MainLayout = ({ children }: Props) => {
   } = theme.useToken();
   const items: MenuItem[] = [
     {
-      key: ROUTE.HOME,
-      label: "Trang chủ",
+      key: ROUTE.HDMV,
+      label: "Hóa đơn mua vào",
       icon: <HomeOutlined />,
+      children: [
+        {
+          key: ROUTE.HDMV_TatCa,
+          label: "Tất cả",
+        },
+        {
+          key: ROUTE.HDMV_Huy,
+          label: "HĐ đã hủy",
+        },
+        {
+          key: ROUTE.HDMV_ThayThe,
+          label: "HĐ đã thay thế",
+        },
+        {
+          key: ROUTE.HDMV_DaDC,
+          label: "HĐ đã đ/c",
+        },
+        {
+          key: ROUTE.HDMV_XuatBangKe,
+          label: "Xuất bảng kê",
+        },
+      ],
+    },
+    {
+      key: ROUTE.HDBR,
+      label: "Hóa đơn bán ra",
+      icon: <HomeOutlined />,
+      children: [
+        {
+          key: ROUTE.HDBR_TatCa,
+          label: "Tất cả",
+        },
+        {
+          key: ROUTE.HDBR_Huy,
+          label: "HĐ đã hủy",
+        },
+        {
+          key: ROUTE.HDBR_ThayThe,
+          label: "HĐ đã thay thế",
+        },
+        {
+          key: ROUTE.HDBR_DaDC,
+          label: "HĐ đã điều chỉnh",
+        },
+        {
+          key: ROUTE.HDBR_XuatBangKe,
+          label: "Xuất bảng kê",
+        },
+      ],
     },
     {
       key: ROUTE.LOGOUT,
@@ -87,6 +136,7 @@ const MainLayout = ({ children }: Props) => {
           onClick={(item) => {
             navigate(item.key);
           }}
+          defaultOpenKeys={["/" + location.pathname.split("/")[1]]}
         />
       </Sider>
       <Layout

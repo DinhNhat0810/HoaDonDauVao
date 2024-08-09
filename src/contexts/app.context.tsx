@@ -29,6 +29,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   );
 
   useEffect(() => {
+    if (user?.expiredAt < Date.now()) {
+      localStorage.removeItem("user");
+      setIsAuthenticated(false);
+      return;
+    }
     const interval = setInterval(() => {
       if (user?.expiredAt < Date.now()) {
         localStorage.removeItem("user");

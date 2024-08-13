@@ -1,5 +1,5 @@
-import { Tabs, TabsProps } from "antd";
-import { useContext } from "react";
+import { Modal, Tabs, TabsProps } from "antd";
+import { useContext, useRef, useState } from "react";
 import https from "../../libs/https";
 import { AppContext } from "../../contexts/app.context";
 import { NotificationContext } from "../../contexts/notification.context";
@@ -60,6 +60,8 @@ const ListData = ({ fields, width }: { fields: any[]; width?: string }) => {
 const HoaDon = () => {
   const { token } = useContext(AppContext);
   const { handleOpenNotification } = useContext(NotificationContext);
+  const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
+  const modalBodyRef = useRef(null);
 
   const handleDownload = async (values: DownloadHoaDonType) => {
     try {
@@ -147,42 +149,36 @@ const HoaDon = () => {
                   );
                 }
               });
+              // const popupWindow = window.open(
+              //   "",
+              //   "_blank",
+              //   "width=1000,height=600"
+              // );
 
-              // Display the modified HTML content in the popup window
-              const popupWindow = window.open(
-                "",
-                "_blank",
-                "width=1000,height=600"
-              );
-              if (popupWindow) {
-                // Define the HTML for the "Đăng ký" button
-                const buttonHtml = `<div style="text-align:center;padding:40px">
-                <button 
-                style="padding: 10px 20px; background-color: #ffab31; color: white; border: none; border-radius: 4px; cursor: pointer;font-size: 16px;"
-                onclick="document.getElementById('myModal').style.display='block'">Kiểm tra thông tin</button>
-                </div>
-                
-                
-                <div id="myModal" 
-                style="display:none;position: fixed;z-index: 1;left: 0;top: 0;width: 100%;height: 100%;overflow: auto;background-color: rgba(0,0,0,0.4);">
-                ">
-                  <div class="modal-content" style="">
-                  
-                 
-                  </div>
-                </div>
-                
-                
-                
-                `;
+              // if (popupWindow) {
+              //   // Append the button HTML to the content
+              //   popupWindow.document.open();
+              //   popupWindow.document.write(content);
+              //   popupWindow.document.close();
+              // }
 
-                // Append the button HTML to the content
-                const modifiedContent = content + buttonHtml;
+              setOpenInvoiceModal(true);
 
-                popupWindow.document.open();
-                popupWindow.document.write(modifiedContent);
-                popupWindow.document.close();
-              }
+              setTimeout(() => {
+                const modalBody = document.getElementById("aloha");
+                if (modalBody) {
+                  // Tạo một iframe và đặt nội dung HTML vào đó
+                  const iframe = document.createElement("iframe");
+                  iframe.style.width = "100%";
+                  iframe.style.height = "800px";
+                  iframe.style.border = "none";
+                  iframe.srcdoc = content; // srcdoc chứa nội dung HTML
+                  modalBody.innerHTML = ""; // Xóa nội dung cũ
+                  modalBody.appendChild(iframe); // Thêm iframe vào modalBody
+                } else {
+                  console.error("Element with id 'aloha' not found");
+                }
+              }, 100);
             });
           });
       });
@@ -219,8 +215,19 @@ const HoaDon = () => {
     },
   ];
 
+  const handleCancel = () => {
+    setOpenInvoiceModal(false);
+  };
+
   return (
     <div className="hoadon">
+      <Modal
+        width={1200}
+        open={openInvoiceModal}
+        onCancel={() => setOpenInvoiceModal(false)}
+      >
+        <div id="aloha" ref={modalBodyRef}></div>
+      </Modal>
       <div
         style={{
           display: "flex",

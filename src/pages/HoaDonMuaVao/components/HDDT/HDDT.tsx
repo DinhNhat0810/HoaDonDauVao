@@ -521,6 +521,14 @@ export default function HDDT({
               nbten: item?.nbten,
               nbdchi: item?.nbdchi,
             },
+            thongTinHoaDon: {
+              thdon: item?.thdon,
+              khmshdon: item?.khmshdon,
+              khhdon: item?.khhdon,
+              shdon: item?.shdon,
+              ntao: dayjs(item?.ntao).format("DD/MM/YYYY HH:mm:ss"),
+            },
+
             nky: dayjs(item?.nky).format("DD/MM/YYYY HH:mm:ss"),
             ncma: dayjs(item?.ncma).format("DD/MM/YYYY HH:mm:ss"),
             thongTinNguoiMua: {

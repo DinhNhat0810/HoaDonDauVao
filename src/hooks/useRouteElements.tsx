@@ -4,12 +4,13 @@ import { useContext } from "react";
 import NotFound from "../pages/NotFound";
 import { AppContext } from "../contexts/app.context";
 import MainLayout from "../layouts/MainLayout";
-import HoaDon from "../pages/HoaDon";
 import Login from "../pages/Auth/Login";
 import AuthLayout from "../layouts/AuthLayout";
 
 import Logout from "../pages/Auth/Logout";
 import { ROUTE } from "../libs/constants";
+import HoaDonMuaVao from "../pages/HoaDonMuaVao";
+import HoaDonBanRa from "../pages/HoaDonBanRa";
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext);
@@ -41,7 +42,7 @@ export default function useRouteElement() {
           path: ROUTE.HDMV_TatCa,
           element: (
             <MainLayout>
-              <HoaDon />
+              <HoaDonMuaVao />
             </MainLayout>
           ),
         },
@@ -49,7 +50,7 @@ export default function useRouteElement() {
           path: ROUTE.HDMV_Huy,
           element: (
             <MainLayout>
-              <HoaDon />
+              <HoaDonMuaVao />
             </MainLayout>
           ),
         },
@@ -58,7 +59,7 @@ export default function useRouteElement() {
           path: ROUTE.HDMV_ThayThe,
           element: (
             <MainLayout>
-              <HoaDon />
+              <HoaDonMuaVao />
             </MainLayout>
           ),
         },
@@ -67,7 +68,7 @@ export default function useRouteElement() {
           path: ROUTE.HDMV_DaDC,
           element: (
             <MainLayout>
-              <HoaDon />
+              <HoaDonMuaVao />
             </MainLayout>
           ),
         },
@@ -76,59 +77,10 @@ export default function useRouteElement() {
           path: ROUTE.HDMV_XuatBangKe,
           element: (
             <MainLayout>
-              <HoaDon />
+              <HoaDonMuaVao />
             </MainLayout>
           ),
         },
-
-        {
-          path: ROUTE.HDMV,
-          element: <Navigate to={ROUTE.HDMV_TatCa} replace />,
-        },
-        {
-          path: ROUTE.HDMV_TatCa,
-          element: (
-            <MainLayout>
-              <HoaDon />
-            </MainLayout>
-          ),
-        },
-        {
-          path: ROUTE.HDMV_Huy,
-          element: (
-            <MainLayout>
-              <HoaDon />
-            </MainLayout>
-          ),
-        },
-
-        {
-          path: ROUTE.HDMV_ThayThe,
-          element: (
-            <MainLayout>
-              <HoaDon />
-            </MainLayout>
-          ),
-        },
-
-        {
-          path: ROUTE.HDMV_DaDC,
-          element: (
-            <MainLayout>
-              <HoaDon />
-            </MainLayout>
-          ),
-        },
-
-        {
-          path: ROUTE.HDMV_XuatBangKe,
-          element: (
-            <MainLayout>
-              <HoaDon />
-            </MainLayout>
-          ),
-        },
-
         {
           path: ROUTE.HDBR,
           element: <Navigate to={ROUTE.HDBR_TatCa} replace />,
@@ -137,7 +89,7 @@ export default function useRouteElement() {
           path: ROUTE.HDBR_TatCa,
           element: (
             <MainLayout>
-              <HoaDon />
+              <HoaDonBanRa />
             </MainLayout>
           ),
         },
@@ -145,7 +97,7 @@ export default function useRouteElement() {
           path: ROUTE.HDBR_Huy,
           element: (
             <MainLayout>
-              <HoaDon />
+              <HoaDonBanRa />
             </MainLayout>
           ),
         },
@@ -154,7 +106,7 @@ export default function useRouteElement() {
           path: ROUTE.HDBR_ThayThe,
           element: (
             <MainLayout>
-              <HoaDon />
+              <HoaDonBanRa />
             </MainLayout>
           ),
         },
@@ -163,7 +115,7 @@ export default function useRouteElement() {
           path: ROUTE.HDBR_DaDC,
           element: (
             <MainLayout>
-              <HoaDon />
+              <HoaDonBanRa />
             </MainLayout>
           ),
         },
@@ -172,7 +124,7 @@ export default function useRouteElement() {
           path: ROUTE.HDBR_XuatBangKe,
           element: (
             <MainLayout>
-              <HoaDon />
+              <HoaDonBanRa />
             </MainLayout>
           ),
         },

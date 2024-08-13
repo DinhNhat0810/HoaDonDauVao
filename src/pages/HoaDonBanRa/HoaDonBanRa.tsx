@@ -106,17 +106,60 @@ const HoaDon = () => {
         zipFiles
           .file("invoice.html")
           .async("text")
-          .then((content: any) => {
-            const popupWindow = window.open(
-              "",
-              "_blank",
-              "width=1000,height=600"
-            );
-            if (popupWindow) {
-              popupWindow.document.open();
-              popupWindow.document.write(content);
-              popupWindow.document.close();
-            }
+          .then((content: string) => {
+            const imageFiles = zipFiles.filter((relativePath: string) => {
+              return (
+                relativePath.toLowerCase().endsWith(".png") ||
+                relativePath.toLowerCase().endsWith(".jpg") ||
+                relativePath.toLowerCase().endsWith(".jpeg")
+              );
+            });
+
+            const jsFiles = zipFiles.filter((relativePath: string) => {
+              return relativePath.toLowerCase().endsWith(".js");
+            });
+
+            const imagePromises = imageFiles.map((imageFile: any) => {
+              return imageFile.async("blob").then((blob: Blob) => {
+                const blobUrl = URL.createObjectURL(blob);
+                return { originalPath: imageFile.name, blobUrl };
+              });
+            });
+
+            const jsPromises = jsFiles.map((jsFile: any) => {
+              return jsFile.async("blob").then((blob: Blob) => {
+                const blobUrl = URL.createObjectURL(blob);
+                return { originalPath: jsFile.name, blobUrl };
+              });
+            });
+
+            Promise.all([...imagePromises, ...jsPromises]).then((resources) => {
+              resources.forEach(({ originalPath, blobUrl }) => {
+                if (originalPath.toLowerCase().endsWith(".js")) {
+                  content = content.replace(
+                    "</body>",
+                    `<script src="${blobUrl}"></script></body>`
+                  );
+                } else {
+                  content = content.replace(
+                    new RegExp(originalPath, "g"),
+                    blobUrl
+                  );
+                }
+              });
+
+              // Display the modified HTML content in the popup window
+              const popupWindow = window.open(
+                "",
+                "_blank",
+                "width=1000,height=600"
+              );
+              if (popupWindow) {
+                popupWindow.document.open();
+                popupWindow.document.write(content);
+                popupWindow.document.close();
+              }
+            });
           });
       });
     } catch (error) {

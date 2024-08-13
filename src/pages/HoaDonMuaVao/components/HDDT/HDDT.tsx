@@ -13,6 +13,7 @@ import {
   Table,
   TableColumnType,
   TableProps,
+  Tabs,
 } from "antd";
 import { FilterDropdownProps } from "antd/es/table/interface";
 import dayjs from "dayjs";
@@ -25,6 +26,8 @@ import { RangePickerProps } from "antd/es/date-picker";
 import https from "../../../../libs/https";
 import JSZip from "jszip";
 import SelectTemplateModal from "../../../../components/CustomModal/SelectTemplateModal";
+import { useLocation } from "react-router-dom";
+import { TabsProps } from "antd/lib";
 
 export default function HDDT({
   handleDownload,
@@ -48,6 +51,22 @@ export default function HDDT({
   const searchInput = useRef<InputRef>(null);
   const [fileName, setFileName] = useState("");
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
+  const [tab, setTab] = useState("5");
+
+  const items: TabsProps["items"] = [
+    {
+      key: "5",
+      label: "Hóa đơn đã được cấp mã",
+    },
+    {
+      key: "4",
+      label: "Hóa đơn chưa được cấp mã",
+    },
+    {
+      key: "6",
+      label: "Hóa đơn không mã",
+    },
+  ];
 
   const handleSearch = (
     selectedKeys: string[],
@@ -307,7 +326,43 @@ export default function HDDT({
         },
       },
       {
-        title: "Thông tin người bán",
+        title: "Mẫu số",
+        dataIndex: "khmshdon",
+      },
+
+      {
+        title: "Ký hiệu",
+        dataIndex: "khhdon",
+      },
+
+      {
+        title: "Số hóa đơn",
+        dataIndex: "shdon",
+      },
+
+      {
+        title: "Tổng tiền",
+        dataIndex: "tongThanhToan",
+      },
+
+      {
+        title: "Trạng thái hóa đơn",
+        dataIndex: "tthai",
+      },
+
+      {
+        title: "Ngày thay đổi trạng thái hóa đơn trên TCT",
+        dataIndex: "ncnhat",
+        width: "10%",
+      },
+
+      {
+        title: "Ngày lập hóa đơn",
+        dataIndex: "ntao",
+      },
+
+      {
+        title: "Thông tin người bán hàng",
         dataIndex: "thongTinNguoiBan",
         width: "15%",
         render: (value: any) => (
@@ -334,122 +389,17 @@ export default function HDDT({
       },
 
       {
-        title: "Thông tin hóa đơn",
-        dataIndex: "thongTinHoaDon",
-        filters: [
-          {
-            text: "89",
-            value: "89",
-          },
-          {
-            text: "87",
-            value: "87",
-          },
-        ],
-        width: "15%",
-        ...getColumnSearchProps("thongTinHoaDon", [
-          {
-            label: "Tên hóa đơn",
-            field: "thdon",
-          },
-          {
-            label: "Mẫu số",
-            field: "khmshdon",
-          },
-          {
-            label: "Ký hiệu",
-            field: "khhdon",
-          },
-          {
-            label: "Số HĐ",
-            field: "shdon",
-          },
-          {
-            label: "Ngày lập",
-            field: "ntao",
-          },
-        ]),
+        title: "Kiểm tra thuế suất",
+        dataIndex: "tongThue",
       },
 
       {
-        title: "Ngày ký",
-        dataIndex: "nky",
-        width: "100px",
-        ...getColumnSearchProps("nky"),
-      },
-
-      {
-        title: "Ngày cấp mã",
-        dataIndex: "ncma",
-        width: "100px",
-      },
-
-      {
-        title: "Thông tin người mua",
-        dataIndex: "thongTinNguoiMua",
-        width: "12%",
-        ...getColumnSearchProps("thongTinNguoiMua", [
-          {
-            label: "MST",
-            field: "nmmst",
-          },
-          {
-            label: "Tên đơn vị",
-            field: "nmten",
-          },
-        ]),
-      },
-
-      {
-        title: "Tổng trước thuế",
-        dataIndex: "tongTruocThue",
-        width: "10%",
-        ...getColumnSearchProps("tongTruocThue"),
-      },
-
-      {
-        title: "Thuế suất",
-        dataIndex: "thueSuat",
-        width: "10%",
-        render: (value: any) => (
-          <ListData
-            fields={[
-              {
-                label: "Thành tiền",
-                field: "thtien",
-                value: value,
-                labelWidth: "76px",
-              },
-              {
-                label: "Thuế suất",
-                field: "tsuat",
-                value: value,
-                labelWidth: "76px",
-              },
-              {
-                label: "Tiền thuế",
-                field: "tthue",
-                value: value,
-                labelWidth: "76px",
-              },
-            ]}
-          />
-        ),
-      },
-      {
-        title: "Tổng thuế",
+        title: "Trạng thái MST người bán",
         dataIndex: "tongThue",
       },
       {
-        title: "Tổng thanh toán",
-        dataIndex: "tongThanhToan",
-        width: "10%",
-      },
-
-      {
-        title: "Bằng chữ",
-        dataIndex: "bangChu",
-        width: "10%",
+        title: "Kết quả kiểm tra",
+        dataIndex: "tongThue",
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -546,7 +496,7 @@ export default function HDDT({
           values.tungay
         ).format("DD/MM/YYYY")}T00:00:00;tdlap=le=${dayjs(
           values.denngay
-        ).format("DD/MM/YYYY")}T23:59:59;ttxly==5`,
+        ).format("DD/MM/YYYY")}T23:59:59;ttxly==${tab}`,
         method: "get",
         headers: {
           "Content-Type": "application/json",
@@ -571,13 +521,6 @@ export default function HDDT({
               nbten: item?.nbten,
               nbdchi: item?.nbdchi,
             },
-            thongTinHoaDon: {
-              thdon: item?.thdon,
-              khmshdon: item?.khmshdon,
-              khhdon: item?.khhdon,
-              shdon: item?.shdon,
-              ntao: dayjs(item?.ntao).format("DD/MM/YYYY HH:mm:ss"),
-            },
             nky: dayjs(item?.nky).format("DD/MM/YYYY HH:mm:ss"),
             ncma: dayjs(item?.ncma).format("DD/MM/YYYY HH:mm:ss"),
             thongTinNguoiMua: {
@@ -597,8 +540,45 @@ export default function HDDT({
             tgtttbso: item?.tgtttbso,
             bangChu: item?.tgtttbchu,
             cksNguoiBan: item?.nbcks,
+
+            ncnhat: dayjs(item?.ncnhat).format("DD/MM/YYYY HH:mm:ss"),
+            tthai: item?.tthai,
+            thdon: item?.thdon,
+            khmshdon: item?.khmshdon,
+            khhdon: item?.khhdon,
+            shdon: item?.shdon,
+            ntao: dayjs(item?.ntao).format("DD/MM/YYYY HH:mm:ss"),
+
+            thttltsuat: item?.thttltsuat,
+            msttcgp: item?.msttcgp,
+            mtdtchieu: item?.mtdtchieu,
+            mhdon: item?.mhdon,
+            thttlphi: item?.thttlphi,
+            shdgoc: item?.shdgoc,
+            tdlhdgoc: item?.tdlhdgoc,
+            khmshdgoc: item?.khmshdgoc,
+            khhdgoc: item?.khhdgoc,
           }))
         );
+
+        // console.log(
+        //   response.datas?.map((item: any, index: number) => ({
+        //     key: index,
+        //     stt: index + 1,
+        //     khmshdon: item?.khmshdon,
+        //     khhdon: item?.khhdon,
+        //     shdon: item?.shdon,
+        //     tongThanhToan: item?.tgtttbso,
+        //     ntao: item?.ntao,
+        //     thongTinNguoiBan: {
+        //       mst: item?.nbmst,
+        //       nbten: item?.nbten,
+        //       nbdchi: item?.nbdchi,
+        //     },
+        //     ncnhat: item?.ncnhat,
+        //     tthai: item?.tthai,
+        //   }))
+        // );
       } else {
         setExpandedRowKeys([]);
         setData([]);
@@ -619,6 +599,8 @@ export default function HDDT({
       });
     }
   };
+
+  console.log(data);
 
   // const excelData = useMemo(() => {
   //   return data?.map((item, index) => {
@@ -652,8 +634,15 @@ export default function HDDT({
     };
   }, []);
 
+  const onChangeTabs = (key: string) => {
+    setTab(key);
+    setData([]);
+  };
+
   return (
     <>
+      <Tabs defaultActiveKey="5" items={items} onChange={onChangeTabs} />
+
       <Form
         style={{
           display: "flex",
@@ -723,7 +712,7 @@ export default function HDDT({
             marginLeft: "8px",
           }}
         >
-          <SelectTemplateModal data={data} fileName={fileName} />
+          <SelectTemplateModal data={data} fileName={fileName} type="buyin" />
         </Form.Item>
       </Form>
       <ConfigProvider
@@ -745,57 +734,57 @@ export default function HDDT({
           columns={columns}
           dataSource={data}
           bordered
-          expandable={{
-            defaultExpandAllRows: true,
-            expandedRowRender: (record) => {
-              return (
-                <ConfigProvider
-                  theme={{
-                    components: {
-                      Table: {
-                        headerBg: "#001529d4",
-                        headerColor: "#fff",
-                        controlItemBgHover: "#fff",
-                        headerBorderRadius: 4,
-                        padding: 8,
-                        colorBgContainer: "#d5d5d559",
-                      },
-                    },
-                  }}
-                >
-                  <Table
-                    loading={loadingChild[record.key]}
-                    columns={childrenTableColumns}
-                    dataSource={record.childrens || []}
-                    pagination={false}
-                    rowKey={(record) => record?.key}
-                    bordered
-                  />
-                </ConfigProvider>
-              );
-            },
-            onExpand: async (expanded, record) => {
-              if (expanded) {
-                handleGetDataChild(
-                  {
-                    nbmst: record?.thongTinNguoiBan?.mst,
-                    khhdon: record?.thongTinHoaDon?.khhdon,
-                    shdon: record?.thongTinHoaDon?.shdon,
-                    khmshdon: record?.thongTinHoaDon?.khmshdon,
-                  },
-                  record?.key
-                );
-                setExpandedRowKeys((prev) => {
-                  return [...prev, record.key];
-                });
-              } else {
-                setExpandedRowKeys((prev) => {
-                  return prev.filter((item) => item !== record.key);
-                });
-              }
-            },
-            expandedRowKeys: expandedRowKeys,
-          }}
+          // expandable={{
+          //   defaultExpandAllRows: true,
+          //   expandedRowRender: (record) => {
+          //     return (
+          //       <ConfigProvider
+          //         theme={{
+          //           components: {
+          //             Table: {
+          //               headerBg: "#001529d4",
+          //               headerColor: "#fff",
+          //               controlItemBgHover: "#fff",
+          //               headerBorderRadius: 4,
+          //               padding: 8,
+          //               colorBgContainer: "#d5d5d559",
+          //             },
+          //           },
+          //         }}
+          //       >
+          //         <Table
+          //           loading={loadingChild[record.key]}
+          //           columns={childrenTableColumns}
+          //           dataSource={record.childrens || []}
+          //           pagination={false}
+          //           rowKey={(record) => record?.key}
+          //           bordered
+          //         />
+          //       </ConfigProvider>
+          //     );
+          //   },
+          //   onExpand: async (expanded, record) => {
+          //     if (expanded) {
+          //       handleGetDataChild(
+          //         {
+          //           nbmst: record?.thongTinNguoiBan?.mst,
+          //           khhdon: record?.thongTinHoaDon?.khhdon,
+          //           shdon: record?.thongTinHoaDon?.shdon,
+          //           khmshdon: record?.thongTinHoaDon?.khmshdon,
+          //         },
+          //         record?.key
+          //       );
+          //       setExpandedRowKeys((prev) => {
+          //         return [...prev, record.key];
+          //       });
+          //     } else {
+          //       setExpandedRowKeys((prev) => {
+          //         return prev.filter((item) => item !== record.key);
+          //       });
+          //     }
+          //   },
+          //   expandedRowKeys: expandedRowKeys,
+          // }}
         />
       </ConfigProvider>
     </>

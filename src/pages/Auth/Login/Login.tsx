@@ -63,8 +63,10 @@ const Login = () => {
         "https://hoadondientu.gdt.gov.vn:30000/security-taxpayer/authenticate";
 
       const res = await axios.post(url, {
-        username: values.username,
-        password: values.password,
+        // username: values.username,
+        // password: values.password,
+        username: "0103930279-999",
+        password: "xsw2XSW@",
         cvalue: values.cvalue,
         ckey: captcha.key,
       });

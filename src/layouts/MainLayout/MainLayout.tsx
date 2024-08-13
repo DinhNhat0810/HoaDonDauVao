@@ -31,7 +31,6 @@ const MainLayout = ({ children }: Props) => {
     {
       key: ROUTE.HDMV,
       label: "Hóa đơn mua vào",
-      icon: <HomeOutlined />,
       children: [
         {
           key: ROUTE.HDMV_TatCa,
@@ -47,7 +46,7 @@ const MainLayout = ({ children }: Props) => {
         },
         {
           key: ROUTE.HDMV_DaDC,
-          label: "HĐ đã đ/c",
+          label: "HĐ đã điều chỉnh",
         },
         {
           key: ROUTE.HDMV_XuatBangKe,
@@ -58,7 +57,6 @@ const MainLayout = ({ children }: Props) => {
     {
       key: ROUTE.HDBR,
       label: "Hóa đơn bán ra",
-      icon: <HomeOutlined />,
       children: [
         {
           key: ROUTE.HDBR_TatCa,

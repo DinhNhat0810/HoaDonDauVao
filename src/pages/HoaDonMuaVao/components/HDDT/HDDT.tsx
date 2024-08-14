@@ -37,7 +37,7 @@ export default function HDDT({
   token,
 }: {
   handleDownload: (values: any) => void;
-  handleViewInvoice: (values: any) => void;
+  handleViewInvoice: (values: any, data: any) => void;
   ListData: any;
   handleOpenNotification: any;
   token: any;
@@ -311,12 +311,15 @@ export default function HDDT({
                   color: "#1890ff",
                 }}
                 onClick={() => {
-                  handleViewInvoice({
-                    nbmst: record?.thongTinNguoiBan?.mst,
-                    khhdon: record?.thongTinHoaDon?.khhdon,
-                    shdon: record?.thongTinHoaDon?.shdon,
-                    khmshdon: record?.thongTinHoaDon?.khmshdon,
-                  });
+                  handleViewInvoice(
+                    {
+                      nbmst: record?.thongTinNguoiBan?.mst,
+                      khhdon: record?.thongTinHoaDon?.khhdon,
+                      shdon: record?.thongTinHoaDon?.shdon,
+                      khmshdon: record?.thongTinHoaDon?.khmshdon,
+                    },
+                    record
+                  );
                 }}
               >
                 <EyeOutlined />
@@ -607,8 +610,6 @@ export default function HDDT({
       });
     }
   };
-
-  console.log(data);
 
   // const excelData = useMemo(() => {
   //   return data?.map((item, index) => {

@@ -1,4 +1,4 @@
-import { Modal, Tabs, TabsProps } from "antd";
+import { Button, Modal, Tabs, TabsProps } from "antd";
 import { useContext, useRef, useState } from "react";
 import https from "../../libs/https";
 import { AppContext } from "../../contexts/app.context";
@@ -9,6 +9,7 @@ import JSZip from "jszip";
 import HDMTT from "./components/HDMTT";
 import HDDT from "./components/HDDT";
 import { convertXmlToJson } from "../../libs/common";
+import CheckInvoiceModal from "../../components/CustomModal/CheckInvoiceModal";
 
 type DownloadHoaDonType = {
   nbmst: string;
@@ -61,6 +62,9 @@ const HoaDon = () => {
   const { token } = useContext(AppContext);
   const { handleOpenNotification } = useContext(NotificationContext);
   const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
+  const [openCheckInvoiceModal, setOpenCheckInvoiceModal] = useState(false);
+  const [dataInvoice, setDataInvoice] = useState<any>(null);
+
   const modalBodyRef = useRef(null);
 
   const handleDownload = async (values: DownloadHoaDonType) => {
@@ -88,7 +92,7 @@ const HoaDon = () => {
     }
   };
 
-  const handleViewInvoice = async (values: DownloadHoaDonType) => {
+  const handleViewInvoice = async (values: DownloadHoaDonType, data: any) => {
     try {
       const response: any = await https({
         baseURL: `https://hoadondientu.gdt.gov.vn:30000/query/invoices/export-xml?nbmst=${values.nbmst}&khhdon=${values.khhdon}&shdon=${values.shdon}&khmshdon=${values.khmshdon}`,
@@ -167,14 +171,14 @@ const HoaDon = () => {
               setTimeout(() => {
                 const modalBody = document.getElementById("aloha");
                 if (modalBody) {
-                  // Tạo một iframe và đặt nội dung HTML vào đó
                   const iframe = document.createElement("iframe");
-                  iframe.style.width = "100%";
+                  iframe.style.width = "98%";
                   iframe.style.height = "800px";
                   iframe.style.border = "none";
-                  iframe.srcdoc = content; // srcdoc chứa nội dung HTML
-                  modalBody.innerHTML = ""; // Xóa nội dung cũ
-                  modalBody.appendChild(iframe); // Thêm iframe vào modalBody
+                  iframe.srcdoc = content;
+                  modalBody.innerHTML = "";
+                  modalBody.appendChild(iframe);
+                  setDataInvoice(data);
                 } else {
                   console.error("Element with id 'aloha' not found");
                 }
@@ -224,10 +228,42 @@ const HoaDon = () => {
       <Modal
         width={1200}
         open={openInvoiceModal}
-        onCancel={() => setOpenInvoiceModal(false)}
+        onCancel={handleCancel}
+        footer={null}
       >
         <div id="aloha" ref={modalBodyRef}></div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <button
+            style={{
+              backgroundColor: "#ed9b2d",
+              color: "white",
+              padding: "8px 16px",
+              borderRadius: "4px",
+              border: "none",
+              cursor: "pointer",
+              marginTop: "16px",
+              outline: "none",
+            }}
+            onClick={() => {
+              setOpenCheckInvoiceModal(true);
+            }}
+          >
+            Kiểm tra thông tin hóa đơn
+          </button>
+        </div>
       </Modal>
+
+      <CheckInvoiceModal
+        open={openCheckInvoiceModal}
+        handleCancel={() => setOpenCheckInvoiceModal(false)}
+        data={dataInvoice}
+      />
+
       <div
         style={{
           display: "flex",

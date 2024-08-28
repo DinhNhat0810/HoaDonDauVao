@@ -1,11 +1,13 @@
-import { ConfigProvider, Form, Input, notification, Spin } from "antd";
+import { Button, ConfigProvider, Form, Input, notification, Spin } from "antd";
 import CustomInput from "../../../components/CustomInput";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../../../contexts/app.context";
 import { isEmpty } from "lodash";
 import CustomLoading from "../../../components/CustomLoading";
+import { IMAGES } from "../../../libs/constants";
+import ResetIcon from "../../../components/Icon/reset";
 
 type NotificationType = "success" | "info" | "warning" | "error";
 
@@ -41,12 +43,26 @@ const Login = () => {
         contentCaptcha = contentCaptcha.replace(/="/g, '="');
 
         if (contentCaptcha.trim().startsWith("<svg")) {
-          const imgCapcha: any = document.querySelector(".captcha_img");
-          imgCapcha.innerHTML = contentCaptcha;
-          setCaptcha({
-            content: contentCaptcha,
-            key,
-          });
+          const parser = new DOMParser();
+          const svgDoc = parser.parseFromString(
+            contentCaptcha,
+            "image/svg+xml"
+          );
+          const svgElement = svgDoc.querySelector("svg");
+          if (svgElement) {
+            svgElement.setAttribute("width", "100%");
+            svgElement.setAttribute("height", "80px");
+
+            const serializer = new XMLSerializer();
+            const serializedSvg = serializer.serializeToString(svgElement);
+            const imgCapcha: any = document.querySelector(".captcha_img");
+            imgCapcha.innerHTML = serializedSvg;
+
+            setCaptcha({
+              content: serializedSvg,
+              key,
+            });
+          }
         } else {
           console.warn("Unsafe HTML content blocked.");
         }
@@ -98,179 +114,135 @@ const Login = () => {
   };
 
   return (
-    <div
-      style={{
-        backgroundImage:
-          "linear-gradient(60deg, rgb(112 125 243) 0%, rgb(173 82 209) 100%)",
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "flex-start",
-      }}
-    >
+    <div className="flex h-full flex-1">
       {loading && <CustomLoading />}
       {contextHolder}
-      <div
-        style={{
-          width: "400px",
-          backgroundColor: "white",
-          borderRadius: "10px",
-          overflow: "hidden",
-          padding: "10px 20px 20px",
-          margin: "80px 0 20px 0",
-        }}
-      >
-        <div>
-          <img
-            src="/assets/logo.jpg"
-            alt="logo"
-            style={{
-              width: "80%",
-              display: "block",
-              margin: "auto",
-            }}
-          />
+      <div className="flex-[6] flex flex-col items-center">
+        <div className="m-auto mt-20 flex flex-col items-center">
+          <h2 className="text-center text-[40px] font-semibold text-primary-color">
+            Phần mềm quản lý hóa đơn
+          </h2>
+          <p className="text-center">
+            Quản lý tập trung hóa đơn đầu vào và đầu ra của doanh nghiệp
+          </p>
+          <p className="text-center">
+            Tự động tra cứu, phân tích và kiểm tra thông tin hóa đơn
+          </p>
+          <p className="text-center text-xs mt-4 mb-2 text-primary-color font-semibold">
+            Phát hành hóa đơn ngay hôm nay với CA2 Einvoice{" "}
+          </p>
+
+          <Link
+            to="https://ca2einv.nacencomm.vn"
+            className="text-primary-color underline"
+          >
+            <img src={IMAGES.auth.ca2Invoice} alt="logo" />
+          </Link>
         </div>
-
-        <p
-          style={{
-            fontWeight: "bold",
-            fontSize: "24px",
-            textAlign: "center",
-            textTransform: "uppercase",
-          }}
-        >
-          Đăng nhập
-        </p>
-
-        <p
-          style={{
-            textAlign: "center",
-            marginTop: "10px",
-            fontSize: "14px",
-            fontWeight: "400",
-            width: "80%",
-            margin: "auto",
-            fontStyle: "italic",
-          }}
-        >
-          Sử dụng tài khoản đăng nhập hệ thống Hóa đơn điện tử của Tổng Cục Thuế
-        </p>
-
-        <Form
-          style={{
-            marginTop: "10px",
-          }}
-          onFinish={(values) => {
-            handleLogin(values);
-          }}
-        >
-          <CustomInput
-            label="Mã số thuế"
-            name="username"
-            placeholder="Mã số thuế"
-            size="large"
-            configBoderRadius={4}
-            rules={[{ required: true, message: "Vui lòng nhập mã số thuế" }]}
-            formItemStyle={{
-              marginBottom: "24px",
-            }}
-          />
-
-          <CustomInput
-            label="Mật khẩu"
-            name="password"
-            placeholder="Mật khẩu"
-            size="large"
-            configBoderRadius={4}
-            type="password"
-            rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
-            formItemStyle={{
-              marginBottom: "24px",
-              marginTop: "4px",
-            }}
-          />
-
-          <div
-            className="captcha_img"
+        <img
+          src={IMAGES.auth.personnel}
+          alt="personnel"
+          width={591}
+          className="w-[591px] h-[556px]"
+        />
+      </div>
+      <div className="flex-[5] bg-white rounded-tl-[48px] flex">
+        <div className="m-auto md:w-[440px]">
+          <h2 className="text-4xl font-semibold text-center mb-4">Đăng nhập</h2>
+          <p className="text-center text-sm px-2 mb-4">
+            Khách hàng sử dụng tài khoản của doanh nghiệp đăng ký trên Thuế để
+            đăng nhập
+          </p>
+          <Form
             style={{
-              marginBottom: "10px",
+              marginTop: "10px",
             }}
-          ></div>
-
-          <CustomInput
-            label="Captcha"
-            name="cvalue"
-            placeholder="Nhập captcha"
-            size="large"
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập captcha",
-              },
-            ]}
-            formItemStyle={{
-              marginBottom: "24px",
-              marginTop: "4px",
+            onFinish={(values) => {
+              handleLogin(values);
             }}
-            configBoderRadius="4"
-          />
-
-          <Form.Item>
-            <button
-              style={{
-                width: "100%",
-                backgroundImage:
-                  "linear-gradient(160deg, rgb(112 125 243) 0%, rgb(173 82 209) 100%)",
-                color: "white",
-                padding: "10px",
-                borderRadius: "4px",
-                border: "none",
-                cursor: "pointer",
-                marginTop: "10px",
+          >
+            <CustomInput
+              name="username"
+              placeholder="Mã số thuế"
+              size="large"
+              configBoderRadius={6}
+              rules={[{ required: true, message: "Vui lòng nhập mã số thuế" }]}
+              formItemStyle={{
+                marginBottom: "28px",
               }}
-            >
-              Đăng nhập
-            </button>
-          </Form.Item>
-        </Form>
+              className="py-[15px]"
+              labelInside="Mã số thuế"
+            />
 
-        <p
-          style={{
-            fontStyle: "italic",
-            textAlign: "center",
-            fontSize: "12px",
-            marginBottom: "4px",
-          }}
-        >
-          Bản quyền thuộc: Công Ty Cổ phần Công nghệ thẻ Nacencomm
-        </p>
-        <p
-          style={{
-            fontStyle: "italic",
-            textAlign: "center",
-            fontSize: "12px",
-            width: "90%",
-            margin: "auto",
-            marginBottom: "4px",
-          }}
-        >
-          Địa chỉ ĐKKD: Tầng 5, số 2 Chùa Bộc, Phường Trung Tự, Quận Đống Đa,
-          Thành phố Hà Nội, Việt Nam.
-        </p>
+            <CustomInput
+              name="password"
+              placeholder="Mật khẩu"
+              size="large"
+              configBoderRadius={6}
+              type="password"
+              rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
+              formItemStyle={{
+                marginBottom: "24px",
+                marginTop: "4px",
+              }}
+              className="py-[15px]"
+              labelInside="Mật khẩu"
+            />
+            <div className="text-right">
+              <span className="text-primary-color underline cursor-pointer">
+                Quên mật khẩu
+              </span>
+            </div>
 
-        <p
-          style={{
-            fontStyle: "italic",
-            textAlign: "center",
-            fontSize: "12px",
-            width: "90%",
-            margin: "auto",
-          }}
-        >
-          Trụ sở chính: Tầng 3, Tòa nhà Bohemia, Số 25 Nguyễn Huy Tưởng, Phường
-          Thanh Xuân Trung, Quận Thanh Xuân, Thành phố Hà Nội, Việt Nam
-        </p>
+            <div className="relative border border-[#d9d9d9] rounded-md pb-2 mt-2 mb-4">
+              <div
+                className="captcha_img"
+                style={{
+                  marginBottom: "10px",
+                }}
+              ></div>
+              <ResetIcon
+                className="cursor-pointer absolute bottom-2 right-2"
+                onClick={() => setLoadCapcha(!loadCapcha)}
+              />
+            </div>
+
+            <CustomInput
+              name="cvalue"
+              placeholder="Mã captcha"
+              configBoderRadius={6}
+              size="large"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập captcha",
+                },
+              ]}
+              formItemStyle={{
+                marginBottom: "24px",
+                marginTop: "4px",
+              }}
+              className="py-[15px]"
+              labelInside="Mã captcha"
+            />
+
+            <div className="text-center mt-8">
+              <button
+                type="submit"
+                className="w-11/12 bg-[#E6E6E8] h-12 font-bold text-[#9B9B9E] hover:bg-primary-color hover:text-white text-lg rounded-md"
+              >
+                Tiếp tục
+              </button>
+              <p className="py-4">
+                Quý khách có thể{" "}
+                <span className="underline font-semibold text-primary-color cursor-pointer">
+                  Đăng ký
+                </span>{" "}
+                tại đây
+              </p>
+            </div>
+          </Form>
+        </div>
       </div>
     </div>
   );

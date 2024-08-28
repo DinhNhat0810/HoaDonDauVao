@@ -10,23 +10,18 @@ th {
   text-align: center !important;
 }
 
-.line-clamp-400-2 {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  width: 400px;
+.table-invoice .ant-pagination .ant-pagination-item {
+  background-color: #f6f7f9 !important;
 }
 
-.compose2 .ant-table-cell .ant-radio-inner {
-  border-color: #001529 !important;
+.table-invoice .ant-pagination .ant-pagination-item-active a {
+  color: #fff !important;
 }
 
-.compose2 .ant-upload-wrapper {
-  display: flex;
-  align-items: center;
+.table-invoice .ant-pagination .ant-pagination-item-active {
+  background-color: var(--primary-color) !important;
 }
 
-.compose2 .ant-upload-wrapper > div:first-child {
-  margin-right: 10px;
+.ant-pagination .ant-pagination-item-active {
+  border-color: var(--primary-color) !important;
 }

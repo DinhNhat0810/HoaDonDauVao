@@ -1,5 +1,8 @@
 import { Modal } from "antd";
-import React, { useState } from "react";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import { convertToVnd } from "../../libs/common";
+dayjs.extend(customParseFormat);
 
 export default function CheckInvoiceModal({
   open,
@@ -37,7 +40,7 @@ export default function CheckInvoiceModal({
               fontWeight: "bold",
             }}
           >
-            Tại thời điểm ngày 10/10/2087
+            Tại thời điểm ngày {dayjs(new Date()).format("DD/MM/YYYY")}
           </p>
           <p
             style={{
@@ -59,23 +62,22 @@ export default function CheckInvoiceModal({
         >
           <div
             style={{
-              width: "40%",
+              width: "50%",
             }}
           >
-            <p>Mã số thuế người bán: </p>
-            <p>Mã số thuế người bán: </p>
-            <p>Số hóa đơn: </p>
-            <p>Ký hiệu hóa đơn: </p>
+            <p>Mã số thuế người bán: {data?.thongTinNguoiBan.mst}</p>
+            <p>Tổng tiền thanh toán: {convertToVnd(data?.tgtttbso)}</p>
+            <p>Số hóa đơn: {data?.shdon}</p>
+            <p>Ký hiệu hóa đơn: {data?.khhdon}</p>
           </div>
           <div
             style={{
-              width: "40%",
-              paddingLeft: "60px",
+              width: "50%",
             }}
           >
-            <p>Mẫu hóa đơn: </p>
-            <p>Ngày lập: </p>
-            <p>Ngày ký: </p>
+            <p>Mẫu hóa đơn: {data?.thdon}</p>
+            <p>Ngày lập: {data?.tdlap}</p>
+            <p>Ngày ký: {data?.nky}</p>
             <p></p>
           </div>
         </div>
@@ -110,10 +112,14 @@ export default function CheckInvoiceModal({
               Chữ ký số người bán:
             </p>
 
-            <p>- Ký bởi: Công ty cổ phần công nghệ thẻ NACENCOMM</p>
-            <p>- Nhà cung cấp: CN=CA2, O=NACENCOMM SCT, C=VN</p>
-            <p>- Hiệu lực: từ 25/05/2022 đến 06/03/2025</p>
-            <p>- Serial number: 5402BC5CACCE669C2015000200063CD0</p>
+            <p>- Ký bởi: {data?.cksNguoiBanObj?.CN}</p>
+            <p>- Nhà cung cấp: {data?.cksNguoiBanObj?.Issuer}</p>
+            <p>
+              - Hiệu lực: từ{" "}
+              {dayjs(data?.cksNguoiBanObj?.NotAfter).format("DD/MM/YYYY")} đến{" "}
+              {dayjs(data?.cksNguoiBanObj?.NotBefore).format("DD/MM/YYYY")}
+            </p>
+            <p>- Serial number: {data?.cksNguoiBanObj?.SerialNumber}</p>
             <p
               style={{
                 color: "green",
@@ -153,7 +159,9 @@ export default function CheckInvoiceModal({
               padding: "0 16px",
             }}
           >
-            - Hóa đơn được cấp mã ngày: 26/11/2222
+            - Hóa đơn được cấp mã ngày:{" "}
+            {data?.ncma &&
+              dayjs(data?.ncma, "DD/MM/YYYY HH:mm:ss").format("DD/MM/YYYY")}
           </p>
         </div>
 
@@ -206,18 +214,29 @@ export default function CheckInvoiceModal({
                   width: "200px",
                 }}
               >
-                - Mã số thuế: 021525454
+                - Mã số thuế: {data?.thongTinNguoiBan.mst}
               </p>
               <p
                 style={{
                   flex: 1,
                 }}
               >
-                Trạng thái: Hoạt động
+                Trạng thái:
+                <span
+                  style={{
+                    color:
+                      data?.thongTinNguoiMua?.trangThai === "MST đang hoạt động"
+                        ? "green"
+                        : "orange",
+                    marginLeft: "8px",
+                  }}
+                >
+                  {data?.thongTinNguoiBan?.trangThai}
+                </span>
               </p>
             </div>
-            <p>- Tên đơn vị: CN=CA2, O=NACENCOMM SCT, C=VN</p>
-            <p>- Địa chỉ: từ 25/05/2022 đến 06/03/2025</p>
+            <p>- Tên đơn vị: {data?.thongTinNguoiBan?.nbten}</p>
+            <p>- Địa chỉ: {data?.thongTinNguoiBan?.nbdchi}</p>
           </div>
 
           <div
@@ -245,18 +264,29 @@ export default function CheckInvoiceModal({
                   width: "200px",
                 }}
               >
-                - Mã số thuế: 021525454
+                - Mã số thuế: {data?.thongTinNguoiMua?.nmmst}
               </p>
               <p
                 style={{
                   flex: 1,
                 }}
               >
-                Trạng thái: Hoạt động
+                Trạng thái:
+                <span
+                  style={{
+                    color:
+                      data?.thongTinNguoiMua?.trangThai === "MST đang hoạt động"
+                        ? "green"
+                        : "orange",
+                    marginLeft: "8px",
+                  }}
+                >
+                  {data?.thongTinNguoiMua?.trangThai}
+                </span>
               </p>
             </div>
-            <p>- Tên đơn vị: CN=CA2, O=NACENCOMM SCT, C=VN</p>
-            <p>- Địa chỉ: từ 25/05/2022 đến 06/03/2025</p>
+            <p>- Tên đơn vị: {data?.thongTinNguoiMua?.nmten}</p>
+            <p>- Địa chỉ: {data?.thongTinNguoiMua?.nmdchi}</p>
           </div>
         </div>
       </div>

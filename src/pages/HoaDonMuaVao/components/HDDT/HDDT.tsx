@@ -19,7 +19,11 @@ import { FilterDropdownProps } from "antd/es/table/interface";
 import dayjs from "dayjs";
 import { isEmpty } from "lodash";
 import { useMemo, useRef, useState } from "react";
-import { convertToVnd, convertXmlToJson } from "../../../../libs/common";
+import {
+  convertCksNguoiBan,
+  convertToVnd,
+  convertXmlToJson,
+} from "../../../../libs/common";
 import ExcelExport from "../../../../components/ExportExcel";
 import CustomInput from "../../../../components/CustomInput";
 import { RangePickerProps } from "antd/es/date-picker";
@@ -404,6 +408,26 @@ export default function HDDT({
         title: "Kết quả kiểm tra",
         dataIndex: "tongThue",
       },
+      {
+        title: "Nhà cung cấp",
+        dataIndex: "nhaCungCap",
+        render: (value: any) => (
+          <ListData
+            fields={[
+              {
+                label: "MST TCGP",
+                field: "msttcgp",
+                value: value,
+              },
+              {
+                label: "Tên nhà CC",
+                field: "ngcnhat",
+                value: value,
+              },
+            ]}
+          />
+        ),
+      },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -538,6 +562,7 @@ export default function HDDT({
               nmmst: item?.nmmst,
               nmten: item?.nmten,
               khhdon: item?.khhdon,
+              nmdchi: item?.nmdchi,
             },
             tongTruocThue: convertToVnd(item?.tgtcthue),
             thueSuat: {
@@ -569,27 +594,55 @@ export default function HDDT({
             tdlhdgoc: item?.tdlhdgoc,
             khmshdgoc: item?.khmshdgoc,
             khhdgoc: item?.khhdgoc,
+
+            nhaCungCap: {
+              msttcgp: item?.msttcgp,
+              ngcnhat: item?.ngcnhat,
+            },
+            tdlap: dayjs(item?.tdlap).format("DD/MM/YYYY HH:mm:ss"),
+            cksNguoiBanObj: convertCksNguoiBan(item?.nbcks),
           }))
         );
 
-        // console.log(
-        //   response.datas?.map((item: any, index: number) => ({
-        //     key: index,
-        //     stt: index + 1,
-        //     khmshdon: item?.khmshdon,
-        //     khhdon: item?.khhdon,
-        //     shdon: item?.shdon,
-        //     tongThanhToan: item?.tgtttbso,
-        //     ntao: item?.ntao,
-        //     thongTinNguoiBan: {
-        //       mst: item?.nbmst,
-        //       nbten: item?.nbten,
-        //       nbdchi: item?.nbdchi,
-        //     },
-        //     ncnhat: item?.ncnhat,
-        //     tthai: item?.tthai,
-        //   }))
-        // );
+        const payload = response.datas?.map((item: any) => ({
+          nbmst: item?.nbmst,
+          khmshdon: item?.khmshdon,
+          khhdon: item?.khhdon,
+          shdon: item?.shdon,
+          hthdon: item?.hthdon,
+          khhdgoc: item?.khhdgoc,
+          khmshdgoc: item?.khmshdgoc,
+          mhdon: item?.mhdon,
+          mtdtchieu: item?.mtdtchieu,
+          nbdchi: item?.nbdchi,
+          nbten: item?.nbten,
+          ncma: item?.ncma,
+          ncnhat: item?.ncnhat,
+          ngcnhat: item?.ngcnhat,
+          nky: item?.nky,
+          nmdchi: item?.nmdchi,
+          nmmst: item?.nmmst,
+          nmten: item?.nmten,
+          shdgoc: item?.shdgoc,
+          tchat: item?.tchat,
+          tdlap: item?.tdlap,
+          tgtcthue: item?.tgtcthue,
+          tgtthue: item?.tgtthue,
+          tgtttbchu: item?.tgtttbchu,
+          tgtttbso: item?.tgtttbso,
+          thdon: item?.thdon,
+          thttlphi: item?.thttlphi,
+          thttltsuat: item?.thttltsuat,
+          ttcktmai: item?.ttcktmai,
+          tthai: item?.tthai,
+          ttxly: item?.ttxly,
+          nbcks: item?.nbcks,
+          tdlhdgoc: item?.tdlhdgoc,
+          thtttoan: item?.thtttoan,
+          msttcgp: item?.msttcgp,
+          cqtcks: item?.cqtcks,
+        }));
+        console.log(payload);
       } else {
         setExpandedRowKeys([]);
         setData([]);

@@ -1,201 +1,255 @@
-import {
-  HomeOutlined,
-  LogoutOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-} from "@ant-design/icons";
-import { Button, Layout, Menu, theme, type MenuProps } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ROUTE } from "../../libs/constants";
+import { IMAGES, ROUTE } from "../../libs/constants";
 import { AppContext } from "../../contexts/app.context";
-const { Header, Sider, Content } = Layout;
+import ExpandIcon from "../../components/Icon/expand";
+import ComputerIcon from "../../components/Icon/computer";
+import DocumentIcon from "../../components/Icon/document";
+import StatisticalIcon from "../../components/Icon/statistical";
+import ProtectUserIcon from "../../components/Icon/protect-user";
+import SettingIcon from "../../components/Icon/setting";
+import Header from "./Header";
 
 type Props = {
   children?: React.ReactNode;
 };
 
-type MenuItem = Required<MenuProps>["items"][number];
+type ItemsType = {
+  key: string;
+  label: string;
+  icon?: React.ReactNode;
+  children?: ItemsType[];
+};
+
+const RenderIcon = ({
+  active,
+  ROUTE,
+  icon: IconComponent,
+}: {
+  active: string | number;
+  ROUTE: string;
+  icon: React.ElementType;
+}) => {
+  return (
+    <IconComponent
+      className={`py-[13px] px-[12px] ${
+        active === ROUTE ? "bg-primary-color" : "bg-[#343436]"
+      } rounded-md`}
+    />
+  );
+};
 
 const MainLayout = ({ children }: Props) => {
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedKey, setSelectedKey] = useState("/");
   const navigate = useNavigate();
   const location = useLocation();
   const { mst } = useContext(AppContext);
+  const [active, setActive] = useState<string | number>(ROUTE.HDMV);
+  const [activeSubMenu, setActiveSubMenu] = useState<string | number>(
+    ROUTE.HDMV_TatCa
+  );
+  const [subMenu, setSubMenu] = useState<ItemsType[]>([]);
 
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
-  const items: MenuItem[] = [
+  const items: ItemsType[] = [
     {
-      key: ROUTE.HDMV,
-      label: "Hóa đơn mua vào",
+      key: ROUTE.TQ,
+      label: "Tổng quan",
+      icon: <RenderIcon active={active} ROUTE={ROUTE.TQ} icon={ComputerIcon} />,
       children: [
         {
-          key: ROUTE.HDMV_TatCa,
-          label: "Tất cả",
-        },
-        {
-          key: ROUTE.HDMV_Huy,
-          label: "HĐ đã hủy",
-        },
-        {
-          key: ROUTE.HDMV_ThayThe,
-          label: "HĐ đã thay thế",
-        },
-        {
-          key: ROUTE.HDMV_DaDC,
-          label: "HĐ đã điều chỉnh",
-        },
-        {
-          key: ROUTE.HDMV_XuatBangKe,
-          label: "Xuất bảng kê",
+          key: ROUTE.TQ_HD,
+          label: "Tổng quan hóa đơn",
         },
       ],
     },
     {
-      key: ROUTE.HDBR,
-      label: "Hóa đơn bán ra",
+      key: ROUTE.HD,
+      label: "Hóa đơn",
+      icon: <RenderIcon active={active} ROUTE={ROUTE.HD} icon={DocumentIcon} />,
       children: [
         {
-          key: ROUTE.HDBR_TatCa,
-          label: "Tất cả",
+          key: ROUTE.HDDV,
+          label: "Hóa đơn đầu vào",
         },
         {
-          key: ROUTE.HDBR_Huy,
-          label: "HĐ đã hủy",
-        },
-        {
-          key: ROUTE.HDBR_ThayThe,
-          label: "HĐ đã thay thế",
-        },
-        {
-          key: ROUTE.HDBR_DaDC,
-          label: "HĐ đã điều chỉnh",
-        },
-        {
-          key: ROUTE.HDBR_XuatBangKe,
-          label: "Xuất bảng kê",
+          key: ROUTE.HDDR,
+          label: "Hóa đơn đầu ra",
         },
       ],
     },
+
     {
-      key: ROUTE.LOGOUT,
-      label: "Đăng xuất",
-      icon: <LogoutOutlined />,
+      key: ROUTE.BAOCAO,
+      label: "Báo cáo",
+      icon: (
+        <RenderIcon
+          active={active}
+          ROUTE={ROUTE.BAOCAO}
+          icon={StatisticalIcon}
+        />
+      ),
+
+      children: [
+        {
+          key: ROUTE.BAOCAO_KXBKMV,
+          label: "Kết xuất bảng kê mua vào",
+        },
+        {
+          key: ROUTE.BAOCAO_KXBKBR,
+          label: "Kết xuất bảng kê bán ra",
+        },
+        {
+          key: ROUTE.BAOCAO_THKT,
+          label: "Tổng hợp khai thuế",
+        },
+        {
+          key: ROUTE.BAOCAO_HDRR,
+          label: "Hóa đơn rủi ro",
+        },
+      ],
+    },
+
+    {
+      key: ROUTE.DANHMUC,
+      label: "Danh mục",
+      icon: (
+        <RenderIcon
+          active={active}
+          ROUTE={ROUTE.DANHMUC}
+          icon={ProtectUserIcon}
+        />
+      ),
+      children: [
+        {
+          key: ROUTE.DANHMUC_NCC,
+          label: "Danh mục nhà cung cấp",
+        },
+        {
+          key: ROUTE.DANHMUC_KH,
+          label: "Danh mục khác hàng",
+        },
+      ],
+    },
+
+    {
+      key: ROUTE.HETHONG,
+      label: "Hệ thống",
+      icon: (
+        <RenderIcon active={active} ROUTE={ROUTE.HETHONG} icon={SettingIcon} />
+      ),
+      children: [
+        {
+          key: ROUTE.HETHONG_TTDN,
+          label: "Thông tin doanh nghiệp",
+        },
+        {
+          key: ROUTE.HETHONG_QLTN,
+          label: "Quản lý tài nguyên",
+        },
+        {
+          key: ROUTE.HETHONG_KNCQT,
+          label: "Kết nối cơ quan thuế",
+        },
+        {
+          key: ROUTE.HETHONG_NKTC,
+          label: "Nhật ký truy cập",
+        },
+      ],
     },
   ];
 
   useEffect(() => {
-    setSelectedKey(location.pathname);
+    setActive("/" + location.pathname.split("/")[1]);
+    setActiveSubMenu(location.pathname);
+    setSubMenu(
+      items.find((item) => item.key === "/" + location.pathname.split("/")[1])
+        ?.children || []
+    );
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
-  return (
-    <Layout hasSider>
-      <Sider
-        trigger={null}
-        collapsible
-        collapsed={collapsed}
-        width={256}
-        style={{
-          overflow: "auto",
-          height: "100vh",
-          position: "fixed",
-          left: 0,
-          top: 0,
-          bottom: 0,
-          padding: 8,
-          transform: collapsed ? "translateX(-80px)" : "translateX(0)",
-        }}
-      >
-        {!collapsed ? (
-          <h2
-            style={{
-              padding: "24px",
-              margin: 0,
-              fontSize: "1.5rem",
-              fontWeight: "bold",
-              color: "#fff",
-              textAlign: "center",
-              backgroundColor: "#001529",
-            }}
-          >
-            NACENCOMM
-          </h2>
-        ) : (
-          <div style={{ height: "84px" }}></div>
-        )}
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={[selectedKey]}
-          items={items}
-          onClick={(item) => {
-            navigate(item.key);
-          }}
-          defaultOpenKeys={["/" + location.pathname.split("/")[1]]}
-        />
-      </Sider>
-      <Layout
-        style={{
-          marginLeft: !collapsed ? 256 : 0,
-        }}
-      >
-        <Header
-          style={{
-            padding: "0 16px",
-            background: colorBgContainer,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            position: "fixed",
-            top: 0,
-            height: 80,
-            right: 0,
-            left: collapsed ? 0 : 256,
-            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-            zIndex: 100,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Button
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
-              style={{
-                fontSize: "16px",
-                marginRight: "16px",
-              }}
-            />
-            <h3 style={{ textTransform: "uppercase" }}>
-              Dữ liệu hóa đơn điện tử đầu vào
-            </h3>
-          </div>
+  const handleSelectItem = (item: ItemsType) => {
+    if (item.key) {
+      navigate(item.children?.[0].key || "");
+    }
+  };
 
-          <div>
-            <p>
-              Mã số thuế: <b>{mst ? mst : ""}</b>
-            </p>
+  const handleSelectSubMenu = (item: ItemsType) => {
+    if (item.key) {
+      navigate(item.key);
+    }
+  };
+
+  return (
+    <div className="flex h-screen overflow-hidden">
+      <div className="flex sticky top-0">
+        <div className="bg-black-color p-3 w-[88px] min-h-screen flex justify-between flex-col">
+          <div className="flex justify-center py-3 mb-4">
+            <ExpandIcon
+              onClick={() => setCollapsed(!collapsed)}
+              className="cursor-pointer"
+            />
           </div>
-        </Header>
-        <Content
-          style={{
-            marginTop: "64px",
-            padding: 16,
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}
+          <ul className="flex-1">
+            {items.map((item, index) => (
+              <li
+                className="text-[13px] font-semibold flex flex-col items-center cursor-pointer mb-4"
+                key={index}
+                onClick={() => handleSelectItem(item)}
+              >
+                <div
+                  className={`relative ${
+                    active === item.key ? "before:block" : "before:hidden"
+                  } before:content-[''] before:w-4 before:top-1 before:bottom-1 before:left-[-34px] before:rounded-md before:bg-primary-color before:absolute`}
+                >
+                  {item.icon}
+                </div>
+                <span className="text-white mt-2">{item.label}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex justify-center">
+            <img
+              src="https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg"
+              alt="avatar"
+              width="44"
+              height="44"
+              className="rounded-full"
+            />
+          </div>
+        </div>
+        <div
+          className={`bg-[#343436] transition-width duration-200 ease-in-out ${
+            collapsed ? "w-0" : "w-[200px]"
+          }`}
         >
-          {children}
-        </Content>
-      </Layout>
-    </Layout>
+          <div className="p-4">
+            <img src={IMAGES.home.logo} alt="logo" className="" />
+            <ul className="mt-8">
+              {subMenu.map((item, index) => (
+                <li
+                  className={`text-[13px] py-4 rounded-md font-semibold flex flex-col items-start cursor-pointer ${
+                    activeSubMenu === item.key
+                      ? "text-white bg-[#1E1E1E]"
+                      : "text-[#ffffff80]"
+                  }`}
+                  key={index}
+                  onClick={() => handleSelectSubMenu(item)}
+                >
+                  <span className="pl-2">{item.label}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div className="flex-1 flex flex-col flex-grow-[1] overflow-y-auto relative">
+        <Header collapsed={collapsed} />
+        <div className="flex-1 p-4 mt-20">{children}</div>
+      </div>
+    </div>
   );
 };
 

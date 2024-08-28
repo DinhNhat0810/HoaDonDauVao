@@ -10,6 +10,9 @@ import HDMTT from "./components/HDMTT";
 import HDDT from "./components/HDDT";
 import { convertXmlToJson } from "../../libs/common";
 import CheckInvoiceModal from "../../components/CustomModal/CheckInvoiceModal";
+import { isEmpty, set } from "lodash";
+import CustomLoading from "../../components/CustomLoading";
+import { TRANG_THAI_HOA_DON } from "../../libs/constants";
 
 type DownloadHoaDonType = {
   nbmst: string;
@@ -64,6 +67,7 @@ const HoaDon = () => {
   const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
   const [openCheckInvoiceModal, setOpenCheckInvoiceModal] = useState(false);
   const [dataInvoice, setDataInvoice] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
   const modalBodyRef = useRef(null);
 
@@ -146,6 +150,10 @@ const HoaDon = () => {
                     "</body>",
                     `<script src="${blobUrl}"></script></body>`
                   );
+                  content = content.replace(
+                    `<script type="text/javascript" src="${originalPath}"></script>`,
+                    ""
+                  );
                 } else {
                   content = content.replace(
                     new RegExp(originalPath, "g"),
@@ -153,18 +161,6 @@ const HoaDon = () => {
                   );
                 }
               });
-              // const popupWindow = window.open(
-              //   "",
-              //   "_blank",
-              //   "width=1000,height=600"
-              // );
-
-              // if (popupWindow) {
-              //   // Append the button HTML to the content
-              //   popupWindow.document.open();
-              //   popupWindow.document.write(content);
-              //   popupWindow.document.close();
-              // }
 
               setOpenInvoiceModal(true);
 
@@ -223,8 +219,80 @@ const HoaDon = () => {
     setOpenInvoiceModal(false);
   };
 
+  const getTrangThaiMST = async (mst: string) => {
+    try {
+      const soapRequest = `
+        <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+          <soap12:Body>
+            <Laythongtin_NNT xmlns="http://tempuri.org/">
+              <MST>${mst}</MST>
+            </Laythongtin_NNT>
+          </soap12:Body>
+        </soap12:Envelope>`;
+
+      const response: any = await https({
+        baseURL: `https://gip.nacencomm.vn`,
+        method: "post",
+        headers: {
+          "Content-Type": "application/soap+xml;charset=UTF-8",
+        },
+        data: soapRequest,
+      });
+
+      const dataJson = convertXmlToJson(response);
+      const DocumentElement =
+        dataJson["soap:Envelope"]["soap:Body"]["Laythongtin_NNTResponse"][
+          "Laythongtin_NNTResult"
+        ];
+
+      if (!isEmpty(DocumentElement)) {
+        return TRANG_THAI_HOA_DON[DocumentElement.TRANG_THAI];
+      }
+
+      return null;
+    } catch (error) {
+      console.log(error);
+      handleOpenNotification({
+        type: "error",
+        message: "Lỗi",
+        description: "Có lỗi xảy ra khi kiểm tra trạng thái MST",
+      });
+    }
+  };
+
+  const handleOpenCheckInvoiceModal = async () => {
+    try {
+      setLoading(true);
+
+      await Promise.all([
+        getTrangThaiMST(dataInvoice.thongTinNguoiBan?.mst),
+        getTrangThaiMST(dataInvoice.thongTinNguoiMua?.nmmst),
+      ]).then((responses: any) => {
+        setDataInvoice((prev: any) => {
+          return {
+            ...prev,
+            thongTinNguoiBan: {
+              ...prev.thongTinNguoiBan,
+              trangThai: responses[0],
+            },
+            thongTinNguoiMua: {
+              ...prev.thongTinNguoiMua,
+              trangThai: responses[1],
+            },
+          };
+        });
+      });
+
+      setLoading(false);
+      setOpenCheckInvoiceModal(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="hoadon">
+      {loading && <CustomLoading />}
       <Modal
         width={1200}
         open={openInvoiceModal}
@@ -249,9 +317,7 @@ const HoaDon = () => {
               marginTop: "16px",
               outline: "none",
             }}
-            onClick={() => {
-              setOpenCheckInvoiceModal(true);
-            }}
+            onClick={handleOpenCheckInvoiceModal}
           >
             Kiểm tra thông tin hóa đơn
           </button>
@@ -268,7 +334,6 @@ const HoaDon = () => {
         style={{
           display: "flex",
           justifyContent: "space-between",
-          // padding: "16px",
         }}
       >
         <Tabs

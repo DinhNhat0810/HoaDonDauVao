@@ -1,3 +1,8 @@
+import ca2Invoice from "../../assets/images/auth/ca2-invoice.svg";
+import personnel from "../../assets/images/auth/personnel.png";
+import logo from "../../assets/images/home/logo.svg";
+import dots from "../../assets/images/icon/dots.svg";
+
 export const ROUTE = {
   HOME: "/",
   HDMV: "/hoa-don-mua-vao",
@@ -12,7 +17,168 @@ export const ROUTE = {
   HDBR_ThayThe: "/hoa-don-ban-ra/da-thay-the",
   HDBR_DaDC: "/hoa-don-ban-ra/da-dieu-chinh",
   HDBR_XuatBangKe: "/hoa-don-ban-ra/xuat-bang-ke",
+  QL_NGUOI_DUNG: "/quan-ly-nguoi-dung",
+  QL_TAI_NGUYEN: "/quan-ly-tai-nguyen",
+  QL_NHAT_KY: "/quan-ly-nhat-ky",
+
+  TQ: "/tong-quan",
+  TQ_HD: "/tong-quan/hoa-don",
+
+  HD: "/hoa-don",
+  HDDV: "/hoa-don/hoa-don-dau-vao",
+  HDDR: "/hoa-don/hoa-don-dau-ra",
+
+  BAOCAO: "/bao-cao",
+  BAOCAO_KXBKMV: "/bao-cao/ket-xuat-bang-ke-mua-vao",
+  BAOCAO_KXBKBR: "/bao-cao/ket-xuat-bang-ke-ban-ra",
+  BAOCAO_THKT: "/bao-cao/tong-hop-khai-thue",
+  BAOCAO_HDRR: "/bao-cao/hoa-don-rui-ro",
+
+  DANHMUC: "/danh-muc",
+  DANHMUC_NCC: "/danh-muc/nha-cung-cap",
+  DANHMUC_KH: "/danh-muc/khach-hang",
+
+  HETHONG: "/he-thong",
+  HETHONG_TTDN: "/he-thong/thong-tin-doanh-nghiep",
+  HETHONG_QLTN: "/he-thong/quan-ly-tai-nguyen",
+  HETHONG_KNCQT: "/he-thong/ket-noi-co-quan-thue",
+  HETHONG_NKTC: "/he-thong/nhat-ky-truy-cap",
+
   LOGIN: "/login",
   LOGOUT: "/logout",
   NOT_FOUND: "*",
 };
+
+export const TRANG_THAI_HOA_DON: any = {
+  "00": "MST đang hoạt động",
+  "0": "MST đang hoạt động",
+  "04": "MST đang hoạt động",
+  "4": "MST đang hoạt động",
+  "01": "MST ngừng hoạt động và đã hoàn thành thủ tục chấm dứt hiệu lực MST",
+  "1": "MST ngừng hoạt động và đã hoàn thành thủ tục chấm dứt hiệu lực MST",
+  "02": "MST đã chuyển cơ quan thuế quản lý",
+  "2": "MST đã chuyển cơ quan thuế quản lý",
+  "03": "MST ngừng hoạt động nhưng chưa hoàn thành thủ tục chấm dứt hiệu lực MST",
+  "3": "MST ngừng hoạt động nhưng chưa hoàn thành thủ tục chấm dứt hiệu lực MST",
+  "05": "MST tạm ngừng hoạt động, kinh doanh",
+  "5": "MST tạm ngừng hoạt động, kinh doanh",
+  "06": "MST không hoạt động tại địa chỉ đã đăng ký",
+  "6": "MST không hoạt động tại địa chỉ đã đăng ký",
+  "07": "MST chờ làm thủ tục phá sản",
+  "7": "MST chờ làm thủ tục phá sản",
+};
+
+export const IMAGES = {
+  auth: {
+    ca2Invoice: ca2Invoice,
+    personnel: personnel,
+  },
+  home: {
+    logo: logo,
+  },
+
+  icon: {
+    dots: dots,
+  },
+};
+
+export const COLORS = {
+  primary: "#de3f0f",
+  gray: "#bdbdbf",
+  black: "#000",
+  infor: "#38a4dd",
+  success: "#4caf4e",
+  warning: "#f9bf2c",
+  error: "#ef5451",
+};
+
+export const HTHDO_Options = [
+  {
+    label: "Tất cả",
+    color: null,
+    value: 0,
+  },
+  {
+    label: "Hóa đơn mới",
+    color: "#7C7C7E",
+    value: 1,
+  },
+  {
+    label: "Hóa đơn điều chỉnh",
+    color: COLORS.infor,
+    value: 2,
+  },
+
+  {
+    label: "Hóa đơn thay thế",
+    color: COLORS.success,
+    value: 3,
+  },
+  {
+    label: "Hóa đơn bị điều chỉnh",
+    color: COLORS.warning,
+    value: 4,
+  },
+  {
+    label: "Hóa đơn bị thay thế",
+    color: "#FF6E40",
+    value: 5,
+  },
+  {
+    label: "Hóa đơn bị hủy",
+    color: "#E03400",
+    value: 6,
+  },
+];
+
+export const TTMST_Options = [
+  {
+    label: "Tất cả",
+    color: null,
+    value: 0,
+  },
+  {
+    label: "Đang hoạt động",
+    color: COLORS.success,
+    value: 1,
+  },
+  {
+    label: "Ngừng hoạt động",
+    color: COLORS.error,
+    value: 2,
+  },
+
+  {
+    label: "Tạm ngừng hoạt động",
+    color: COLORS.warning,
+    value: 3,
+  },
+  {
+    label: "Chờ thủ tục phá sản",
+    color: "#7C7C7E",
+    value: 4,
+  },
+  {
+    label: "Địa chỉ không khớp",
+    color: COLORS.infor,
+    value: 5,
+  },
+];
+
+export const TTHD = [
+  {
+    label: "Tất cả",
+    color: null,
+    value: 0,
+  },
+  {
+    label: "Hợp lệ",
+    color: COLORS.success,
+    value: 1,
+  },
+  {
+    label: "Không hợp lệ",
+    color: COLORS.error,
+    value: 2,
+  },
+];

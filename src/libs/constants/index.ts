@@ -2,6 +2,10 @@ import ca2Invoice from "../../assets/images/auth/ca2-invoice.svg";
 import personnel from "../../assets/images/auth/personnel.png";
 import logo from "../../assets/images/home/logo.svg";
 import dots from "../../assets/images/icon/dots.svg";
+import qrCode from "../../assets/images/auth/qr-chplay.svg";
+import chplay from "../../assets/images/auth/chplay.svg";
+import appstore from "../../assets/images/auth/appstore.svg";
+import signAuth from "../../assets/images/auth/sign-auth.png";
 
 export const ROUTE = {
   HOME: "/",
@@ -26,7 +30,9 @@ export const ROUTE = {
 
   HD: "/hoa-don",
   HDDV: "/hoa-don/hoa-don-dau-vao",
+  HDDV_MTT: "/hoa-don/hoa-don-dau-vao-may-tinh-tien",
   HDDR: "/hoa-don/hoa-don-dau-ra",
+  HDDR_MTT: "/hoa-don/hoa-don-dau-ra-may-tinh-tien",
 
   BAOCAO: "/bao-cao",
   BAOCAO_KXBKMV: "/bao-cao/ket-xuat-bang-ke-mua-vao",
@@ -49,29 +55,14 @@ export const ROUTE = {
   NOT_FOUND: "*",
 };
 
-export const TRANG_THAI_HOA_DON: any = {
-  "00": "MST đang hoạt động",
-  "0": "MST đang hoạt động",
-  "04": "MST đang hoạt động",
-  "4": "MST đang hoạt động",
-  "01": "MST ngừng hoạt động và đã hoàn thành thủ tục chấm dứt hiệu lực MST",
-  "1": "MST ngừng hoạt động và đã hoàn thành thủ tục chấm dứt hiệu lực MST",
-  "02": "MST đã chuyển cơ quan thuế quản lý",
-  "2": "MST đã chuyển cơ quan thuế quản lý",
-  "03": "MST ngừng hoạt động nhưng chưa hoàn thành thủ tục chấm dứt hiệu lực MST",
-  "3": "MST ngừng hoạt động nhưng chưa hoàn thành thủ tục chấm dứt hiệu lực MST",
-  "05": "MST tạm ngừng hoạt động, kinh doanh",
-  "5": "MST tạm ngừng hoạt động, kinh doanh",
-  "06": "MST không hoạt động tại địa chỉ đã đăng ký",
-  "6": "MST không hoạt động tại địa chỉ đã đăng ký",
-  "07": "MST chờ làm thủ tục phá sản",
-  "7": "MST chờ làm thủ tục phá sản",
-};
-
 export const IMAGES = {
   auth: {
     ca2Invoice: ca2Invoice,
     personnel: personnel,
+    qrCode: qrCode,
+    chplay: chplay,
+    appstore: appstore,
+    signAuth: signAuth,
   },
   home: {
     logo: logo,
@@ -96,7 +87,7 @@ export const HTHDO_Options = [
   {
     label: "Tất cả",
     color: null,
-    value: 0,
+    value: 9999,
   },
   {
     label: "Hóa đơn mới",
@@ -131,45 +122,93 @@ export const HTHDO_Options = [
   },
 ];
 
-export const TTMST_Options = [
+export const TTMST_Options: any = [
   {
     label: "Tất cả",
     color: null,
-    value: 0,
+    value: 9999,
+    desc: "Tất cả",
   },
   {
     label: "Đang hoạt động",
     color: COLORS.success,
-    value: 1,
+    value: 0,
+    desc: "MST đang hoạt động",
   },
+
+  {
+    label: "Đang hoạt động",
+    color: COLORS.success,
+    value: 4,
+    desc: "MST đang hoạt động",
+    hidden: true,
+  },
+
   {
     label: "Ngừng hoạt động",
     color: COLORS.error,
+    value: 1,
+    desc: "MST ngừng hoạt động và đã hoàn thành thủ tục chấm dứt hiệu lực MST",
+  },
+
+  {
+    label: "Đã chuyển cơ quan thuế quản lý",
+    color: "#b155d7",
     value: 2,
+    desc: "MST đã chuyển cơ quan thuế quản lý",
   },
 
   {
     label: "Tạm ngừng hoạt động",
     color: COLORS.warning,
     value: 3,
+    desc: "MST ngừng hoạt động nhưng chưa hoàn thành thủ tục chấm dứt hiệu lực MST",
   },
+
   {
-    label: "Chờ thủ tục phá sản",
-    color: "#7C7C7E",
-    value: 4,
+    label: "Tạm ngừng hoạt động, kinh doanh",
+    color: "#f9812c",
+    value: 5,
+    desc: "MST tạm ngừng hoạt động, kinh doanh",
   },
   {
     label: "Địa chỉ không khớp",
     color: COLORS.infor,
-    value: 5,
+    value: 6,
+    desc: "MST không hoạt động tại địa chỉ đã đăng ký",
+  },
+  {
+    label: "Chờ thủ tục phá sản",
+    color: "#7C7C7E",
+    value: 7,
+    desc: "MST chờ làm thủ tục phá sản",
   },
 ];
+
+export const TRANG_THAI_HOA_DON: any = {
+  "00": "MST đang hoạt động",
+  "0": "MST đang hoạt động",
+  "04": "MST đang hoạt động",
+  "4": "MST đang hoạt động",
+  "01": "MST ngừng hoạt động và đã hoàn thành thủ tục chấm dứt hiệu lực MST",
+  "1": "MST ngừng hoạt động và đã hoàn thành thủ tục chấm dứt hiệu lực MST",
+  "02": "MST đã chuyển cơ quan thuế quản lý",
+  "2": "MST đã chuyển cơ quan thuế quản lý",
+  "03": "MST ngừng hoạt động nhưng chưa hoàn thành thủ tục chấm dứt hiệu lực MST",
+  "3": "MST ngừng hoạt động nhưng chưa hoàn thành thủ tục chấm dứt hiệu lực MST",
+  "05": "MST tạm ngừng hoạt động, kinh doanh",
+  "5": "MST tạm ngừng hoạt động, kinh doanh",
+  "06": "MST không hoạt động tại địa chỉ đã đăng ký",
+  "6": "MST không hoạt động tại địa chỉ đã đăng ký",
+  "07": "MST chờ làm thủ tục phá sản",
+  "7": "MST chờ làm thủ tục phá sản",
+};
 
 export const TTHD = [
   {
     label: "Tất cả",
     color: null,
-    value: 0,
+    value: 9999,
   },
   {
     label: "Hợp lệ",

@@ -1,11 +1,21 @@
+import { useState } from "react";
 import CustomInput from "../../../../components/CustomInput";
 import { COLORS } from "../../../../libs/constants";
+import CalendarIcon from "../../../../components/Icon/calendar";
+import RangeDatePicker from "./RangeDatePicker";
 
 export default function TongHoaDon() {
+  const [isFirstLoad, setIsFirstLoad] = useState<any>({
+    part1: true,
+    part2: true,
+    part3: true,
+  });
+
   const data = [
     {
       label: "Tổng hóa đơn đã xử lý",
       value: "200",
+      key: "part1",
       children: [
         {
           label: "Trước thuế GTGT",
@@ -32,6 +42,7 @@ export default function TongHoaDon() {
     {
       label: "Tổng hóa đơn hợp lệ",
       value: "0",
+      key: "part2",
       children: [
         {
           label: "Trước thuế GTGT",
@@ -58,6 +69,7 @@ export default function TongHoaDon() {
     {
       label: "Tổng hóa đơn không hợp lệ",
       value: "200",
+      key: "part3",
       children: [
         {
           label: "Trước thuế GTGT",
@@ -88,18 +100,13 @@ export default function TongHoaDon() {
       {data.map((item, index) => (
         <div key={index} className="p-4 rounded-lg shadow-custom flex-1">
           <h2 className="text-center font-semibold">{item.label}</h2>
-          <div className="mt-2">
-            <CustomInput
-              type="rangePicker"
-              placeholder={["Từ ngày", "Đến ngày"]}
-              configBoderRadius={4}
-              configComponent={{
-                activeBorderColor: COLORS.primary,
-                hoverBorderColor: COLORS.primary,
-              }}
-              config={{
-                colorPrimary: COLORS.primary,
-              }}
+          <div className="mt-2 flex justify-center">
+            <RangeDatePicker
+              isFirstLoad={isFirstLoad[item.key]}
+              handleSetFirstLoad={() =>
+                setIsFirstLoad({ ...isFirstLoad, [item.key]: false })
+              }
+              item={item}
             />
           </div>
           <div className="flex justify-center my-4">

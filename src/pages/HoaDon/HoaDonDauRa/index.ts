@@ -1,3 +1,3 @@
-import HoaDonDauVao from "./HoaDonDauVao";
+import HoaDonDauRa from "./HoaDonDauRa";
 
-export default HoaDonDauVao;
+export default HoaDonDauRa;

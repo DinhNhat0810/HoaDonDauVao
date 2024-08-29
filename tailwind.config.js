@@ -14,6 +14,19 @@ export default {
         "success-color": "#4caf4e",
         "warning-color": "#f9bf2c",
         "error-color": "#ef5451",
+
+        "neutral-200": "var(--neutral-200)",
+        "neutral-50": "var(--neutral-50)",
+        "neutral-800": "var(--neutral-800)",
+        "neutral600-character-secondary":
+          "var(--neutral600-character-secondary)",
+        "neutral900-character-primary": "var(--neutral900-character-primary)",
+        "primary-400": "var(--primary-400)",
+        "primarymain-800": "var(--primarymain-800)",
+        "semanticinfomain-500": "var(--semanticinfomain-500)",
+        "semanticsuccess-50": "var(--semanticsuccess-50)",
+        "semanticsuccessmain-500": "var(--semanticsuccessmain-500)",
+        "semanticwarningmain-700": "var(--semanticwarningmain-700)",
       },
       boxShadow: {
         custom: "0px 4px 19px 0px rgba(184, 184, 184, 0.25)",

@@ -20,6 +20,7 @@ const CustomInput = ({
   formItemStyle,
   labelInside,
   className,
+  onCalendarChange,
   ...inputProps
 }: {
   value?: string;
@@ -102,6 +103,7 @@ const CustomInput = ({
                 type: "mask",
               }}
               name={name}
+              onChange={onChange}
               {...inputProps}
             />
           )}
@@ -115,6 +117,7 @@ const CustomInput = ({
                 type: "mask",
               }}
               name={name}
+              onCalendarChange={onCalendarChange}
               {...inputProps}
             />
           )}

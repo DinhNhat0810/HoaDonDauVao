@@ -69,11 +69,19 @@ const MainLayout = ({ children }: Props) => {
       children: [
         {
           key: ROUTE.HDDV,
-          label: "Hóa đơn đầu vào",
+          label: "HĐ đầu vào",
+        },
+        {
+          key: ROUTE.HDDV_MTT,
+          label: "HĐ đầu vào máy tính tiền",
         },
         {
           key: ROUTE.HDDR,
-          label: "Hóa đơn đầu ra",
+          label: "HĐ đầu ra",
+        },
+        {
+          key: ROUTE.HDDR_MTT,
+          label: "HĐ đầu ra máy tính tiền",
         },
       ],
     },

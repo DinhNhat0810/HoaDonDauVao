@@ -117,9 +117,23 @@ const Login = () => {
     <div className="flex h-full flex-1">
       {loading && <CustomLoading />}
       {contextHolder}
-      <div className="flex-[6] flex flex-col items-center">
+      <div className="flex-[6] flex flex-col items-center bg-[#F9FAFB]">
         <div className="m-auto mt-20 flex flex-col items-center">
-          <h2 className="text-center text-[40px] font-semibold text-primary-color">
+          <p className="text-center text-xs mb-2 font-semibold">
+            Phát hành hóa đơn ngay hôm nay với CA2 Einvoice{" "}
+          </p>
+
+          <Link
+            to="https://ca2einv.nacencomm.vn"
+            className="text-primary-color underline"
+          >
+            <img
+              src={IMAGES.auth.ca2Invoice}
+              alt="logo"
+              className="shadow-2xl"
+            />
+          </Link>
+          <h2 className="text-center text-[30px] mt-4 font-semibold">
             Phần mềm quản lý hóa đơn
           </h2>
           <p className="text-center">
@@ -128,23 +142,25 @@ const Login = () => {
           <p className="text-center">
             Tự động tra cứu, phân tích và kiểm tra thông tin hóa đơn
           </p>
-          <p className="text-center text-xs mt-4 mb-2 text-primary-color font-semibold">
-            Phát hành hóa đơn ngay hôm nay với CA2 Einvoice{" "}
-          </p>
-
-          <Link
-            to="https://ca2einv.nacencomm.vn"
-            className="text-primary-color underline"
-          >
-            <img src={IMAGES.auth.ca2Invoice} alt="logo" />
-          </Link>
+          <div className="flex gap-6 mt-2">
+            <div className="bg-[#F2F4F7] p-4">
+              <img src={IMAGES.auth.qrCode} className="mb-2" />
+              <img src={IMAGES.auth.chplay} />
+            </div>
+            <div className="bg-[#F2F4F7] p-4">
+              <img src={IMAGES.auth.qrCode} className="mb-2" />
+              <img src={IMAGES.auth.appstore} />
+            </div>
+          </div>
         </div>
-        <img
-          src={IMAGES.auth.personnel}
-          alt="personnel"
-          width={591}
-          className="w-[591px] h-[556px]"
-        />
+        <div className="mt-4">
+          <img
+            src={IMAGES.auth.signAuth}
+            alt="footer"
+            width={378}
+            className="w-[378px] h-[329px] z-0 -translate-x-14"
+          />
+        </div>
       </div>
       <div className="flex-[5] bg-white rounded-tl-[48px] flex">
         <div className="m-auto md:w-[440px]">

@@ -5,7 +5,7 @@ import {
   TTMST_Options,
 } from "../../../libs/constants";
 import { DownloadOutlined, EyeOutlined } from "@ant-design/icons";
-import { Popover } from "antd";
+import { Popover, Tooltip } from "antd";
 import ErrorIcon from "../../../components/Icon/error";
 import SuccessIcon from "../../../components/Icon/success";
 
@@ -18,7 +18,7 @@ export const columnsTable = ({
   handleDownload: (values: any) => void;
   handleTogglePopover: (stt: string) => void;
   openPopover: string;
-  handleViewInvoice: (values: any, record: any) => void;
+  handleViewInvoice: (values: any) => void;
 }) => {
   return [
     {
@@ -71,15 +71,8 @@ export const columnsTable = ({
                 <div
                   className="flex items-center cursor-pointer px-2 py-1 hover:bg-gray-200 rounded-md"
                   onClick={() => {
-                    handleViewInvoice(
-                      {
-                        nbmst: record?.thongTinNguoiBan?.mst,
-                        khhdon: record?.thongTinHoaDon?.khhdon,
-                        shdon: record?.thongTinHoaDon?.shdon,
-                        khmshdon: record?.thongTinHoaDon?.khmshdon,
-                      },
-                      record
-                    );
+                    handleViewInvoice(record);
+                    handleTogglePopover("");
                   }}
                 >
                   <div className="w-6">
@@ -108,13 +101,28 @@ export const columnsTable = ({
     },
 
     {
-      title: "Mẫu số Ký hiệu / Số HĐ",
+      title: "Thông tin người bán",
+      dataIndex: "thongTinNguoiBan",
+      width: "260px",
+      render: (value: any, record: any) => {
+        return (
+          <div>
+            <p>{value?.nbten}</p>
+            <p>{value?.mst}</p>
+          </div>
+        );
+      },
+    },
+
+    {
+      title: "Mẫu số / Ký hiệu / Số HĐ",
       dataIndex: "khmshdon",
       width: "120px",
       render: (value: any, record: any) => {
         return (
           <div>
-            <span>{record?.khmshdon}</span>__<span>{record?.shdon}</span>
+            <span>{record?.khmshdon}</span> / <span>{record?.khhdon}</span> /{" "}
+            <span>{record?.shdon}</span>
           </div>
         );
       },
@@ -175,7 +183,7 @@ export const columnsTable = ({
           </div>
         );
       },
-      width: "200px",
+      width: "120px",
     },
 
     {
@@ -188,17 +196,25 @@ export const columnsTable = ({
               className="w-3 h-3 rounded-[2px] mr-2"
               style={{
                 backgroundColor:
-                  TTMST_Options.find((item) => item.value === value)?.color ||
-                  "transparent",
+                  TTMST_Options.find((item: any) => item.value === value)
+                    ?.color || "transparent",
               }}
             ></div>
-            <span>
-              {TTMST_Options.find((item) => item.value === value)?.label}
-            </span>
+            <div className="flex-1 ml-1">
+              {/* <Tooltip
+                title={
+                  TTMST_Options.find((item: any) => item.value === value)?.desc
+                }
+              > */}
+              <span className="line-clamp-2">
+                {TTMST_Options.find((item: any) => item.value === value)?.desc}
+              </span>
+              {/* </Tooltip> */}
+            </div>
           </div>
         );
       },
-      width: "160px",
+      width: "200px",
     },
   ];
 };

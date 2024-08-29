@@ -1,4 +1,7 @@
 import { XMLParser } from "fast-xml-parser";
+import { isEmpty } from "lodash";
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
 
 export function getDataFromXml(xmlDoc: any, key: any) {
   try {
@@ -71,4 +74,37 @@ export const convertCksNguoiBan = (jsonString: string) => {
   const allValuesObject = extractValuesAsObject(jsObject);
 
   return allValuesObject;
+};
+
+export const exportToExcel = (data: any, fileName: string) => {
+  if (isEmpty(data)) return;
+
+  const worksheet: any = XLSX.utils.json_to_sheet(data);
+
+  worksheet["!cols"] = [
+    {
+      wch: 6,
+    },
+    {
+      wch: 40,
+    },
+    { wch: 25 },
+    { wch: 18 },
+    { wch: 18 },
+    { wch: 15 },
+    { wch: 15 },
+    { wch: 18 },
+    { wch: 20 },
+    { wch: 30 },
+  ];
+
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: "xlsx",
+    type: "array",
+  });
+  const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+  saveAs(blob, `${fileName}.xlsx`);
 };

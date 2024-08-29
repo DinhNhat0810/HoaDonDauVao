@@ -1,20 +1,18 @@
 // components/LineChart.js
 import { Chart } from "chart.js";
-import React, { useEffect, useRef } from "react";
-import { Line } from "react-chartjs-2";
+import { useEffect, useRef } from "react";
 import "chart.js/auto";
 
 function LineChart({ chartData }: { chartData: any }) {
-  const chartRef = useRef<any>(null);
+  const chartReff = useRef<any>(null);
+  const chartInstance = useRef<any>(null);
 
   useEffect(() => {
-    const chartReff: any = chartRef.current?.getContext("2d");
+    if (chartInstance.current) {
+      chartInstance.current.destroy();
+    }
 
-    const gradient = chartReff.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, "rgba(255, 0, 0, 0.3)");
-    gradient.addColorStop(1, "rgba(255, 0, 0, 0.1)");
-
-    new Chart(chartReff, {
+    chartInstance.current = new Chart(chartReff.current, {
       type: "line",
       data: chartData,
       options: {
@@ -54,7 +52,7 @@ function LineChart({ chartData }: { chartData: any }) {
         //   },
         // }}
       /> */}
-      <canvas ref={chartRef} />
+      <canvas ref={chartReff} className="!w-full" />
     </div>
   );
 }

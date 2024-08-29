@@ -8,10 +8,10 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-auth-bg min-h-screen bg-no-repeat bg-center bg-cover flex flex-col justify-between">
+    <div className="min-h-screen bg-no-repeat bg-center bg-cover flex flex-col justify-between">
       {children}
 
-      <div className="bg-black-color text-white flex flex-col items-center">
+      <div className="bg-black-color text-white flex flex-col items-center relative z-50">
         <div className="flex justify-between items-center container">
           <div className="py-4">
             <div className="flex gap-2 items-center mb-2">

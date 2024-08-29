@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
 import { CategoryScale } from "chart.js";
-import { Line } from "react-chartjs-2";
 import LineChart from "./LineChart";
 import { COLORS } from "../../../../libs/constants";
+import RangeDatePicker from "../TongHoaDon/RangeDatePicker";
 
 const Data = [
   {
@@ -39,6 +39,8 @@ const Data = [
 ];
 
 export default function BottomChart() {
+  const [isFirstLoad, setIsFirstLoad] = useState<any>(true);
+
   const [chartData, setChartData] = useState({
     labels: Data.map((data) => data.year),
     datasets: [
@@ -57,9 +59,18 @@ export default function BottomChart() {
 
   return (
     <div className="p-4 rounded-lg shadow-custom">
-      <h2 className="text-xl font-semibold">Tình hình nhận hóa đơn đầu vào</h2>
+      <div className="flex justify-between">
+        <h2 className="text-xl font-semibold">
+          Tình hình nhận hóa đơn đầu vào
+        </h2>
 
-      {/* <LineChart chartData={chartData} /> */}
+        <RangeDatePicker
+          isFirstLoad={isFirstLoad}
+          handleSetFirstLoad={() => setIsFirstLoad(false)}
+        />
+      </div>
+
+      <LineChart chartData={chartData} />
     </div>
   );
 }

@@ -1,8 +1,8 @@
 import { ConfigProvider, Modal, Tabs, TabsProps } from "antd";
-import { COLORS, TRANG_THAI_HOA_DON } from "../../../libs/constants";
+import { COLORS, HTHDO_Options, TTMST_Options } from "../../../libs/constants";
 import ToolBar from "../../../components/ToolBar";
 import TableHoaDon from "../components/Table";
-import { useCallback, useContext, useRef, useState } from "react";
+import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { NotificationContext } from "../../../contexts/notification.context";
 import dayjs from "dayjs";
 import https from "../../../libs/https";
@@ -10,12 +10,11 @@ import {
   convertCksNguoiBan,
   convertToVnd,
   convertXmlToJson,
+  exportToExcel,
 } from "../../../libs/common";
 import { AppContext } from "../../../contexts/app.context";
-import JSZip from "jszip";
-import { isEmpty, set } from "lodash";
-import CheckInvoiceModal from "../../../components/CustomModal/CheckInvoiceModal";
-import useDebounce from "../../../hooks/useDebounce";
+import { isEmpty } from "lodash";
+import ViewInvoiceModal from "../../../components/CustomModal/ViewInvoiceModal";
 
 type DownloadHoaDonType = {
   nbmst: string;
@@ -38,11 +37,11 @@ export default function HoaDonDauVao() {
     total: 0,
   });
   const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
-  const modalBodyRef = useRef(null);
   const [invoiceDetail, setInvoiceDetail] = useState<any>(null);
-  const [openCheckInvoiceModal, setOpenCheckInvoiceModal] = useState(false);
   const [filterData, setFilterData] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState("");
+  const [isLoadingCheckStatus, setIsLoadingCheckStatus] = useState(false);
+  const [rangeDate, setRangeDate] = useState<any>([]);
 
   const handleChange = (e: any) => {
     setSearchValue(e);
@@ -128,9 +127,9 @@ export default function HoaDonDauVao() {
       });
 
       setFileName(
-        `${dayjs(date[0]).format("DD/MM/YYYY")}-${dayjs(date[1]).format(
-          "DD/MM/YYYY"
-        )}`
+        `HoaDonDauVao_${dayjs(date[0]).format("DD/MM/YYYY")}-${dayjs(
+          date[1]
+        ).format("DD/MM/YYYY")}`
       );
 
       if (response.datas.length > 0 && response.datas) {
@@ -172,7 +171,7 @@ export default function HoaDonDauVao() {
 
           ncnhat: dayjs(item?.ncnhat).format("DD/MM/YYYY HH:mm:ss"),
           // tthai: item?.tthai,
-          tthai: Math.floor(Math.random() * 5) + 1,
+          tthai: Math.floor(Math.random() * 6),
           thdon: item?.thdon,
           // khmshdon: item?.khmshdon,
 
@@ -264,6 +263,7 @@ export default function HoaDonDauVao() {
         "time",
         JSON.stringify(new Date().getTime() + 60 * 60 * 1000)
       );
+      setRangeDate(date);
       setLoading(false);
       handleOpenNotification({
         type: "success",
@@ -291,12 +291,6 @@ export default function HoaDonDauVao() {
     (value: string, filteredData: any[] = filterData) => {
       const data = value
         ? filteredData.filter((item) => {
-            console.log(
-              item.thongTinNguoiBan?.mst
-                ?.toLowerCase()
-                ?.includes(value.toLowerCase())
-            );
-
             return (
               item.shdon
                 ?.toString()
@@ -338,7 +332,7 @@ export default function HoaDonDauVao() {
       };
 
       const newData = initialData.filter((item) => {
-        if (value === "0") return true;
+        if (value === "9999") return true;
 
         const typeToPropMap: any = {
           hthuc: "hthuc",
@@ -347,10 +341,21 @@ export default function HoaDonDauVao() {
         };
 
         const propName: any = typeToPropMap[type];
+        console.log(item[propName]?.toString());
+
+        // If type is 'tthai' and value is "0", filter by value "0" or "4"
+        if (type === "tthai" && (value === "0" || value === "4")) {
+          return (
+            item[propName]?.toString() === value ||
+            item[propName]?.toString() === "4"
+          );
+        }
+
         return item[propName]?.toString() === value;
       });
 
       updatedFilter[type] = value;
+
       setFilterData(newData);
       handleSearch(searchValue, newData);
     },
@@ -391,94 +396,14 @@ export default function HoaDonDauVao() {
     }
   };
 
-  const handleViewInvoice = async (values: DownloadHoaDonType, data: any) => {
+  const handleViewInvoice = async (data: any) => {
     try {
-      const response: any = await https({
-        baseURL: `https://hoadondientu.gdt.gov.vn:30000/query/invoices/export-xml?nbmst=${values.nbmst}&khhdon=${values.khhdon}&shdon=${values.shdon}&khmshdon=${values.khmshdon}`,
-        method: "get",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        responseType: "arraybuffer",
-      });
-
-      // const blob = new Blob([response], { type: "application/zip" });
-
-      // const zip = new JSZip();
-
-      // zip.loadAsync(blob).then((zipFiles: any) => {
-      //   zipFiles
-      //     .file("invoice.html")
-      //     .async("text")
-      //     .then((content: string) => {
-      //       const imageFiles = zipFiles.filter((relativePath: string) => {
-      //         return (
-      //           relativePath.toLowerCase().endsWith(".png") ||
-      //           relativePath.toLowerCase().endsWith(".jpg") ||
-      //           relativePath.toLowerCase().endsWith(".jpeg")
-      //         );
-      //       });
-
-      //       const jsFiles = zipFiles.filter((relativePath: string) => {
-      //         return relativePath.toLowerCase().endsWith(".js");
-      //       });
-
-      //       const imagePromises = imageFiles.map((imageFile: any) => {
-      //         return imageFile.async("blob").then((blob: Blob) => {
-      //           const blobUrl = URL.createObjectURL(blob);
-      //           return { originalPath: imageFile.name, blobUrl };
-      //         });
-      //       });
-
-      //       const jsPromises = jsFiles.map((jsFile: any) => {
-      //         return jsFile.async("blob").then((blob: Blob) => {
-      //           const blobUrl = URL.createObjectURL(blob);
-      //           return { originalPath: jsFile.name, blobUrl };
-      //         });
-      //       });
-
-      //       Promise.all([...imagePromises, ...jsPromises]).then((resources) => {
-      //         resources.forEach(({ originalPath, blobUrl }) => {
-      //           if (originalPath.toLowerCase().endsWith(".js")) {
-      //             content = content.replace(
-      //               "</body>",
-      //               `<script src="${blobUrl}"></script></body>`
-      //             );
-      //             content = content.replace(
-      //               `<script type="text/javascript" src="${originalPath}"></script>`,
-      //               ""
-      //             );
-      //           } else {
-      //             content = content.replace(
-      //               new RegExp(originalPath, "g"),
-      //               blobUrl
-      //             );
-      //           }
-      //         });
-
-      //         setOpenInvoiceModal(true);
-
-      //         setTimeout(() => {
-      //           const modalBody = document.getElementById("aloha");
-      //           if (modalBody) {
-      //             const iframe = document.createElement("iframe");
-      //             iframe.style.width = "98%";
-      //             iframe.style.height = "800px";
-      //             iframe.style.border = "none";
-      //             iframe.srcdoc = content;
-      //             modalBody.innerHTML = "";
-      //             modalBody.appendChild(iframe);
-      //             setInvoiceDetail(data);
-      //           } else {
-      //             console.error("Element with id 'aloha' not found");
-      //           }
-      //         }, 100);
-      //       });
-      //     });
-      // });
+      setOpenInvoiceModal(true);
+      setInvoiceDetail(data);
+      handleOpenCheckInvoiceModal();
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   };
 
@@ -513,7 +438,9 @@ export default function HoaDonDauVao() {
         ];
 
       if (!isEmpty(DocumentElement)) {
-        return TRANG_THAI_HOA_DON[DocumentElement.TRANG_THAI];
+        return TTMST_Options.find(
+          (item: any) => item.value === DocumentElement.TRANG_THAI
+        );
       }
 
       return null;
@@ -529,33 +456,100 @@ export default function HoaDonDauVao() {
 
   const handleOpenCheckInvoiceModal = async () => {
     try {
-      setLoading(true);
+      setIsLoadingCheckStatus(true);
 
       await Promise.all([
-        getTrangThaiMST(invoiceDetail.thongTinNguoiBan?.mst),
-        getTrangThaiMST(invoiceDetail.thongTinNguoiMua?.nmmst),
+        getTrangThaiMST(invoiceDetail?.thongTinNguoiBan?.mst),
+        getTrangThaiMST(invoiceDetail?.thongTinNguoiMua?.nmmst),
       ]).then((responses: any) => {
         setInvoiceDetail((prev: any) => {
           return {
             ...prev,
             thongTinNguoiBan: {
               ...prev.thongTinNguoiBan,
-              trangThai: responses[0],
+              trangThaiMST: responses[0],
             },
             thongTinNguoiMua: {
               ...prev.thongTinNguoiMua,
-              trangThai: responses[1],
+              trangThaiMST: responses[1],
             },
           };
         });
       });
 
-      setLoading(false);
-      setOpenCheckInvoiceModal(true);
+      setIsLoadingCheckStatus(false);
     } catch (error) {
       console.log(error);
+      setIsLoadingCheckStatus(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   };
+
+  // const filterQuery = ({
+  //   value,
+  //   filteredData,
+  // }: {
+  //   value: string;
+  //   filteredData: any[];
+  // }) => {
+  //   const newData = filteredData.filter((item) => {
+  //     return (
+  //       item.shdon?.toString()?.toLowerCase()?.includes(value.toLowerCase()) ||
+  //       item.khmshdon
+  //         ?.toString()
+  //         ?.toLowerCase()
+  //         ?.includes(value.toLowerCase()) ||
+  //       item.thongTinNguoiBan?.nbten
+  //         ?.toLowerCase()
+  //         ?.includes(value.toLowerCase()) ||
+  //       item.thongTinNguoiBan?.mst?.toLowerCase()?.includes(value.toLowerCase())
+  //     );
+  //   });
+
+  //   return newData;
+  // };
+
+  const handleExportExcel = useCallback(() => {
+    const newData = filterData.filter((item) => {
+      return (
+        item.shdon
+          ?.toString()
+          ?.toLowerCase()
+          ?.includes(searchValue.toLowerCase()) ||
+        item.khmshdon
+          ?.toString()
+          ?.toLowerCase()
+          ?.includes(searchValue.toLowerCase()) ||
+        item.thongTinNguoiBan?.nbten
+          ?.toLowerCase()
+          ?.includes(searchValue.toLowerCase()) ||
+        item.thongTinNguoiBan?.mst
+          ?.toLowerCase()
+          ?.includes(searchValue.toLowerCase())
+      );
+    });
+
+    const excelData = newData?.map((item, index) => {
+      return {
+        STT: (index + 1).toString(),
+        "Thông tin người bán": `${item?.thongTinNguoiBan?.nbten}\n${item?.thongTinNguoiBan?.mst}`,
+        "Mẫu số / Ký hiệu / Số HĐ": `${item?.khmshdon} / ${item?.khhdon} / ${item?.shdon}`,
+        "Ngày lập": item?.tdlap,
+        "Ngày ký": item?.nky,
+        "Tổng thanh toán": item?.tongThanhToan?.toString(),
+        "Trạng thái HĐ": item?.tthd === 1 ? "Hợp lệ" : "Không hợp lệ",
+        "Ngày cấp mã CQT": item?.ncnhat,
+        "Hình thức HĐ": `${
+          HTHDO_Options.find((ele) => ele.value === item?.hthuc)?.label
+        }`,
+        "Trạng thái MST người bán": TTMST_Options.find(
+          (ele: any) => ele.value === item.tthai
+        )?.label,
+      };
+    });
+
+    exportToExcel(excelData, fileName);
+  }, [filterData, searchValue, fileName]);
 
   return (
     <div className="flex flex-col h-full">
@@ -583,6 +577,8 @@ export default function HoaDonDauVao() {
         handleChange={handleChange}
         searchValue={searchValue}
         handleResetFilter={handleResetFilter}
+        handleExportExcel={handleExportExcel}
+        rangeDate={rangeDate}
       />
       <TableHoaDon
         data={dataInvoices}
@@ -594,42 +590,15 @@ export default function HoaDonDauVao() {
         handleViewInvoice={handleViewInvoice}
       />
 
-      <Modal
-        width={1200}
-        open={openInvoiceModal}
-        onCancel={handleCloseInvoiceModal}
-        footer={null}
-      >
-        <div id="aloha" ref={modalBodyRef}></div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <button
-            style={{
-              backgroundColor: "#ed9b2d",
-              color: "white",
-              padding: "8px 16px",
-              borderRadius: "4px",
-              border: "none",
-              cursor: "pointer",
-              marginTop: "16px",
-              outline: "none",
-            }}
-            onClick={handleOpenCheckInvoiceModal}
-          >
-            Kiểm tra thông tin hóa đơn
-          </button>
-        </div>
-      </Modal>
-
-      <CheckInvoiceModal
-        open={openCheckInvoiceModal}
-        handleCancel={() => setOpenCheckInvoiceModal(false)}
-        data={invoiceDetail}
-      />
+      {openInvoiceModal && (
+        <ViewInvoiceModal
+          open={openInvoiceModal}
+          handleCancel={handleCloseInvoiceModal}
+          data={invoiceDetail}
+          handleDownload={handleDownload}
+          isLoadingCheckStatus={isLoadingCheckStatus}
+        />
+      )}
     </div>
   );
 }

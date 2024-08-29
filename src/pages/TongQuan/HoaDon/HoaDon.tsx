@@ -2,6 +2,7 @@ import React from "react";
 import ThongTinTaiNguyen from "./ThongTinTaiNguyen";
 import TongHoaDon from "./TongHoaDon";
 import BottomChart from "./BottomChart";
+import RightChart from "./RightChart";
 
 export default function HoaDon() {
   return (
@@ -11,7 +12,9 @@ export default function HoaDon() {
         <TongHoaDon />
         <BottomChart />
       </div>
-      <div className="flex-[1]"></div>
+      <div className="flex-[1]">
+        <RightChart />
+      </div>
     </div>
   );
 }

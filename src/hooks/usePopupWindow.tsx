@@ -6,9 +6,7 @@ function usePopupWindow() {
   const [windowRef, setWindowRef] = useState<any>(null);
 
   useEffect(() => {
-    // Khi component được mount, không làm gì cả vì chúng ta cần một hành động để mở cửa sổ
     return () => {
-      // Khi component unmount, đóng cửa sổ nếu nó vẫn mở
       if (windowRef) {
         windowRef.close();
       }

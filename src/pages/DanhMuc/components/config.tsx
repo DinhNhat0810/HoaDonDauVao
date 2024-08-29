@@ -69,12 +69,12 @@ export const columnsTable = [
             className="w-3 h-3 rounded-[2px] mr-2"
             style={{
               backgroundColor:
-                TTMST_Options.find((item) => item.value === value)?.color ||
-                "transparent",
+                TTMST_Options.find((item: any) => item.value === value)
+                  ?.color || "transparent",
             }}
           ></div>
           <span>
-            {TTMST_Options.find((item) => item.value === value)?.label}
+            {TTMST_Options.find((item: any) => item.value === value)?.label}
           </span>
         </div>
       );

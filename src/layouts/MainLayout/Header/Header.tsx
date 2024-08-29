@@ -1,7 +1,13 @@
 import NotifyIcon from "../../../components/Icon/notify";
 import LogoutIcon from "../../../components/Icon/logout";
+import { useNavigate } from "react-router-dom";
 
 export default function Header({ collapsed }: { collapsed: boolean }) {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    navigate("/logout");
+  };
+
   return (
     <div
       className={`flex justify-between p-4 bg-[#EFF0F2] fixed top-0 ${
@@ -24,7 +30,7 @@ export default function Header({ collapsed }: { collapsed: boolean }) {
 
       <div className="flex items-center gap-4">
         <NotifyIcon className="cursor-pointer" />
-        <LogoutIcon className="cursor-pointer" />
+        <LogoutIcon className="cursor-pointer" onClick={handleLogout} />
       </div>
     </div>
   );

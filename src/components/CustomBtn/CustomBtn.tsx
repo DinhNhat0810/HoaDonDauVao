@@ -5,6 +5,7 @@ type Props = {
   title: string;
   onClick?: () => void;
   variant?: "primary" | "white"; // Thêm một thuộc tính mới để xác định biến thể của nút
+  prefix?: React.ReactNode;
 };
 
 export default function CustomBtn({
@@ -12,6 +13,7 @@ export default function CustomBtn({
   title,
   onClick,
   variant = "primary", // Mặc định là biến thể "primary"
+  prefix,
   ...props
 }: Props) {
   // Xác định className dựa trên biến thể
@@ -26,6 +28,7 @@ export default function CustomBtn({
       className={`${buttonClass} py-[8px] px-4 rounded-md text-sm ${className}`}
       {...props}
     >
+      {prefix}
       {title}
     </button>
   );

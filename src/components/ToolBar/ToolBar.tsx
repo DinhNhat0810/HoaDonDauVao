@@ -16,13 +16,13 @@ import dayjs from "dayjs";
 type ToolBarProps = {
   className?: string;
   showSyncBtn?: boolean;
-  handleFinish: (values: any, callback: () => void) => void;
-  handleSearch: (values: any) => void;
-  handleFilter: (value: string, type: string) => void;
-  searchValue: string;
-  handleChange: (value: string) => void;
-  handleResetFilter: () => void;
-  handleExportExcel: () => void;
+  handleFinish?: (values: any, callback: () => void) => void;
+  handleSearch?: (values: any) => void;
+  handleFilter?: (value: string, type: string) => void;
+  searchValue?: string;
+  handleChange?: (value: string) => void;
+  handleResetFilter?: () => void;
+  handleExportExcel?: () => void;
   rangeDate?: any;
 };
 
@@ -171,13 +171,13 @@ const RenderFilter = ({
 
 const ToolBar = ({
   showSyncBtn = true,
-  handleFinish,
-  handleSearch,
-  handleFilter,
-  searchValue,
-  handleChange,
-  handleResetFilter,
-  handleExportExcel,
+  handleFinish = () => {},
+  handleSearch = () => {},
+  handleFilter = () => {},
+  searchValue = "",
+  handleChange = () => {},
+  handleResetFilter = () => {},
+  handleExportExcel = () => {},
   rangeDate,
 }: ToolBarProps) => {
   const [openSyncInvoiceModal, setOpenSyncInvoiceModal] = useState(false);
@@ -193,7 +193,9 @@ const ToolBar = ({
   };
 
   useEffect(() => {
-    handleSearch(debouncedValue);
+    if (handleSearch) {
+      handleSearch(debouncedValue);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue]);
 

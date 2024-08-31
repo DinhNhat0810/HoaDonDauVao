@@ -15,14 +15,28 @@ function CircleChart({ chartData }: { chartData: any }) {
     if (chartRef.current) {
       const ctx = chartRef.current.getContext("2d");
       if (ctx) {
-        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, "rgba(255, 0, 0, 0.3)");
-        gradient.addColorStop(1, "rgba(255, 0, 0, 0.1)");
+        // const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        // gradient.addColorStop(0, "rgba(255, 0, 0, 0.3)");
+        // gradient.addColorStop(1, "rgba(255, 0, 0, 0.1)");
+
+        const background_1 = ctx.createLinearGradient(0, 0, 0, 300);
+        background_1.addColorStop(0, "rgba(255, 177, 104, 1)");
+        background_1.addColorStop(1, "rgba(255, 120, 79, 1)");
+
+        const background_2 = ctx.createLinearGradient(0, 0, 0, 600);
+        background_2.addColorStop(0, "rgba(212, 212, 214, 1)");
+        background_2.addColorStop(1, "rgba(212, 212, 214, 0.1)");
+
+        const background_3 = ctx.createLinearGradient(0, 0, 0, 600);
+        background_3.addColorStop(0, "rgb(76, 175, 78,0.6)");
+        background_3.addColorStop(1, "rgb(76, 175, 78,1)");
 
         const newData = chartData?.datasets?.map((data: any) => ({
           ...data,
-          backgroundColor: gradient,
+          backgroundColor: [background_1, background_2, background_3],
         }));
+
+        console.log(newData);
 
         const donutChart = new Chart(ctx, {
           type: "doughnut",
@@ -44,16 +58,16 @@ function CircleChart({ chartData }: { chartData: any }) {
                 display: false,
               },
             },
-            onClick: function ({ chart }, element) {
-              if (element.length > 0) {
-                const firstElementIndex = element[0].index;
-                // Lấy dữ liệu của phần tử được click
-                const label = this.data.labels[firstElementIndex];
-                const value = this.data.datasets[0].data[firstElementIndex];
-                // Thực hiện hành động, ví dụ: hiển thị thông tin
-                console.log(`Label: ${label}, Value: ${value}`);
+            onClick: function (event, elements) {
+              if (elements.length > 0) {
+                const index = elements[0].index;
+                const label = this.data.labels[index];
+                const value = this.data.datasets[0].data[index];
+                const centerText = `${label}: ${value}`;
 
-                // Bạn có thể thay thế console.log bằng bất kỳ hành động nào bạn muốn thực hiện
+                // Cập nhật trung tâm văn bản và vẽ lại biểu đồ
+                donutChart.options.plugins.centerText = centerText;
+                donutChart.update();
               }
             },
           },
@@ -92,7 +106,7 @@ function CircleChart({ chartData }: { chartData: any }) {
 
   return (
     <div className="chart-container flex justify-center">
-      <canvas ref={chartRef} width="200" height="200" className="" />
+      <canvas ref={chartRef} width="200" height="200" />
     </div>
   );
 }

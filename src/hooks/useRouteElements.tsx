@@ -17,6 +17,7 @@ import HoaDonDauRa from "../pages/HoaDon/HoaDonDauRa/HoaDonDauRa";
 import KXBKMV from "../pages/BaoCao/KXBKMV";
 import KXBKBR from "../pages/BaoCao/KXBKBR";
 import DanhMucNCC from "../pages/DanhMuc/DanhMucNCC";
+import ThongTinDoanhNghiep from "../pages/HeThong/ThongTinDoanhNghiep";
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext);
@@ -131,7 +132,11 @@ export default function useRouteElement() {
         },
         {
           path: ROUTE.HETHONG_TTDN,
-          element: <MainLayout></MainLayout>,
+          element: (
+            <MainLayout>
+              <ThongTinDoanhNghiep />
+            </MainLayout>
+          ),
         },
         {
           path: ROUTE.HETHONG_QLTN,

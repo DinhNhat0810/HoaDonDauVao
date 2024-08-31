@@ -12,7 +12,7 @@ type CustomPaginationProps = {
 };
 
 export default function CustomPagination(props: CustomPaginationProps) {
-  const { data, handlePageChange, currentPage, total = 0 } = props;
+  const { data, handlePageChange = () => {}, currentPage, total = 0 } = props;
   const [page, setPage] = useState({
     pageSize: 10,
     currentPage: 1,

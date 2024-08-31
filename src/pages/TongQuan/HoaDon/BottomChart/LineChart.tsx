@@ -37,7 +37,7 @@ function LineChart({ chartData }: { chartData: any }) {
   }, [chartData]);
 
   return (
-    <div className="chart-container">
+    <div className="chart-container flex justify-center">
       {/* <Line
         ref={chartRef}
         data={chartData}
@@ -52,7 +52,7 @@ function LineChart({ chartData }: { chartData: any }) {
         //   },
         // }}
       /> */}
-      <canvas ref={chartReff} className="!w-full" />
+      <canvas ref={chartReff} className="!w-[90%] !h-[45%]" />
     </div>
   );
 }

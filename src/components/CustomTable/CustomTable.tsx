@@ -8,9 +8,10 @@ type CustomTableProps = {
   rowSelection?: any;
   scroll?: any;
   loading?: boolean;
-  handlePageChange: (newPage: number) => void;
-  currentPage: number;
+  handlePageChange?: (newPage: number) => void;
+  currentPage?: number;
   total?: number;
+  showPagination: boolean;
 };
 
 export default function CustomTable(props: CustomTableProps) {
@@ -22,9 +23,10 @@ export default function CustomTable(props: CustomTableProps) {
     scroll = {
       x: 1800,
     },
-    handlePageChange,
-    currentPage,
+    handlePageChange = () => {},
+    currentPage = 1,
     total,
+    showPagination = true,
   } = props;
   return (
     <div className="table-invoice flex-1 flex flex-col justify-between">
@@ -56,12 +58,14 @@ export default function CustomTable(props: CustomTableProps) {
           loading={loading}
         />
       </ConfigProvider>
-      <CustomPagination
-        data={data}
-        handlePageChange={handlePageChange}
-        currentPage={currentPage}
-        total={total}
-      />
+      {showPagination && (
+        <CustomPagination
+          data={data}
+          handlePageChange={handlePageChange}
+          currentPage={currentPage}
+          total={total}
+        />
+      )}
     </div>
   );
 }

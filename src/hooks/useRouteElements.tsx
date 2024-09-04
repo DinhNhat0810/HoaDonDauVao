@@ -18,6 +18,8 @@ import KXBKMV from "../pages/BaoCao/KXBKMV";
 import KXBKBR from "../pages/BaoCao/KXBKBR";
 import DanhMucNCC from "../pages/DanhMuc/DanhMucNCC";
 import ThongTinDoanhNghiep from "../pages/HeThong/ThongTinDoanhNghiep";
+import QuanLyTaiNguyen from "../pages/HeThong/QuanLyTaiNguyen/QuanLyTaiNguyen";
+import NhatKyTruyCap from "../pages/HeThong/NhatKyTruyCap";
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext);
@@ -28,7 +30,7 @@ const ProtectedRoute = () => {
 const RejectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext);
 
-  return !isAuthenticated ? <Outlet /> : <Navigate to={ROUTE.HDMV_TatCa} />;
+  return !isAuthenticated ? <Outlet /> : <Navigate to={ROUTE.TQ} />;
 };
 
 export default function useRouteElement() {
@@ -140,7 +142,11 @@ export default function useRouteElement() {
         },
         {
           path: ROUTE.HETHONG_QLTN,
-          element: <MainLayout></MainLayout>,
+          element: (
+            <MainLayout>
+              <QuanLyTaiNguyen />
+            </MainLayout>
+          ),
         },
 
         {
@@ -149,7 +155,11 @@ export default function useRouteElement() {
         },
         {
           path: ROUTE.HETHONG_NKTC,
-          element: <MainLayout></MainLayout>,
+          element: (
+            <MainLayout>
+              <NhatKyTruyCap />
+            </MainLayout>
+          ),
         },
       ],
     },

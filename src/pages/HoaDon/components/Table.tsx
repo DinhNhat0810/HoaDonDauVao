@@ -17,7 +17,7 @@ const TableHoaDon = ({
   currentPage: number;
   total: number;
   handleDownload: (values: any) => void;
-  handleViewInvoice: (values: any, record: any) => void;
+  handleViewInvoice?: (values: any, record: any) => void;
 }) => {
   const [openPopover, setOpenPopover] = useState("");
 

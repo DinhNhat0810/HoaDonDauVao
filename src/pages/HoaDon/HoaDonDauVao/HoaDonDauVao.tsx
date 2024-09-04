@@ -5,6 +5,7 @@ import TableHoaDon from "../components/Table";
 import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { NotificationContext } from "../../../contexts/notification.context";
 import dayjs from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import https from "../../../libs/https";
 import {
   convertCksNguoiBan,
@@ -22,6 +23,8 @@ type DownloadHoaDonType = {
   shdon: string;
   khmshdon: string;
 };
+
+dayjs.extend(isSameOrBefore);
 
 export default function HoaDonDauVao() {
   const [dataInvoices, setDataInvoices] = useState<any[]>([]);
@@ -42,6 +45,11 @@ export default function HoaDonDauVao() {
   const [searchValue, setSearchValue] = useState("");
   const [isLoadingCheckStatus, setIsLoadingCheckStatus] = useState(false);
   const [rangeDate, setRangeDate] = useState<any>([]);
+  const [dataFilter, setDataFilter] = useState<any>({
+    value: String(TTMST_Options[0].value),
+    type: "tthai",
+    date: null,
+  });
 
   const handleChange = (e: any) => {
     setSearchValue(e);
@@ -322,8 +330,27 @@ export default function HoaDonDauVao() {
   );
 
   const handleFilter = useCallback(
-    (value: string, type: any) => {
-      if (!value) return;
+    ({
+      value = "9999",
+      type = "tthai",
+      date,
+    }: {
+      value: string;
+      type: any;
+      date: any;
+    }) => {
+      if (!value || isEmpty(initialData)) return;
+
+      let newData: any = initialData;
+      if (date) {
+        newData = initialData.filter((item) => {
+          const tdlapDate = dayjs(item.tdlap, "DD/MM/YYYY HH:mm:ss");
+          return (
+            tdlapDate.isAfter(date[0].startOf("day")) &&
+            tdlapDate.isSameOrBefore(date[1].endOf("day"))
+          );
+        });
+      }
 
       const updatedFilter: any = {
         tthai: "",
@@ -331,7 +358,7 @@ export default function HoaDonDauVao() {
         hthuc: "",
       };
 
-      const newData = initialData.filter((item) => {
+      newData = newData.filter((item: any) => {
         if (value === "9999") return true;
 
         const typeToPropMap: any = {
@@ -341,9 +368,7 @@ export default function HoaDonDauVao() {
         };
 
         const propName: any = typeToPropMap[type];
-        console.log(item[propName]?.toString());
 
-        // If type is 'tthai' and value is "0", filter by value "0" or "4"
         if (type === "tthai" && (value === "0" || value === "4")) {
           return (
             item[propName]?.toString() === value ||
@@ -365,6 +390,11 @@ export default function HoaDonDauVao() {
   const handleResetFilter = () => {
     setFilterData(initialData);
     handleSearch(searchValue, initialData);
+    setDataFilter({
+      value: String(TTMST_Options[0].value),
+      type: "tthai",
+      date: null,
+    });
   };
 
   const handleDownload = async (values: DownloadHoaDonType) => {
@@ -579,6 +609,8 @@ export default function HoaDonDauVao() {
         handleResetFilter={handleResetFilter}
         handleExportExcel={handleExportExcel}
         rangeDate={rangeDate}
+        setDataFilter={(data: any) => setDataFilter(data)}
+        dataFilter={dataFilter}
       />
       <TableHoaDon
         data={dataInvoices}

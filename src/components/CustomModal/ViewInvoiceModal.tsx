@@ -84,14 +84,6 @@ function ViewInvoiceModal({
             </div>
             <div className="flex flex-col items-start gap-1 relative self-stretch w-full flex-[0_0_auto]">
               <div className="flex items-center gap-10 relative self-stretch w-full flex-[0_0_auto]">
-                <p className="relative w-fit mt-[-1.00px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] whitespace-nowrap [font-style:var(--body-small-regular-font-style)]">
-                  Tình trạng rủi ro thuế:
-                </p>
-                <div className="relative w-fit mt-[-1.00px] font-body-medium-medium font-[number:var(--body-medium-medium-font-weight)] text-neutral-800 text-[length:var(--body-medium-medium-font-size)] tracking-[var(--body-medium-medium-letter-spacing)] leading-[var(--body-medium-medium-line-height)] whitespace-nowrap [font-style:var(--body-medium-medium-font-style)]">
-                  Không
-                </div>
-              </div>
-              <div className="flex items-center gap-10 relative self-stretch w-full flex-[0_0_auto]">
                 <div className="relative w-[126px] mt-[-1.00px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] [font-style:var(--body-small-regular-font-style)]">
                   Thời gian kiểm tra:
                 </div>

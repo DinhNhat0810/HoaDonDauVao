@@ -145,7 +145,7 @@ export const columnsTable = ({
       width: "100px",
     },
     {
-      title: "Trạng thái HĐ",
+      title: "Trạng thái HĐ", //pending
       dataIndex: "tthd",
       render: (value: any) => {
         return (
@@ -164,7 +164,7 @@ export const columnsTable = ({
       width: "10%",
     },
     {
-      title: "Hình thức HĐ",
+      title: "Hình thức HĐ", //pending
       dataIndex: "hthuc",
       render: (value: any) => {
         return (
@@ -187,7 +187,7 @@ export const columnsTable = ({
     },
 
     {
-      title: "Trạng thái MST người bán",
+      title: "Trạng thái MST người bán", //pending
       dataIndex: "tthai",
       render: (value: any) => {
         return (

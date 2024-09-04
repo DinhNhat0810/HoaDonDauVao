@@ -9,6 +9,8 @@ import StatisticalIcon from "../../components/Icon/statistical";
 import ProtectUserIcon from "../../components/Icon/protect-user";
 import SettingIcon from "../../components/Icon/setting";
 import Header from "./Header";
+import { CaretDownOutlined } from "@ant-design/icons";
+import { set } from "lodash";
 
 type Props = {
   children?: React.ReactNode;
@@ -25,15 +27,17 @@ const RenderIcon = ({
   active,
   ROUTE,
   icon: IconComponent,
+  isFirstLoad,
 }: {
   active: string | number;
   ROUTE: string;
   icon: React.ElementType;
+  isFirstLoad: boolean;
 }) => {
   return (
     <IconComponent
       className={`py-[13px] px-[12px] ${
-        active === ROUTE ? "bg-primary-color" : "bg-[#343436]"
+        !isFirstLoad && active === ROUTE ? "bg-primary-color" : "bg-[#343436]"
       } rounded-md`}
     />
   );
@@ -43,18 +47,33 @@ const MainLayout = ({ children }: Props) => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { mst } = useContext(AppContext);
+  const { mst, token } = useContext(AppContext);
   const [active, setActive] = useState<string | number>(ROUTE.HDMV);
   const [activeSubMenu, setActiveSubMenu] = useState<string | number>(
-    ROUTE.HDMV_TatCa
+    ROUTE.TQ_HD
   );
   const [subMenu, setSubMenu] = useState<ItemsType[]>([]);
+  const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
+  const [menusSelected, setMenusSelected] = useState<string[]>([
+    ROUTE.TQ,
+    ROUTE.HD,
+    ROUTE.BAOCAO,
+    ROUTE.DANHMUC,
+    ROUTE.HETHONG,
+  ]);
 
   const items: ItemsType[] = [
     {
       key: ROUTE.TQ,
       label: "Tổng quan",
-      icon: <RenderIcon active={active} ROUTE={ROUTE.TQ} icon={ComputerIcon} />,
+      icon: (
+        <RenderIcon
+          isFirstLoad={isFirstLoad}
+          active={active}
+          ROUTE={ROUTE.TQ}
+          icon={ComputerIcon}
+        />
+      ),
       children: [
         {
           key: ROUTE.TQ_HD,
@@ -65,7 +84,14 @@ const MainLayout = ({ children }: Props) => {
     {
       key: ROUTE.HD,
       label: "Hóa đơn",
-      icon: <RenderIcon active={active} ROUTE={ROUTE.HD} icon={DocumentIcon} />,
+      icon: (
+        <RenderIcon
+          isFirstLoad={isFirstLoad}
+          active={active}
+          ROUTE={ROUTE.HD}
+          icon={DocumentIcon}
+        />
+      ),
       children: [
         {
           key: ROUTE.HDDV,
@@ -91,6 +117,7 @@ const MainLayout = ({ children }: Props) => {
       label: "Báo cáo",
       icon: (
         <RenderIcon
+          isFirstLoad={isFirstLoad}
           active={active}
           ROUTE={ROUTE.BAOCAO}
           icon={StatisticalIcon}
@@ -122,6 +149,7 @@ const MainLayout = ({ children }: Props) => {
       label: "Danh mục",
       icon: (
         <RenderIcon
+          isFirstLoad={isFirstLoad}
           active={active}
           ROUTE={ROUTE.DANHMUC}
           icon={ProtectUserIcon}
@@ -143,7 +171,12 @@ const MainLayout = ({ children }: Props) => {
       key: ROUTE.HETHONG,
       label: "Hệ thống",
       icon: (
-        <RenderIcon active={active} ROUTE={ROUTE.HETHONG} icon={SettingIcon} />
+        <RenderIcon
+          isFirstLoad={isFirstLoad}
+          active={active}
+          ROUTE={ROUTE.HETHONG}
+          icon={SettingIcon}
+        />
       ),
       children: [
         {
@@ -168,7 +201,9 @@ const MainLayout = ({ children }: Props) => {
 
   useEffect(() => {
     setActive("/" + location.pathname.split("/")[1]);
+
     setActiveSubMenu(location.pathname);
+
     setSubMenu(
       items.find((item) => item.key === "/" + location.pathname.split("/")[1])
         ?.children || []
@@ -181,6 +216,7 @@ const MainLayout = ({ children }: Props) => {
     if (item.key) {
       navigate(item.children?.[0].key || "");
     }
+    setIsFirstLoad(false);
   };
 
   const handleSelectSubMenu = (item: ItemsType) => {
@@ -208,7 +244,9 @@ const MainLayout = ({ children }: Props) => {
               >
                 <div
                   className={`relative ${
-                    active === item.key ? "before:block" : "before:hidden"
+                    !isFirstLoad && active === item.key
+                      ? "before:block"
+                      : "before:hidden"
                   } before:content-[''] before:w-4 before:top-1 before:bottom-1 before:left-[-34px] before:rounded-md before:bg-primary-color before:absolute`}
                 >
                   {item.icon}
@@ -231,24 +269,77 @@ const MainLayout = ({ children }: Props) => {
         <div
           className={`bg-[#343436] transition-width duration-200 ease-in-out ${
             collapsed ? "w-0" : "w-[200px]"
-          }`}
+          } overflow-y-auto max-h-screen`}
         >
-          <div className="p-4">
+          <div className={`p-4`}>
             <img src={IMAGES.home.logo} alt="logo" className="" />
             <ul className="mt-8">
-              {subMenu.map((item, index) => (
-                <li
-                  className={`text-[13px] py-4 rounded-md font-semibold flex flex-col items-start cursor-pointer ${
-                    activeSubMenu === item.key
-                      ? "text-white bg-[#1E1E1E]"
-                      : "text-[#ffffff80]"
-                  }`}
-                  key={index}
-                  onClick={() => handleSelectSubMenu(item)}
-                >
-                  <span className="pl-2">{item.label}</span>
-                </li>
-              ))}
+              {isFirstLoad
+                ? items.map((item, index) => (
+                    <li
+                      className={`text-[13px] rounded-md font-semibold flex flex-col items-start cursor-pointer ${
+                        activeSubMenu === item.key
+                          ? "text-white bg-[#1E1E1E]"
+                          : "text-[#ffffff80]"
+                      }
+                      `}
+                      key={index}
+                    >
+                      <div
+                        className="text-white w-full hover:text-white
+                         py-3 leading-[14px] rounded-md font-semibold flex items-center cursor-pointer
+                        "
+                        onClick={() => {
+                          setMenusSelected((prev) => {
+                            if (prev.includes(item.key)) {
+                              return prev.filter((x) => x !== item.key);
+                            } else {
+                              return [...prev, item.key];
+                            }
+                          });
+                        }}
+                      >
+                        <CaretDownOutlined className="mx-2" />
+                        {item.label}
+                      </div>
+
+                      <ul className="w-full">
+                        {menusSelected.includes(item.key) &&
+                          item.children?.map((child, index) => (
+                            <li
+                              className={`text-[13px] py-3 leading-[14px] rounded-md font-semibold flex flex-col items-start cursor-pointer hover:text-white ${
+                                activeSubMenu === child.key
+                                  ? "text-white bg-[#1E1E1E]"
+                                  : "text-[#ffffff80]"
+                              }`}
+                              key={index}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSelectSubMenu(child);
+                              }}
+                            >
+                              <span className="pl-2 w-full block">
+                                {child.label}
+                              </span>
+                            </li>
+                          ))}
+                      </ul>
+                    </li>
+                  ))
+                : subMenu.map((item, index) => (
+                    <li
+                      className={`text-[13px] py-3 leading-[14px] rounded-md font-semibold flex flex-col items-start cursor-pointer hover:text-white
+                         ${
+                           activeSubMenu === item.key
+                             ? "text-white bg-[#1E1E1E]"
+                             : "text-[#ffffff80]"
+                         }`}
+                      key={index}
+                      onClick={() => handleSelectSubMenu(item)}
+                    >
+                      <span className="pl-2">{item.label}</span>
+                    </li>
+                  ))}
             </ul>
           </div>
         </div>

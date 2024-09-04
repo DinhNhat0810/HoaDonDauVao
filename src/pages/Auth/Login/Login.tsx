@@ -19,7 +19,7 @@ const Login = () => {
   const [api, contextHolder] = notification.useNotification();
   const [loadCapcha, setLoadCapcha] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { setIsAuthenticated } = useContext(AppContext);
+  const { setIsAuthenticated, setUserData } = useContext(AppContext);
   const [loading, setLoading] = useState<boolean>(false);
 
   const openNotificationWithIcon = (
@@ -88,20 +88,21 @@ const Login = () => {
       });
 
       if (!isEmpty(res.data.token)) {
-        setTimeout(() => {
-          setLoading(false);
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              token: res.data.token,
-              mst: values.username,
-              expiredAt: new Date().getTime() + 3600000,
-            })
-          );
-          setIsAuthenticated(true);
-          navigate("/");
-          window.location.reload();
-        }, 1000);
+        setLoading(false);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            token: res.data.token,
+            mst: values.username,
+            expiredAt: new Date().getTime() + 3600000,
+          })
+        );
+        setIsAuthenticated(true);
+        // setUserData({
+        //   token: res.data.token,
+        //   mst: values.username,
+        // });
+        navigate("/");
       } else {
         openNotificationWithIcon("error", "Lỗi", "Đăng nhập thất bại");
         setLoading(false);

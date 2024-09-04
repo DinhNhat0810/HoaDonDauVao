@@ -7,6 +7,7 @@ type AppContextType = {
   mst?: string;
   token?: string;
   expiredAt?: number;
+  setUserData: React.Dispatch<React.SetStateAction<any>>;
 };
 
 const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -19,6 +20,7 @@ const inititalAppContext: AppContextType = {
   mst: user?.mst,
   token: user?.token,
   expiredAt: user?.expiredAt,
+  setUserData: () => null,
 };
 
 export const AppContext = createContext<AppContextType>(inititalAppContext);
@@ -27,11 +29,13 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
     inititalAppContext.isAuthenticated
   );
+  const [userData, setUserData] = useState<any>(user);
 
   useEffect(() => {
     if (user?.expiredAt < Date.now()) {
       localStorage.removeItem("user");
       setIsAuthenticated(false);
+      setUserData({});
       return;
     }
 
@@ -39,6 +43,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       if (user?.expiredAt < Date.now()) {
         localStorage.removeItem("user");
         setIsAuthenticated(false);
+        setUserData({});
       }
     }, 10000);
 
@@ -52,9 +57,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         isAuthenticated,
         setIsAuthenticated,
-        mst: user?.mst,
-        token: user?.token,
-        expiredAt: user?.expiredAt,
+        mst: userData?.mst,
+        token: userData?.token,
+        expiredAt: userData?.expiredAt,
+        setUserData,
       }}
     >
       {children}

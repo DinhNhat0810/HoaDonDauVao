@@ -1,5 +1,3 @@
-import { Button } from "antd";
-import React from "react";
 import CustomBtn from "../../../../components/CustomBtn";
 
 export default function ThongTinTaiNguyen() {

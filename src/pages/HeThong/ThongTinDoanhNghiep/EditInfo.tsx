@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import EditIcon from "../../../components/Icon/edit";
 import CustomBtn from "../../../components/CustomBtn";
 import CustomInput from "../../../components/CustomInput";
+import { AppContext } from "../../../contexts/app.context";
 
 export default function EditInfo() {
   const [isEdit, setIsEdit] = useState(false);
+  const { mst } = useContext(AppContext);
 
   return (
     <div className="mt-4">
@@ -21,7 +23,7 @@ export default function EditInfo() {
           </p>
           <div className="inline-flex items-center justify-center gap-2.5 px-2.5 py-1.5 bg-[#9B9B9E] rounded relative flex-[0_0_auto]">
             <div className="relative w-fit mt-[-1.00px] font-body-large-medium font-[number:var(--body-large-medium-font-weight)] text-white text-[length:var(--body-large-medium-font-size)] tracking-[var(--body-large-medium-letter-spacing)] leading-[var(--body-large-medium-line-height)] whitespace-nowrap [font-style:var(--body-large-medium-font-style)]">
-              MST: 1100035680
+              MST: {mst}
             </div>
           </div>
         </div>

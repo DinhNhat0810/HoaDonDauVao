@@ -10,6 +10,7 @@ const TableHoaDon = ({
   total,
   handleDownload,
   handleViewInvoice,
+  onRow,
 }: {
   loading: boolean;
   data: any[];
@@ -18,6 +19,7 @@ const TableHoaDon = ({
   total: number;
   handleDownload: (values: any) => void;
   handleViewInvoice?: (values: any, record: any) => void;
+  onRow?: (record: any) => any;
 }) => {
   const [openPopover, setOpenPopover] = useState("");
 
@@ -30,12 +32,7 @@ const TableHoaDon = ({
   };
 
   const columns: any = useMemo(() => {
-    return columnsTable({
-      handleDownload,
-      handleTogglePopover,
-      openPopover,
-      handleViewInvoice,
-    });
+    return columnsTable();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openPopover]);
 
@@ -46,10 +43,7 @@ const TableHoaDon = ({
       columns={columns}
       data={data}
       loading={loading}
-      rowSelection={{
-        type: "checkbox",
-        //   ...rowSelection,
-      }}
+      onRow={onRow}
       total={total}
     />
   );

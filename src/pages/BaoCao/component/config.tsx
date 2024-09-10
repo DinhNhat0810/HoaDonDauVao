@@ -10,12 +10,25 @@ export const data = Array.from({ length: 10 }, (_, index) => {
     khmshdon: "Công ty cổ phần công nghệ Nacencomm",
     shdon: "HD001",
     hthuc: (index % 3) + 1, // Giá trị hthuc luân phiên từ 1 đến 3
-    tongThanhToan: "1000000",
+    tongThanhToan: "100000000000",
     thueSuat: "10%",
     ncnhat: "01/01/2021",
     tdlap: "01/01/2021",
     tthai: "Đã kích hoạt",
     ttmst: (index % 3) + 1,
+    thongTinHoaDon: {
+      khmshdon: "khách hàng mua sỉ hóa đơn" + index + 1,
+      khhdon: "ký hiệu hóa đơn" + index + 1,
+      shdon: "số hóa đơn" + index + 1,
+      ntao: "Ngày tạo" + index + 1,
+    },
+    thongTinNguoiBan: {
+      nbten: "Tên người bán" + index + 1,
+      mst: "MST" + index + 1,
+    },
+    tongTruocThue: "1000000",
+    nky: "01/01/2021",
+    ghiChu: "Ghi chú" + index + 1,
   };
 });
 
@@ -31,6 +44,7 @@ export const columnsTable = ({
       render: (value: any) => value + 1,
       fixed: "left",
       width: "60px",
+      align: "center",
     },
     {
       title: "Nhà cung cấp",
@@ -56,7 +70,7 @@ export const columnsTable = ({
     },
     {
       title: "Ngày ký",
-      dataIndex: "hthuc",
+      dataIndex: "nky",
       width: "120px",
     },
     {
@@ -75,7 +89,7 @@ export const columnsTable = ({
       render: (value: any) => {
         return <p>{convertToVnd(Number(value))}</p>;
       },
-      width: "180px",
+      width: "140px",
     },
 
     {
@@ -84,7 +98,7 @@ export const columnsTable = ({
       render: (value: any) => {
         return <p>{convertToVnd(Number(value))}</p>;
       },
-      width: "180px",
+      width: "140px",
     },
     {
       title: "Trạng thái HĐ",

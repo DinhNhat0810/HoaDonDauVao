@@ -1,6 +1,17 @@
+import { useQuery } from "@tanstack/react-query";
 import CustomBtn from "../../../../components/CustomBtn";
+import { Thongtintainguyen } from "../../../../services/dashboard";
 
 export default function ThongTinTaiNguyen() {
+  // const { data, refetch, isLoading } = useQuery({
+  //   queryKey: ["tttn"],
+  //   queryFn: () => {
+  //     return Thongtintainguyen({
+  //       mstnban: "0103930279-999",
+  //     });
+  //   },
+  // });
+
   const data = [
     {
       title: "Hóa đơn đã mua",

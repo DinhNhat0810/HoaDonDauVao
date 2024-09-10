@@ -21,10 +21,13 @@ const CustomInput = ({
   labelInside,
   className,
   onCalendarChange,
+  needConfirm = false,
+  onChangeRange,
   ...inputProps
 }: {
   value?: string;
   onChange?: (value: string) => void;
+  onChangeRange?: (value: any) => void;
   [key: string]: any;
 }) => {
   const [isFocus, setIsFocus] = useState(false);
@@ -104,6 +107,7 @@ const CustomInput = ({
               }}
               name={name}
               onChange={onChange}
+              needConfirm={needConfirm}
               {...inputProps}
             />
           )}
@@ -118,6 +122,8 @@ const CustomInput = ({
               }}
               name={name}
               onCalendarChange={onCalendarChange}
+              needConfirm={needConfirm}
+              onChange={onChangeRange}
               {...inputProps}
             />
           )}

@@ -304,25 +304,24 @@ const MainLayout = ({ children }: Props) => {
                       </div>
 
                       <ul className="w-full">
-                        {menusSelected.includes(item.key) &&
-                          item.children?.map((child, index) => (
-                            <li
-                              className={`text-[13px] py-3 leading-[14px] rounded-md font-semibold flex flex-col items-start cursor-pointer hover:text-white ${
-                                activeSubMenu === child.key
-                                  ? "text-white bg-[#1E1E1E]"
-                                  : "text-[#ffffff80]"
-                              }`}
-                              key={index}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleSelectSubMenu(child);
-                              }}
-                            >
-                              <span className="pl-2 w-full block">
-                                {child.label}
-                              </span>
-                            </li>
-                          ))}
+                        {item.children?.map((child, index) => (
+                          <li
+                            className={`text-[13px] py-3 leading-[14px] rounded-md font-semibold flex flex-col items-start cursor-pointer hover:text-white ${
+                              activeSubMenu === child.key
+                                ? "text-white bg-[#1E1E1E]"
+                                : "text-[#ffffff80]"
+                            }`}
+                            key={index}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSelectSubMenu(child);
+                            }}
+                          >
+                            <span className="pl-2 w-full block">
+                              {child.label}
+                            </span>
+                          </li>
+                        ))}
                       </ul>
                     </li>
                   ))

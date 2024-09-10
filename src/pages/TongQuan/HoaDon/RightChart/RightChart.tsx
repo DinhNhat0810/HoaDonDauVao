@@ -1,35 +1,37 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
 import { CategoryScale } from "chart.js";
 import CircleChart from "./CircleChart";
 import { COLORS } from "../../../../libs/constants";
 import RangeDatePicker from "../TongHoaDon/RangeDatePicker";
 import BarChart from "./BarChart";
+import { AppContext } from "../../../../contexts/app.context";
+import {
+  BieudoSSGTHDon,
+  BieudoSSTongGTHDon_NCC,
+} from "../../../../services/dashboard";
+import { NotificationContext } from "../../../../contexts/notification.context";
+import dayjs from "dayjs";
+import { Skeleton } from "antd";
 
-const Data = [
+const TopData = [
   {
     id: 1,
-    name: "Công ty cổ phần công nghệ Nacencomm 1",
-    total: 8000000,
+    total: 0,
     color: COLORS.primary,
-    gradientFrom: "rgba(212, 212, 214, 1)",
-    gradientTo: "rgba(212, 212, 214, 1)",
+    name: "Nhà cung cấp",
   },
   {
     id: 2,
-    name: "Công ty cổ phần công nghệ Nacencomm 2",
-    total: 2000000,
+    total: 0,
     color: COLORS.infor,
-    gradientFrom: "rgba(255, 177, 104, 1)",
-    gradientTo: "rgba(255, 120, 79, 1)",
+    name: "Nhà cung cấp",
   },
   {
     id: 3,
-    name: "Công ty cổ phần công nghệ Nacencomm 3",
-    total: 7888888,
+    total: 0,
     color: COLORS.success,
-    gradientFrom: "rgba(255, 177, 104, 1)",
-    gradientTo: "rgba(255, 120, 79, 1)",
+    name: "Nhà cung cấp",
   },
 ];
 
@@ -37,49 +39,140 @@ const BottomData = [
   {
     id: 1,
     name: "Hóa đơn đầu vào",
-    total: 100,
     color: COLORS.primary,
+    backgroundColor: COLORS.primary,
   },
   {
     id: 2,
     name: "Hóa đơn đầu ra",
-    total: 3000,
     color: COLORS.infor,
+    backgroundColor: COLORS.infor,
   },
 ];
 
 export default function RightChart() {
   const [isFirstLoad, setIsFirstLoad] = useState<any>(true);
-
+  const { mst } = useContext(AppContext);
   const [circleChartData, setCircleChartData] = useState({
-    labels: Data.map((data) => data.name),
-    datasets: [
-      {
-        label: "Tổng giá trị hóa đơn",
-        data: Data.map((data) => data.total),
-        backgroundColor: Data.map((data) => data.color),
-        hoverOffset: 4,
-        fillColor: "rgba(255, 108, 35, 0.1)",
-        gradientFrom: Data.map((data) => data.gradientFrom),
-        gradientTo: Data.map((data) => data.gradientTo),
-      },
-    ],
-  });
-
-  const [barChartData, setBarChartData] = useState({
-    labels: BottomData.map((data) => data.name),
+    labels: TopData.map((data) => data?.name),
     datasets: [
       {
         label: "Tổng giá trị",
-        data: BottomData.map((data) => data.total),
-        backgroundColor: BottomData.map((data) => data.color),
+        data: TopData.map((data: any) => data?.total),
+        backgroundColor: TopData.map((data) => data?.color),
         hoverOffset: 4,
         fillColor: "rgba(255, 108, 35, 0.1)",
       },
     ],
   });
+  const [barChartData, setBarChartData] = useState({
+    labels: BottomData.map((data) => data?.name),
+    datasets: [
+      {
+        label: "",
+        data: BottomData.map((data: any) => data?.total),
+        backgroundColor: BottomData.map((data) => data?.color),
+        hoverOffset: 4,
+        fillColor: "rgba(255, 108, 35, 0.1)",
+        barPercentage: 0.4,
+      },
+    ],
+  });
+  const { handleOpenNotification } = useContext(NotificationContext);
 
   Chart.register(CategoryScale);
+
+  const fetchData = async (tungay: string, denngay: string) => {
+    try {
+      if (mst) {
+        Promise.all([
+          BieudoSSGTHDon({
+            madonvi: mst,
+            tungay: tungay,
+            denngay: denngay,
+          }),
+          BieudoSSTongGTHDon_NCC({
+            madonvi: mst,
+            tungay: tungay,
+            denngay: denngay,
+          }),
+        ]).then((res) => {
+          setBarChartData({
+            labels: BottomData.map((data) => data.name),
+            datasets: [
+              {
+                label: "Tổng giá trị",
+                data: [res[0].TongHDDauvao, res[0].TongHDDaura],
+                backgroundColor: BottomData.map((data) => data.color),
+                hoverOffset: 4,
+                fillColor: "rgba(255, 108, 35, 0.1)",
+                barPercentage: 0.4,
+              },
+            ],
+          });
+
+          setCircleChartData({
+            labels: res[1]?.map((data: any) => data.TenNCC),
+            datasets: [
+              {
+                label: "Tổng giá trị hóa đơn",
+                data: res[1]?.map((data: any) => data.TongtienTTHD),
+                backgroundColor: [COLORS.primary, COLORS.infor, COLORS.success],
+                hoverOffset: 4,
+                fillColor: "rgba(255, 108, 35, 0.1)",
+              },
+            ],
+          });
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(
+      dayjs().startOf("month").format("YYYY-MM-DD"),
+      dayjs().endOf("month").format("YYYY-MM-DD")
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleGetData = async (tungay: string, denngay: string) => {
+    try {
+      if (!tungay || !denngay) {
+        return [];
+      }
+
+      if (tungay > denngay) {
+        handleOpenNotification({
+          type: "error",
+          message: "Lỗi",
+          description: "Ngày bắt đầu không được lớn hơn ngày kết thúc",
+        });
+        return [];
+      }
+
+      const oneMonthAfterTungay = dayjs(tungay)
+        .add(1, "month")
+        .subtract(1, "day")
+        .endOf("day");
+      if (dayjs(denngay).isAfter(oneMonthAfterTungay)) {
+        handleOpenNotification({
+          type: "error",
+          message: "Lỗi",
+          description: "Khoảng thời gian tìm kiếm không được vượt quá 1 tháng",
+        });
+
+        return [];
+      }
+
+      // Select the correct function based on part and call it with parameters
+      fetchData(tungay, denngay);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   return (
     <div className="p-4 rounded-lg shadow-custom">
@@ -88,6 +181,14 @@ export default function RightChart() {
           <RangeDatePicker
             isFirstLoad={isFirstLoad}
             handleSetFirstLoad={() => setIsFirstLoad(false)}
+            onChangeRange={(values) => {
+              if (values) {
+                handleGetData(
+                  dayjs(values[0]).format("YYYY-MM-DD"),
+                  dayjs(values[1]).format("YYYY-MM-DD")
+                );
+              }
+            }}
           />
           <h2 className="text-xl font-semibold text-center">
             Tổng giá trị hóa đơn
@@ -98,18 +199,6 @@ export default function RightChart() {
         </div>
 
         <CircleChart chartData={circleChartData} />
-
-        <div className="px-8 py-2">
-          {Data.map((item, index) => (
-            <div key={index} className="flex items-center mt-4">
-              <div
-                className="w-4 h-4 rounded-full mr-6"
-                style={{ backgroundColor: item.color }}
-              ></div>
-              <p className="flex-1 text-sm">{item.name}</p>
-            </div>
-          ))}
-        </div>
       </div>
 
       <div className=" mt-6">
@@ -119,23 +208,11 @@ export default function RightChart() {
           </h2>
           <p className="text-sm mb-2 text-center mt-2">
             Biểu đồ so sánh tổng giá trị hóa đơn đầu vào/ đầu ra tính theo{" "}
-            <span className="text-primary-color">đơn vị triệu vnđ</span>
+            <span className="text-primary-color">đơn vị vnđ</span>
           </p>
         </div>
 
         <BarChart chartData={barChartData} />
-
-        <div className="px-8 py-2">
-          {BottomData.map((item, index) => (
-            <div key={index} className="flex items-center mt-4">
-              <div
-                className="w-4 h-4 rounded-full mr-6"
-                style={{ backgroundColor: item.color }}
-              ></div>
-              <p className="flex-1 text-sm">{item.name}</p>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );

@@ -11,7 +11,9 @@ type CustomTableProps = {
   handlePageChange?: (newPage: number) => void;
   currentPage?: number;
   total?: number;
-  showPagination: boolean;
+  showPagination?: boolean;
+  onRow?: (record: any) => any;
+  [key: string]: any;
 };
 
 export default function CustomTable(props: CustomTableProps) {
@@ -27,6 +29,8 @@ export default function CustomTable(props: CustomTableProps) {
     currentPage = 1,
     total,
     showPagination = true,
+    onRow,
+    ...rest
   } = props;
   return (
     <div className="table-invoice flex-1 flex flex-col justify-between">
@@ -56,6 +60,8 @@ export default function CustomTable(props: CustomTableProps) {
           pagination={false}
           className="mb-16 flex-1"
           loading={loading}
+          onRow={onRow}
+          {...rest}
         />
       </ConfigProvider>
       {showPagination && (

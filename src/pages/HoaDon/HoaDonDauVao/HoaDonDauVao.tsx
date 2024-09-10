@@ -16,6 +16,7 @@ import {
 import { AppContext } from "../../../contexts/app.context";
 import { isEmpty } from "lodash";
 import ViewInvoiceModal from "../../../components/CustomModal/ViewInvoiceModal";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 type DownloadHoaDonType = {
   nbmst: string;
@@ -29,7 +30,6 @@ dayjs.extend(isSameOrBefore);
 export default function HoaDonDauVao() {
   const [dataInvoices, setDataInvoices] = useState<any[]>([]);
   const [initialData, setInitialData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
   const { handleOpenNotification } = useContext(NotificationContext);
   const [fileName, setFileName] = useState("");
   const [tab, setTab] = useState("5");
@@ -50,6 +50,27 @@ export default function HoaDonDauVao() {
     type: "tthai",
     date: null,
   });
+  const [query, setQuery] = useState<any>(null);
+  const { data, refetch, isLoading } = useQuery({
+    queryKey: ["todos", query],
+    queryFn: (e) => {
+      return handleFinish(
+        {
+          date: [e.queryKey[1].values[0], e.queryKey[1].values[1]],
+        },
+        e.queryKey[1].callback
+      );
+    },
+    staleTime: 5 * 1000,
+    gcTime: 5 * 1000,
+    retry: 0,
+    enabled: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  });
+  const [openViewAction, setOpenViewAction] = useState(false);
+  const [dataDetail, setDataDetail] = useState<any>(null);
 
   const handleChange = (e: any) => {
     setSearchValue(e);
@@ -82,26 +103,24 @@ export default function HoaDonDauVao() {
 
   const handleFinish = async (values: any, callback: () => void) => {
     const { date } = values;
+
     // const expries = localStorage.getItem("time");
 
     // if (expries && +expries - new Date().getTime() < 60 * 60 * 1000) {
     //   return;
     // }
-
-    setLoading(true);
     try {
       if (!date[0] || !date[1]) {
-        return;
+        return [];
       }
 
       if (date[0] > date[1]) {
-        setLoading(false);
         handleOpenNotification({
           type: "error",
           message: "Lỗi",
           description: "Ngày bắt đầu không được lớn hơn ngày kết thúc",
         });
-        return;
+        return [];
       }
 
       const oneMonthAfterTungay = dayjs(date[0])
@@ -109,14 +128,13 @@ export default function HoaDonDauVao() {
         .subtract(1, "day")
         .endOf("day");
       if (dayjs(date[1]).isAfter(oneMonthAfterTungay)) {
-        setLoading(false);
         handleOpenNotification({
           type: "error",
           message: "Lỗi",
           description: "Khoảng thời gian tìm kiếm không được vượt quá 1 tháng",
         });
 
-        return;
+        return [];
       }
 
       callback();
@@ -210,8 +228,6 @@ export default function HoaDonDauVao() {
           tthd: Math.floor(Math.random() * 2) + 1,
         }));
 
-        console.log(newRes);
-
         const displayedItems = newRes.slice(
           (page.current - 1) * 10,
           page.current * 10
@@ -222,45 +238,48 @@ export default function HoaDonDauVao() {
         setFilterData(newRes);
         setPage((prev) => ({ ...prev, total: response.datas.length }));
 
-        // const payload = response.datas?.map((item: any) => ({
-        //   nbmst: item?.nbmst,
-        //   khmshdon: item?.khmshdon,
-        //   khhdon: item?.khhdon,
-        //   shdon: item?.shdon,
-        //   hthdon: item?.hthdon,
-        //   khhdgoc: item?.khhdgoc,
-        //   khmshdgoc: item?.khmshdgoc,
-        //   mhdon: item?.mhdon,
-        //   mtdtchieu: item?.mtdtchieu,
-        //   nbdchi: item?.nbdchi,
-        //   nbten: item?.nbten,
-        //   ncma: item?.ncma,
-        //   ncnhat: item?.ncnhat,
-        //   ngcnhat: item?.ngcnhat,
-        //   nky: item?.nky,
-        //   nmdchi: item?.nmdchi,
-        //   nmmst: item?.nmmst,
-        //   nmten: item?.nmten,
-        //   shdgoc: item?.shdgoc,
-        //   tchat: item?.tchat,
-        //   tdlap: item?.tdlap,
-        //   tgtcthue: item?.tgtcthue,
-        //   tgtthue: item?.tgtthue,
-        //   tgtttbchu: item?.tgtttbchu,
-        //   tgtttbso: item?.tgtttbso,
-        //   thdon: item?.thdon,
-        //   thttlphi: item?.thttlphi,
-        //   thttltsuat: item?.thttltsuat,
-        //   ttcktmai: item?.ttcktmai,
-        //   tthai: item?.tthai,
-        //   ttxly: item?.ttxly,
-        //   nbcks: item?.nbcks,
-        //   tdlhdgoc: item?.tdlhdgoc,
-        //   thtttoan: item?.thtttoan,
-        //   msttcgp: item?.msttcgp,
-        //   cqtcks: item?.cqtcks,
-        // }));
-        // console.log(payload);
+        const payload = response.datas?.map((item: any) => ({
+          nbmst: item?.nbmst,
+          khmshdon: item?.khmshdon,
+          khhdon: item?.khhdon,
+          shdon: item?.shdon,
+          hthdon: item?.hthdon,
+          khhdgoc: item?.khhdgoc,
+          khmshdgoc: item?.khmshdgoc,
+          mhdon: item?.mhdon,
+          mtdtchieu: item?.mtdtchieu,
+          nbdchi: item?.nbdchi,
+          nbten: item?.nbten,
+          ncma: item?.ncma,
+          ncnhat: item?.ncnhat,
+          ngcnhat: item?.ngcnhat,
+          nky: item?.nky,
+          nmdchi: item?.nmdchi,
+          nmmst: item?.nmmst,
+          nmten: item?.nmten,
+          shdgoc: item?.shdgoc,
+          tchat: item?.tchat,
+          tdlap: item?.tdlap,
+          tgtcthue: item?.tgtcthue,
+          tgtthue: item?.tgtthue,
+          tgtttbchu: item?.tgtttbchu,
+          tgtttbso: item?.tgtttbso,
+          thdon: item?.thdon,
+          thttlphi: item?.thttlphi,
+          thttltsuat: item?.thttltsuat,
+          ttcktmai: item?.ttcktmai,
+          tthai: item?.tthai,
+          ttxly: item?.ttxly,
+          nbcks: item?.nbcks,
+          tdlhdgoc: item?.tdlhdgoc,
+          thtttoan: item?.thtttoan,
+          msttcgp: item?.msttcgp,
+          cqtcks: item?.cqtcks,
+        }));
+        console.log({
+          LoaiHD: 1,
+          dsHoadon: payload,
+        });
       } else {
         setDataInvoices([]);
         setInitialData([]);
@@ -272,21 +291,21 @@ export default function HoaDonDauVao() {
         JSON.stringify(new Date().getTime() + 60 * 60 * 1000)
       );
       setRangeDate(date);
-      setLoading(false);
       handleOpenNotification({
         type: "success",
         message: "Thành công",
         description: "Đồng bộ dữ liệu thành công",
       });
+
+      return response.datas;
     } catch (error) {
       console.log(error);
-
-      setLoading(false);
       handleOpenNotification({
         type: "error",
         message: "Lỗi",
         description: "Có lỗi xảy ra, vui lòng thử lại sau",
       });
+      return [];
     }
   };
 
@@ -399,7 +418,6 @@ export default function HoaDonDauVao() {
 
   const handleDownload = async (values: DownloadHoaDonType) => {
     try {
-      setLoading(true);
       const response: any = await https({
         baseURL: `https://hoadondientu.gdt.gov.vn:30000/query/invoices/export-xml?nbmst=${values.nbmst}&khhdon=${values.khhdon}&shdon=${values.shdon}&khmshdon=${values.khmshdon}`,
         method: "get",
@@ -412,7 +430,6 @@ export default function HoaDonDauVao() {
 
       const blob = new Blob([response], { type: "application/zip" });
 
-      setLoading(false);
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -422,7 +439,6 @@ export default function HoaDonDauVao() {
       link.remove();
     } catch (error) {
       console.log(error);
-      setLoading(false);
     }
   };
 
@@ -433,7 +449,6 @@ export default function HoaDonDauVao() {
       handleOpenCheckInvoiceModal();
     } catch (error) {
       console.log(error);
-      setLoading(false);
     }
   };
 
@@ -601,7 +616,10 @@ export default function HoaDonDauVao() {
         </ConfigProvider>
       </div>
       <ToolBar
-        handleFinish={handleFinish}
+        refetch={refetch}
+        setQuery={(values, callback) => {
+          setQuery({ values, callback });
+        }}
         handleSearch={handleSearch}
         handleFilter={handleFilter}
         handleChange={handleChange}
@@ -611,15 +629,35 @@ export default function HoaDonDauVao() {
         rangeDate={rangeDate}
         setDataFilter={(data: any) => setDataFilter(data)}
         dataFilter={dataFilter}
+        openViewAction={openViewAction}
+        handleDownload={() => {
+          handleDownload({
+            nbmst: dataDetail?.thongTinNguoiBan?.mst,
+            khhdon: dataDetail?.thongTinHoaDon?.khhdon,
+            shdon: dataDetail?.thongTinHoaDon?.shdon,
+            khmshdon: dataDetail?.thongTinHoaDon?.khmshdon,
+          });
+        }}
+        handleViewInvoice={() => {
+          handleViewInvoice(dataDetail);
+        }}
       />
       <TableHoaDon
         data={dataInvoices}
-        loading={loading}
+        loading={isLoading}
         handlePageChange={handlePageChange}
         currentPage={page.current}
         total={page.total}
         handleDownload={handleDownload}
         handleViewInvoice={handleViewInvoice}
+        onRow={(record) => {
+          return {
+            onClick: () => {
+              setOpenViewAction(true);
+              setDataDetail(record);
+            },
+          };
+        }}
       />
 
       {openInvoiceModal && (

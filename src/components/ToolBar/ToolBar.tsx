@@ -1,6 +1,10 @@
 import React, { memo, useEffect, useMemo, useState } from "react";
 import CustomInput from "../CustomInput";
-import { CaretDownOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  CaretDownOutlined,
+  EyeOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import ExcelIcon from "../Icon/excel";
 import FilterIcon from "../Icon/filter";
 import { Form, Popover, Tooltip } from "antd";
@@ -12,6 +16,7 @@ import RefreshIcon from "../Icon/refresh";
 import { RangePickerProps } from "antd/es/date-picker";
 import dayjs from "dayjs";
 import CustomBtn from "../CustomBtn";
+import DownloadIcon from "../Icon/download";
 
 type ToolBarProps = {
   className?: string;
@@ -34,6 +39,11 @@ type ToolBarProps = {
   rangeDate?: any;
   setDataFilter?: (data: any) => void;
   dataFilter?: any;
+  setQuery?: (query: any, callback: () => void) => void;
+  refetch?: () => void;
+  openViewAction?: boolean;
+  handleDownload?: () => void;
+  handleViewInvoice?: () => void;
 };
 
 const fileterOptions = [
@@ -271,6 +281,11 @@ const ToolBar = ({
   setDataFilter = () => {},
   dataFilter = {},
   rangeDate,
+  setQuery = () => {},
+  refetch = () => {},
+  openViewAction,
+  handleDownload = () => {},
+  handleViewInvoice = () => {},
 }: ToolBarProps) => {
   const [openSyncInvoiceModal, setOpenSyncInvoiceModal] = useState(false);
   const debouncedValue = useDebounce(searchValue, 300);
@@ -294,7 +309,7 @@ const ToolBar = ({
 
   return (
     <div className="flex justify-between items-start mt-2">
-      <div>
+      <div className="flex gap-2">
         <CustomInput
           placeholder="Nhập từ khóa để tìm"
           prefix={<SearchOutlined className="cursor-pointer" />}
@@ -302,6 +317,18 @@ const ToolBar = ({
           className="w-60 py-[6px]"
           onChange={handleChange}
         />
+
+        {openViewAction && (
+          <>
+            <DownloadIcon className="cursor-pointer" onClick={handleDownload} />
+            <div
+              className="w-[39px] h-[37px] flex items-center justify-center border border-[#d4d4d6] rounded-md cursor-pointer"
+              onClick={handleViewInvoice}
+            >
+              <EyeOutlined className="text-xl" />
+            </div>
+          </>
+        )}
       </div>
 
       <div className="flex justify-between items-center gap-2">
@@ -370,6 +397,8 @@ const ToolBar = ({
         open={openSyncInvoiceModal}
         handleCancel={handleCancel}
         handleFinish={handleFinish}
+        setQuery={setQuery}
+        refetch={refetch}
       />
     </div>
   );

@@ -9,101 +9,92 @@ import { Popover, Tooltip } from "antd";
 import ErrorIcon from "../../../components/Icon/error";
 import SuccessIcon from "../../../components/Icon/success";
 
-export const columnsTable = ({
-  handleDownload,
-  handleTogglePopover,
-  openPopover = "",
-  handleViewInvoice,
-}: {
-  handleDownload: (values: any) => void;
-  handleTogglePopover: (stt: string) => void;
-  openPopover: string;
-  handleViewInvoice: (values: any) => void;
-}) => {
+export const columnsTable = () => {
   return [
     {
       title: "STT",
       dataIndex: "key",
       render: (value: any) => value + 1,
       fixed: "left",
-      width: "60px",
+      width: "40px",
+      align: "center",
     },
-    {
-      title: "Chức năng",
-      dataIndex: "action",
-      render: (_: any, record: any) => {
-        return (
-          <Popover
-            open={
-              openPopover === record?.key
-                ? true
-                : openPopover === ""
-                ? false
-                : false
-            }
-            onOpenChange={(visible) => {
-              if (!visible) {
-                handleTogglePopover("");
-              } else {
-                handleTogglePopover(record?.key);
-              }
-            }}
-            content={
-              <div>
-                <div
-                  className="flex items-center cursor-pointer px-2 py-1 hover:bg-gray-200 rounded-md"
-                  onClick={() => {
-                    handleDownload({
-                      nbmst: record?.thongTinNguoiBan?.mst,
-                      khhdon: record?.thongTinHoaDon?.khhdon,
-                      shdon: record?.thongTinHoaDon?.shdon,
-                      khmshdon: record?.thongTinHoaDon?.khmshdon,
-                    });
-                    handleTogglePopover("");
-                  }}
-                >
-                  <div className="w-6">
-                    <DownloadOutlined />
-                  </div>
-                  <span className="text-sm flex-1">Tải xuống</span>
-                </div>
+    // {
+    //   title: "Chức năng",
+    //   dataIndex: "action",
+    //   render: (_: any, record: any) => {
+    //     return (
+    //       <Popover
+    //         open={
+    //           openPopover === record?.key
+    //             ? true
+    //             : openPopover === ""
+    //             ? false
+    //             : false
+    //         }
+    //         onOpenChange={(visible) => {
+    //           if (!visible) {
+    //             handleTogglePopover("");
+    //           } else {
+    //             handleTogglePopover(record?.key);
+    //           }
+    //         }}
+    //         content={
+    //           <div>
+    //             <div
+    //               className="flex items-center cursor-pointer px-2 py-1 hover:bg-gray-200 rounded-md"
+    //               onClick={() => {
+    //                 handleDownload({
+    //                   nbmst: record?.thongTinNguoiBan?.mst,
+    //                   khhdon: record?.thongTinHoaDon?.khhdon,
+    //                   shdon: record?.thongTinHoaDon?.shdon,
+    //                   khmshdon: record?.thongTinHoaDon?.khmshdon,
+    //                 });
+    //                 handleTogglePopover("");
+    //               }}
+    //             >
+    //               <div className="w-6">
+    //                 <DownloadOutlined />
+    //               </div>
+    //               <span className="text-sm flex-1">Tải xuống</span>
+    //             </div>
 
-                <div
-                  className="flex items-center cursor-pointer px-2 py-1 hover:bg-gray-200 rounded-md"
-                  onClick={() => {
-                    handleViewInvoice(record);
-                    handleTogglePopover("");
-                  }}
-                >
-                  <div className="w-6">
-                    <EyeOutlined />
-                  </div>
-                  <span className="text-sm flex-1">Xem chi tiết</span>
-                </div>
-              </div>
-            }
-            trigger="click"
-            placement="bottomRight"
-          >
-            <img
-              src={IMAGES.icon.dots}
-              alt="dots"
-              className="cursor-pointer w-9 h-9"
-              onClick={() => {
-                handleTogglePopover(record?.key);
-              }}
-            />
-          </Popover>
-        );
-      },
-      fixed: "left",
-      width: "60px",
-    },
+    //             <div
+    //               className="flex items-center cursor-pointer px-2 py-1 hover:bg-gray-200 rounded-md"
+    //               onClick={() => {
+    //                 handleViewInvoice(record);
+    //                 handleTogglePopover("");
+    //               }}
+    //             >
+    //               <div className="w-6">
+    //                 <EyeOutlined />
+    //               </div>
+    //               <span className="text-sm flex-1">Xem chi tiết</span>
+    //             </div>
+    //           </div>
+    //         }
+    //         trigger="click"
+    //         placement="bottomRight"
+    //       >
+    //         <img
+    //           src={IMAGES.icon.dots}
+    //           alt="dots"
+    //           className="cursor-pointer w-9 h-9"
+    //           onClick={() => {
+    //             handleTogglePopover(record?.key);
+    //           }}
+    //         />
+    //       </Popover>
+    //     );
+    //   },
+    //   fixed: "left",
+    //   width: "60px",
+    // },
 
     {
       title: "Thông tin người bán",
       dataIndex: "thongTinNguoiBan",
-      width: "260px",
+      width: "200px",
       render: (value: any, record: any) => {
         return (
           <div>
@@ -144,19 +135,19 @@ export const columnsTable = ({
       dataIndex: "tongThanhToan",
       width: "100px",
     },
-    {
-      title: "Trạng thái HĐ", //pending
-      dataIndex: "tthd",
-      render: (value: any) => {
-        return (
-          <div className="flex items-center justify-center h-full">
-            {value === 2 && <ErrorIcon />}
-            {value === 1 && <SuccessIcon />}
-          </div>
-        );
-      },
-      width: "80px",
-    },
+    // {
+    //   title: "Trạng thái HĐ", //pending
+    //   dataIndex: "tthd",
+    //   render: (value: any) => {
+    //     return (
+    //       <div className="flex items-center justify-center h-full">
+    //         {value === 2 && <ErrorIcon />}
+    //         {value === 1 && <SuccessIcon />}
+    //       </div>
+    //     );
+    //   },
+    //   width: "80px",
+    // },
 
     {
       title: "Ngày cấp mã CQT",

@@ -479,7 +479,7 @@ export default function HoaDonDauRa() {
 
   return (
     <div className="flex flex-col h-full">
-      <h2 className="text-2xl font-semibold">Danh sách hoa đơn đầu vào</h2>
+      <h2 className="text-2xl font-semibold">Danh sách hoa đơn đầu ra</h2>
       <div className="flex">
         <ConfigProvider
           theme={{

@@ -1,24 +1,27 @@
-import React from "react";
 import CustomInput from "../CustomInput";
-import { CaretDownOutlined, SearchOutlined } from "@ant-design/icons";
-import ExcelIcon from "../Icon/excel";
-import DownloadIcon from "../Icon/download";
-import FilterIcon from "../Icon/filter";
-import { Popover } from "antd";
-import {
-  COLORS,
-  HTHDO_Options,
-  TTHD,
-  TTMST_Options,
-} from "../../libs/constants";
+import { SearchOutlined } from "@ant-design/icons";
+
 import CustomBtn from "../CustomBtn";
+import { useState } from "react";
+import SelectTemplateModal from "../CustomModal/SelectTemplateModal";
 
 type ToolBarProps = {
   className?: string;
-  handleOpenModal?: () => void;
+  data: any;
+  type: string;
 };
 
-export default function ToolBarBaoCao({ handleOpenModal }: ToolBarProps) {
+export default function ToolBarBaoCao({ className, data, type }: ToolBarProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="flex justify-between mt-2">
       <div className="flex">
@@ -39,6 +42,14 @@ export default function ToolBarBaoCao({ handleOpenModal }: ToolBarProps) {
       <div className="">
         <CustomBtn title="Xuất dữ liệu" onClick={handleOpenModal} />
       </div>
+
+      <SelectTemplateModal
+        data={data}
+        fileName={"fileName"}
+        type={type}
+        isModalOpen={isModalOpen}
+        handleCancel={handleCancel}
+      />
     </div>
   );
 }

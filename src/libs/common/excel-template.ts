@@ -68,11 +68,11 @@ export const templateMuaVaoTongHop = async ({
       "Tên người bán": item?.thongTinNguoiBan?.nbten,
       "Mã số thuế người bán": item?.thongTinNguoiBan?.mst,
       "Giá trị HHDV mua vào chưa có thuế": item?.tongTruocThue?.toString(),
-      "Thuế GTGT mua vào": item?.thueSuat?.tsuat,
+      "Thuế GTGT mua vào": item?.thueSuat,
       "Trạng thái hóa đơn": item?.tthai?.toString(),
-      "Ghi chú": item?.nky,
-      "Trạng thái MST": item?.nky,
-      "Tổng tiền phí": item?.tongThanhToan?.toString(),
+      "Ghi chú": item?.ghiChu,
+      "Trạng thái MST": item?.ttmst?.toString(),
+      "Tổng tiền phí": convertToVnd(item?.tongThanhToan?.toString()),
     };
   });
 
@@ -544,7 +544,6 @@ export const templateMuaVaoTCT = async ({
       "MST người bán/MST người xuất hàng": item?.thongTinNguoiBan?.mst,
       "Tên người bán/Tên người xuất hàng": item?.thongTinNguoiBan?.nbten,
       "Địa chỉ người bán": item?.thongTinNguoiBan?.nbten,
-
       "Tổng tiền chưa thuế": item?.thongTinNguoiBan?.nbten,
       "Tổng tiền thuế": item?.thongTinNguoiBan?.nbten,
       "Tổng tiền chiết khấu thương mại": item?.thongTinNguoiBan?.nbten,
@@ -850,7 +849,7 @@ export const templateDauVaoFAST = async ({
       "Trạng thái hóa đơn": item?.tthai?.toString(),
       "Ghi chú": item?.nky,
       "Trạng thái MST": item?.nky,
-      "Tổng tiền phí": item?.tongThanhToan?.toString(),
+      "Tổng tiền phí": "MÃ kho",
     };
   });
 
@@ -971,6 +970,40 @@ export const templateDauVaoFAST = async ({
     );
   });
 
+  let rowIndex = 2;
+  for (const rowData of excelData) {
+    const rowValues = Object.values(rowData); // Convert each object to an array of its values
+    const row = worksheet.addRow(rowValues, "n"); // 'n' is for normal style
+
+    row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+      if (
+        colNumber === 3 ||
+        colNumber === 7 ||
+        colNumber === 8 ||
+        colNumber === 16 ||
+        colNumber === 17
+      ) {
+        cell.alignment = {
+          horizontal: "left", // Căn lề ngang bên trái
+          vertical: "bottom", // Căn lề dọc lên trên
+          wrapText: true, // Bọc văn bản nếu cần
+        };
+      } else {
+        cell.alignment = {
+          horizontal: "center", // Căn lề ngang giữa
+          vertical: "bottom", // Căn lề dọc lên trên
+          wrapText: true, // Bọc văn bản nếu cần
+        };
+      }
+      cell.border = borderStyle;
+      cell.font = {
+        name: "Times New Roman",
+        size: 11,
+      };
+    });
+    rowIndex++;
+  }
+
   const buffer = await workbook.xlsx.writeBuffer();
   saveAs(new Blob([buffer]), `${fileName}.xlsx`);
 };
@@ -984,25 +1017,25 @@ export const templateDauRaFAST = async ({
 }) => {
   if (isEmpty(data)) return;
 
-  // const excelData = data?.map((item: any, index: string) => {
-  //   return {
-  //     STT: (index + 1).toString(),
-  //     "Ký hiệu mẫu số": item?.thongTinHoaDon?.khmshdon?.toString(),
-  //     "Ký hiệu hóa đơn": item?.thongTinHoaDon?.khhdon?.toString(),
-  //     "Số hóa đơn": item?.thongTinHoaDon?.shdon?.toString(),
-  //     "Ngày, tháng, năm lập hóa đơn": item?.thongTinHoaDon?.ntao,
-  //     "Tên người bán": item?.thongTinNguoiBan?.nbten,
-  //     "Mã số thuế người bán": item?.thongTinNguoiBan?.mst,
-  //     "Giá trị HHDV mua vào chưa có thuế": item?.tongTruocThue?.toString(),
-  //     "Thuế GTGT mua vào": item?.thueSuat?.tsuat,
-  //     "Trạng thái hóa đơn": item?.tthai?.toString(),
-  //     "Ghi chú": item?.nky,
-  //     "Trạng thái MST": item?.nky,
-  //     "Tổng tiền phí": item?.tongThanhToan?.toString(),
-  //   };
-  // });
+  const excelData = data?.map((item: any, index: string) => {
+    return {
+      STT: (index + 1).toString(),
+      "Ký hiệu mẫu số": item?.thongTinHoaDon?.khmshdon?.toString(),
+      "Ký hiệu hóa đơn": item?.thongTinHoaDon?.khhdon?.toString(),
+      "Số hóa đơn": item?.thongTinHoaDon?.shdon?.toString(),
+      "Ngày, tháng, năm lập hóa đơn": item?.thongTinHoaDon?.ntao,
+      "Tên người bán": item?.thongTinNguoiBan?.nbten,
+      "Mã số thuế người bán": item?.thongTinNguoiBan?.mst,
+      "Giá trị HHDV mua vào chưa có thuế": item?.tongTruocThue?.toString(),
+      "Thuế GTGT mua vào": item?.thueSuat?.tsuat,
+      "Trạng thái hóa đơn": item?.tthai?.toString(),
+      "Ghi chú": item?.nky,
+      "Trạng thái MST": item?.nky,
+      "Tổng tiền phí": item?.tongThanhToan?.toString(),
+    };
+  });
 
-  const response = await fetch("../assets/template/HDDR_TEMPLATE_FAST.xlsx"); // Tải file từ thư mục public
+  const response = await fetch("/template/HDDR_TEMPLATE_FAST.xlsx"); // Tải file từ thư mục public
   const arrayBuffer = await response.arrayBuffer(); // Chuyển đổi response thành ArrayBuffer
 
   const workbook = new ExcelJS.Workbook();
@@ -1012,6 +1045,26 @@ export const templateDauRaFAST = async ({
   const worksheet = workbook.worksheets[0];
 
   // Cập nhật dữ liệu vào template
+  excelData.forEach((item: any, index: number) => {
+    const rowIndex = index + 2;
+    worksheet.getCell(`A${rowIndex}`).value = item.STT;
+    worksheet.getCell(`B${rowIndex}`).value = item["Ký hiệu mẫu số"];
+    worksheet.getCell(`C${rowIndex}`).value = item["Ký hiệu hóa đơn"];
+    worksheet.getCell(`D${rowIndex}`).value = item["Số hóa đơn"];
+
+    worksheet.getCell(`E${rowIndex}`).value =
+      item["Ngày, tháng, năm lập hóa đơn"];
+    worksheet.getCell(`F${rowIndex}`).value = item["Tên người bán"];
+
+    worksheet.getCell(`G${rowIndex}`).value = item["Mã số thuế người bán"];
+    worksheet.getCell(`H${rowIndex}`).value =
+      item["Giá trị HHDV mua vào chưa có thuế"];
+    worksheet.getCell(`I${rowIndex}`).value = item["Thuế GTGT mua vào"];
+    worksheet.getCell(`J${rowIndex}`).value = item["Trạng thái hóa đơn"];
+    worksheet.getCell(`K${rowIndex}`).value = item["Ghi chú"];
+    worksheet.getCell(`L${rowIndex}`).value = item["Trạng thái MST"];
+    worksheet.getCell(`M${rowIndex}`).value = item["Tổng tiền phí"];
+  });
 
   // Tạo file mới và lưu
   const buffer = await workbook.xlsx.writeBuffer();
@@ -1020,240 +1073,6 @@ export const templateDauRaFAST = async ({
   });
   saveAs(blob, `${fileName}.xlsx`);
 };
-
-// export const templateDauVaoMISA = async ({
-//   data,
-//   fileName,
-// }: {
-//   data: any;
-//   fileName: string;
-// }) => {
-//   if (isEmpty(data)) return;
-
-//   const excelData = data?.map((item: any, index: string) => {
-//     return {
-//       STT: (index + 1).toString(),
-//       "Ký hiệu mẫu số": item?.thongTinHoaDon?.khmshdon?.toString(),
-//       "Ký hiệu hóa đơn": item?.thongTinHoaDon?.khhdon?.toString(),
-//       "Số hóa đơn": item?.thongTinHoaDon?.shdon?.toString(),
-//       "Ngày, tháng, năm lập hóa đơn": item?.thongTinHoaDon?.ntao,
-//       "Tên người bán": item?.thongTinNguoiBan?.nbten,
-//       "Mã số thuế người bán": item?.thongTinNguoiBan?.mst,
-//       "Giá trị HHDV mua vào chưa có thuế": item?.tongTruocThue?.toString(),
-//       "Thuế GTGT mua vào": item?.thueSuat?.tsuat,
-//       "Trạng thái hóa đơn": item?.tthai?.toString(),
-//       "Ghi chú": item?.nky,
-//       "Trạng thái MST": item?.nky,
-//       "Tổng tiền phí": item?.tongThanhToan?.toString(),
-//     };
-//   });
-
-//   const workbook = new ExcelJS.Workbook();
-//   const worksheet = workbook.addWorksheet("Sheet1");
-
-//   const columnWidths = {
-//     A: 20,
-//     B: 18,
-//     C: 18,
-//     D: 20,
-//     E: 18,
-//     F: 16,
-//     G: 16,
-//     H: 16,
-//     I: 16,
-//     J: 16,
-//     K: 16,
-//     L: 16,
-//     M: 18,
-//     N: 20,
-//     O: 20,
-//     P: 16,
-//     Q: 18,
-//     R: 18,
-//     S: 18,
-//     T: 20,
-//     U: 20,
-//     V: 20,
-//     W: 20,
-//     X: 20,
-//     Y: 16,
-//     Z: 14,
-//     AA: 14,
-//     AB: 16,
-//     AC: 16,
-//     AD: 12,
-//     AE: 14,
-//     AF: 18,
-//     AG: 18,
-//     AH: 18,
-//     AI: 12,
-//     AJ: 10,
-//     AK: 14,
-//     AL: 16,
-//     AM: 16,
-//     AN: 12,
-//     AO: 14,
-//     AP: 14,
-//     AQ: 14,
-//     AR: 14,
-//     AS: 14,
-//     AT: 14,
-//     AU: 16,
-//     AV: 16,
-//     AW: 16,
-//     AX: 16,
-//     AY: 16,
-//     AZ: 16,
-//     BA: 16,
-//     BB: 16,
-//     BC: 16,
-//     BD: 16,
-//     BE: 16,
-//     BF: 16,
-//     BG: 16,
-//     BH: 16,
-//     BI: 16,
-//   };
-
-//   const headers = [
-//     {
-//       address: "A1",
-//       text: "Hình thức mua hàng",
-//       color: "CCFFFF",
-//       dataValidation: {
-//         showErrorMessage: true,
-//         promptTitle: "AMIS ACCOUNTING",
-//         prompt: `Lựa chọn hình thức mua hàng:
-//     Mua hàng trong nước nhập kho
-//     Mua hàng trong nước không qua kho
-//     Nếu để trống mặc định là Mua hàng trong nước nhập kho.`,
-//         showInputMessage: true,
-//         allowBlank: true,
-//       },
-//     },
-//     {
-//       address: "B1",
-//       text: "Phương thức thanh toán",
-//       color: "CCFFFF",
-//       dataValidation: {
-//         showErrorMessage: true,
-//         promptTitle: "AMIS ACCOUNTING",
-//         prompt: `Nhập Phương thức thanh toán.
-// Chưa thanh toán
-// Tiền mặt
-// Ủy nhiệm chi
-// Séc chuyển khoản
-// Séc tiền mặt
-// Nếu để trống mặc định là Chưa thanh toán.`,
-//         showInputMessage: true,
-//         allowBlank: true,
-//       },
-//     },
-//     { address: "C1", text: "Nhận kèm hóa đơn", color: "CCFFFF" },
-//     { address: "D1", text: "Ngày hạch toán (*)", color: "CCFFFF" },
-//     { address: "E1", text: "Ngày chứng từ (*)", color: "CCFFFF" },
-//     { address: "F1", text: "Số phiếu nhập (*)", color: "CCFFFF" },
-//     {
-//       address: "G1",
-//       text: "Số chứng từ ghi nợ/Số chứng từ thanh toán",
-//       color: "CCFFFF",
-//     },
-//     { address: "H1", text: "Mẫu số HĐ", color: "CCFFFF" },
-//     { address: "I1", text: "Ký hiệu HĐ", color: "CCFFFF" },
-//     { address: "J1", text: "Số hóa đơn", color: "CCFFFF" },
-//     { address: "K1", text: "Ngày hóa đơn", color: "CCFFFF" },
-//     { address: "L1", text: "Số tài khoản chi", color: "CCFFFF" },
-//     { address: "M1", text: "Tên ngân hàng chi", color: "CCFFFF" },
-//     { address: "N1", text: "Mã nhà cung cấp", color: "CCFFFF" },
-//     { address: "O1", text: "Tên nhà cung cấp", color: "CCFFFF" },
-//     { address: "P1", text: "Địa chỉ", color: "CCFFFF" },
-//     { address: "Q1", text: "Mã số thuế", color: "CCFFFF" },
-//     { address: "R1", text: "Người giao hàng", color: "CCFFFF" },
-//     { address: "S1", text: "Diễn giải", color: "CCFFFF" },
-//     { address: "T1", text: "Số tài khoản nhận", color: "CCFFFF" },
-//     { address: "U1", text: "Tên ngân hàng nhận", color: "CCFFFF" },
-//     { address: "V1", text: "Lý do chi/nội dung thanh toán", color: "CCFFFF" },
-//     { address: "W1", text: "Mã nhân viên mua hàng", color: "CCFFFF" },
-//     { address: "X1", text: "Số lượng chứng từ kèm theo", color: "CCFFFF" },
-//     { address: "Y1", text: "Hạn thanh toán", color: "CCFFFF" },
-//     { address: "Z1", text: "Loại tiền", color: "CCFFFF" },
-//     { address: "AA1", text: "Tỷ giá", color: "CCFFFF" },
-//     { address: "AB1", text: "Mã hàng (*)", color: "CCFFCC" },
-//     { address: "AC1", text: "Tên hàng", color: "CCFFCC" },
-//     { address: "AD1", text: "Là dòng ghi chú", color: "CCFFCC" },
-//     { address: "AE1", text: "Mã kho", color: "CCFFCC" },
-//     { address: "AF1", text: "Hàng hóa giữ hộ/bán hộ", color: "CCFFCC" },
-//     { address: "AG1", text: "TK kho/TK chi phí (*)", color: "CCFFCC" },
-//     { address: "AH1", text: "TK công nợ/TK tiền (*)", color: "CCFFCC" },
-//     { address: "AI1", text: "ĐVT", color: "CCFFCC" },
-//     { address: "AJ1", text: "Số lượng", color: "CCFFCC" },
-//     { address: "AK1", text: "Đơn giá", color: "CCFFCC" },
-//     { address: "AL1", text: "Thành tiền", color: "CCFFCC" },
-//     { address: "AM1", text: "Thành tiền quy đổi", color: "CCFFCC" },
-//     { address: "AN1", text: "Tỷ lệ CK (%)", color: "CCFFCC" },
-//     { address: "AO1", text: "Tiền chiết khấu", color: "CCFFCC" },
-//     { address: "AP1", text: "Tiền chiết khấu quy đổi", color: "CCFFCC" },
-//     { address: "AQ1", text: "% thuế GTGT", color: "CCFFCC" },
-//     { address: "AR1", text: "% thuế suất KHAC", color: "CCFFCC" },
-//     { address: "AS1", text: "Tiền thuế GTGT", color: "CCFFCC" },
-//     { address: "AT1", text: "Tiền thuế GTGT quy đổi", color: "CCFFCC" },
-//     { address: "AU1", text: "TK thuế GTGT", color: "CCFFCC" },
-//     {
-//       address: "AV1",
-//       text: "Phí hàng về kho/Chi phí mua hàng",
-//       color: "CCFFCC",
-//     },
-//     { address: "AW1", text: "Nhóm HHDV mua vào", color: "CCFFCC" },
-//     { address: "AX1", text: "Số Lệnh sản xuất", color: "CCFFCC" },
-//     { address: "AY1", text: "Mã khoản mục chi phí", color: "CCFFCC" },
-//     { address: "AZ1", text: "Mã đơn vị", color: "CCFFCC" },
-//     { address: "BA1", text: "Mã đối tượng THCP", color: "CCFFCC" },
-//     { address: "BB1", text: "Mã công trình", color: "CCFFCC" },
-//     { address: "BC1", text: "Số đơn đặt hàng", color: "CCFFCC" },
-//     { address: "BD1", text: "Số đơn mua hàng", color: "CCFFCC" },
-//     { address: "BE1", text: "Số hợp đồng mua", color: "CCFFCC" },
-//     { address: "BF1", text: "Số hợp đồng bán", color: "CCFFCC" },
-//     { address: "BG1", text: "Mã thống kê", color: "CCFFCC" },
-//     { address: "BH1", text: "Số khế ước vay", color: "CCFFCC" },
-//     { address: "BI1", text: "CP không hợp lý", color: "CCFFCC" },
-//   ];
-
-//   // Thiết lập độ rộng cột cho worksheet
-//   for (const [column, width] of Object.entries(columnWidths)) {
-//     worksheet.getColumn(column).width = width;
-//   }
-
-//   // worksheet.getCell("A1").dataValidation = {
-//   //   showErrorMessage: true,
-//   //   promptTitle: "AMIS ACCOUNTING",
-//   //   prompt: `Lựa chọn hình thức mua hàng:
-//   //   Mua hàng trong nước nhập kho
-//   //   Mua hàng trong nước không qua kho
-//   //   Nếu để trống mặc định là Mua hàng trong nước nhập kho.`,
-//   //   showInputMessage: true,
-//   //   allowBlank: true,
-//   // };
-
-//   headers.forEach((header) => {
-//     setFontStyleHeader(
-//       header.address,
-//       11, // fontSize
-//       true, // bold
-//       header.text, // text
-//       worksheet,
-//       50, // row height
-//       1, // column width
-//       header.color // background color
-//     );
-
-//     if (header.dataValidation) {
-//       worksheet.getCell(header.address).dataValidation = header.dataValidation;
-//     }
-//   });
-
-//   const buffer = await workbook.xlsx.writeBuffer();
-//   saveAs(new Blob([buffer]), `${fileName}.xlsx`);
-// };
 
 export const templateDauVaoMISA = async ({
   data,
@@ -1264,25 +1083,27 @@ export const templateDauVaoMISA = async ({
 }) => {
   if (isEmpty(data)) return;
 
-  // const excelData = data?.map((item: any, index: string) => {
-  //   return {
-  //     STT: (index + 1).toString(),
-  //     "Ký hiệu mẫu số": item?.thongTinHoaDon?.khmshdon?.toString(),
-  //     "Ký hiệu hóa đơn": item?.thongTinHoaDon?.khhdon?.toString(),
-  //     "Số hóa đơn": item?.thongTinHoaDon?.shdon?.toString(),
-  //     "Ngày, tháng, năm lập hóa đơn": item?.thongTinHoaDon?.ntao,
-  //     "Tên người bán": item?.thongTinNguoiBan?.nbten,
-  //     "Mã số thuế người bán": item?.thongTinNguoiBan?.mst,
-  //     "Giá trị HHDV mua vào chưa có thuế": item?.tongTruocThue?.toString(),
-  //     "Thuế GTGT mua vào": item?.thueSuat?.tsuat,
-  //     "Trạng thái hóa đơn": item?.tthai?.toString(),
-  //     "Ghi chú": item?.nky,
-  //     "Trạng thái MST": item?.nky,
-  //     "Tổng tiền phí": item?.tongThanhToan?.toString(),
-  //   };
-  // });
+  const excelData = data?.map((item: any, index: string) => {
+    return {
+      "Hình thức thanh toán": "Mua hàng trong nước nhập kho",
+      "Phuong thức thanh toán": "Chưa thanh toán",
+      "Ký hiệu mẫu số": item?.thongTinHoaDon?.khmshdon?.toString(),
+      "Ký hiệu hóa đơn": item?.thongTinHoaDon?.khhdon?.toString(),
+      "Số hóa đơn": item?.thongTinHoaDon?.shdon?.toString(),
+      "Ngày, tháng, năm lập hóa đơn": item?.thongTinHoaDon?.ntao,
+      "Tên người bán": item?.thongTinNguoiBan?.nbten,
+      "Mã số thuế người bán": item?.thongTinNguoiBan?.mst,
+      "Giá trị HHDV mua vào chưa có thuế": item?.tongTruocThue?.toString(),
+      "Thuế GTGT mua vào": item?.thueSuat,
+      "Trạng thái hóa đơn": item?.tthai?.toString(),
+      "Ghi chú": item?.ghiChu,
+      "Trạng thái MST": item?.ttmst?.toString(),
+      "Tổng tiền phí": convertToVnd(item?.tongThanhToan?.toString()),
+    };
+  });
 
-  const response = await fetch("../assets/template/HDDV_TEMPLATE_MISA.xlsx"); // Tải file từ thư mục public
+  const response = await fetch("/template/HDDV_TEMPLATE_MISA.xlsx"); // Tải file từ thư mục public
+
   const arrayBuffer = await response.arrayBuffer(); // Chuyển đổi response thành ArrayBuffer
 
   const workbook = new ExcelJS.Workbook();
@@ -1292,13 +1113,32 @@ export const templateDauVaoMISA = async ({
   const worksheet = workbook.worksheets[0];
 
   // Cập nhật dữ liệu vào template
+  excelData.forEach((item: any, index: number) => {
+    const rowIndex = index + 2;
+    worksheet.getCell(`A${rowIndex}`).value = item["Hình thức thanh toán"];
+    worksheet.getCell(`B${rowIndex}`).value = item["Phuong thức thanh toán"];
+    worksheet.getCell(`C${rowIndex}`).value = item["Ký hiệu hóa đơn"];
+    worksheet.getCell(`D${rowIndex}`).value = item["Số hóa đơn"];
+    worksheet.getCell(`E${rowIndex}`).value =
+      item["Ngày, tháng, năm lập hóa đơn"];
+    worksheet.getCell(`F${rowIndex}`).value = item["Tên người bán"];
+    worksheet.getCell(`G${rowIndex}`).value = item["Mã số thuế người bán"];
+    worksheet.getCell(`H${rowIndex}`).value =
+      item["Giá trị HHDV mua vào chưa có thuế"];
+    worksheet.getCell(`I${rowIndex}`).value = item["Thuế GTGT mua vào"];
+    worksheet.getCell(`J${rowIndex}`).value = item["Trạng thái hóa đơn"];
+    worksheet.getCell(`K${rowIndex}`).value = item["Ghi chú"];
+    worksheet.getCell(`L${rowIndex}`).value = item["Trạng thái MST"];
+    worksheet.getCell(`M${rowIndex}`).value = item["Tổng tiền phí"];
+
+    worksheet.getCell(`A${rowIndex}`).alignment = {
+      wrapText: true,
+    };
+  });
 
   // Tạo file mới và lưu
-  const buffer = await workbook.xlsx.writeBuffer();
-  const blob = new Blob([buffer], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  });
-  saveAs(blob, `${fileName}.xlsx`);
+  const updatedBuffer = await workbook.xlsx.writeBuffer();
+  saveAs(new Blob([updatedBuffer]), `${fileName}.xlsx`);
 };
 
 export const templateDauRaMISA = async ({
@@ -1891,6 +1731,40 @@ export const templateDauRaMISA = async ({
       worksheet.getCell(header.address).note = header.note;
     }
   });
+
+  let rowIndex = 2;
+  for (const rowData of excelData) {
+    const rowValues = Object.values(rowData); // Convert each object to an array of its values
+    const row = worksheet.addRow(rowValues, "n"); // 'n' is for normal style
+
+    row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+      if (
+        colNumber === 3 ||
+        colNumber === 7 ||
+        colNumber === 8 ||
+        colNumber === 16 ||
+        colNumber === 17
+      ) {
+        cell.alignment = {
+          horizontal: "left", // Căn lề ngang bên trái
+          vertical: "bottom", // Căn lề dọc lên trên
+          wrapText: true, // Bọc văn bản nếu cần
+        };
+      } else {
+        cell.alignment = {
+          horizontal: "center", // Căn lề ngang giữa
+          vertical: "bottom", // Căn lề dọc lên trên
+          wrapText: true, // Bọc văn bản nếu cần
+        };
+      }
+      cell.border = borderStyle;
+      cell.font = {
+        name: "Times New Roman",
+        size: 11,
+      };
+    });
+    rowIndex++;
+  }
 
   const buffer = await workbook.xlsx.writeBuffer();
   saveAs(new Blob([buffer]), `${fileName}.xlsx`);

@@ -5,10 +5,13 @@ import { COLORS } from "../../../../libs/constants";
 const RangeDatePicker = ({
   isFirstLoad,
   handleSetFirstLoad,
-  item,
+  onCalendarChange,
+  onChangeRange,
 }: {
   isFirstLoad: any;
   handleSetFirstLoad: () => void;
+  onCalendarChange?: (value: any) => void;
+  onChangeRange?: (value: any) => void;
   item?: any;
 }) => {
   return isFirstLoad ? (
@@ -36,6 +39,8 @@ const RangeDatePicker = ({
         justifyContent: "center",
       }}
       className="py-2"
+      onCalendarChange={onCalendarChange}
+      onChangeRange={onChangeRange}
     />
   );
 };

@@ -1,8 +1,12 @@
 import NotifyIcon from "../../../components/Icon/notify";
 import LogoutIcon from "../../../components/Icon/logout";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AppContext } from "../../../contexts/app.context";
 
 export default function Header({ collapsed }: { collapsed: boolean }) {
+  const { mst } = useContext(AppContext);
+
   const navigate = useNavigate();
   const handleLogout = () => {
     navigate("/logout");
@@ -22,9 +26,7 @@ export default function Header({ collapsed }: { collapsed: boolean }) {
         </p>
         <p className="text-[13px] text-[#7C7C7E]">
           Mã số thuế{" "}
-          <span className="ml-1 text-sm font-medium text-[#1E1E1E]">
-            01234567890
-          </span>
+          <span className="ml-1 text-sm font-medium text-[#1E1E1E]">{mst}</span>
         </p>
       </div>
 

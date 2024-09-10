@@ -6,10 +6,14 @@ export default function SyncInvoiceModal({
   open,
   handleCancel,
   handleFinish,
+  setQuery,
+  refetch,
 }: {
   open: boolean;
   handleCancel: () => void;
   handleFinish: (values: any, callback: () => void) => void;
+  setQuery: (query: any, callback: () => void) => void;
+  refetch: () => void;
 }) {
   const [form] = Form.useForm();
 
@@ -17,11 +21,8 @@ export default function SyncInvoiceModal({
     try {
       const validate = await form.validateFields();
 
-      if (validate) {
-        handleFinish(form.getFieldsValue(), () => {
-          handleCancel();
-          form.resetFields();
-        });
+      if (validate.date) {
+        refetch();
       }
     } catch (error) {
       console.log(error);
@@ -44,11 +45,23 @@ export default function SyncInvoiceModal({
       <div className="w-full">
         <Form form={form}>
           <CustomInput
+            rules={[{ required: true, message: "Vui lòng chọn ngày" }]}
             placeholder="Chọn ngày"
             className="mt-4 w-full"
             type="rangePicker"
             name="date"
             configBoderRadius={4}
+            onCalendarChange={(value: any) => {
+              setQuery(
+                {
+                  ...value,
+                },
+                () => {
+                  handleCancel();
+                  form.resetFields();
+                }
+              );
+            }}
           />
         </Form>
       </div>

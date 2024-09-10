@@ -2,6 +2,7 @@
 import { Chart } from "chart.js";
 import { useEffect, useRef } from "react";
 import "chart.js/auto";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 function LineChart({ chartData }: { chartData: any }) {
   const chartReff = useRef<any>(null);
@@ -16,6 +17,7 @@ function LineChart({ chartData }: { chartData: any }) {
       type: "line",
       data: chartData,
       options: {
+        elements: { point: { radius: 0 } },
         plugins: {
           title: {
             display: true,
@@ -23,35 +25,39 @@ function LineChart({ chartData }: { chartData: any }) {
           legend: {
             display: false,
           },
+          datalabels: {
+            color: "black",
+            font: {
+              size: 14,
+              weight: "bold",
+            },
+            anchor: "end",
+            align: "right",
+            formatter: function (value) {
+              if (value == 0 || !value) {
+                return "";
+              }
+              return value;
+            },
+          },
         },
         scales: {
-          y: {
-            beginAtZero: true,
-          },
           x: {
-            beginAtZero: true,
+            ticks: {
+              autoSkip: false,
+              maxRotation: 90,
+              minRotation: 45,
+            },
           },
+          y: {},
         },
       },
+      plugins: [ChartDataLabels],
     });
   }, [chartData]);
 
   return (
     <div className="chart-container flex justify-center">
-      {/* <Line
-        ref={chartRef}
-        data={chartData}
-        // options={{
-        //   plugins: {
-        //     title: {
-        //       display: true,
-        //     },
-        //     legend: {
-        //       display: false,
-        //     },
-        //   },
-        // }}
-      /> */}
       <canvas ref={chartReff} className="!w-[90%] !h-[45%]" />
     </div>
   );

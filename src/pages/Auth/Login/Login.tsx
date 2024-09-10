@@ -8,6 +8,7 @@ import { isEmpty } from "lodash";
 import CustomLoading from "../../../components/CustomLoading";
 import { IMAGES } from "../../../libs/constants";
 import ResetIcon from "../../../components/Icon/reset";
+import { LuuTTHoadon } from "../../../services/auth";
 
 type NotificationType = "success" | "info" | "warning" | "error";
 
@@ -88,20 +89,28 @@ const Login = () => {
       });
 
       if (!isEmpty(res.data.token)) {
+        // const result = await LuuTTHoadon({
+        //   username: values.username,
+        //   passwd: values.password,
+        // });
+
+        // if (result === "0") {
+        //   openNotificationWithIcon("error", "Lỗi", "Đăng nhập thất bại");
+        //   setLoading(false);
+        //   return;
+        // }
+
         setLoading(false);
         localStorage.setItem(
           "user",
           JSON.stringify({
             token: res.data.token,
-            mst: values.username,
+            mst: "0103930279-999",
             expiredAt: new Date().getTime() + 3600000,
           })
         );
         setIsAuthenticated(true);
-        // setUserData({
-        //   token: res.data.token,
-        //   mst: values.username,
-        // });
+        window.location.reload();
         navigate("/");
       } else {
         openNotificationWithIcon("error", "Lỗi", "Đăng nhập thất bại");

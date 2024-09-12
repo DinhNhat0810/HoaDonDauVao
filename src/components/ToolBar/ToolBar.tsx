@@ -54,12 +54,12 @@ const fileterOptions = [
     value: "tthai",
     tooltip: true,
   },
-  {
-    label: "Trạng thái hóa đơn",
-    children: TTHD,
-    type: "circle",
-    value: "tthd",
-  },
+  // {
+  //   label: "Trạng thái hóa đơn",
+  //   children: TTHD,
+  //   type: "circle",
+  //   value: "tthd",
+  // },
   {
     label: "Hình thức hóa đơn",
     children: HTHDO_Options,

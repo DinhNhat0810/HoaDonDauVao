@@ -1,13 +1,4 @@
-import {
-  HTHDO_Options,
-  IMAGES,
-  TTHD,
-  TTMST_Options,
-} from "../../../libs/constants";
-import { DownloadOutlined, EyeOutlined } from "@ant-design/icons";
-import { Popover, Tooltip } from "antd";
-import ErrorIcon from "../../../components/Icon/error";
-import SuccessIcon from "../../../components/Icon/success";
+import { HTHDO_Options, TTMST_Options } from "../../../libs/constants";
 
 export const columnsTable = () => {
   return [
@@ -15,7 +6,6 @@ export const columnsTable = () => {
       title: "STT",
       dataIndex: "key",
       render: (value: any) => value + 1,
-      fixed: "left",
       width: "40px",
       align: "center",
     },

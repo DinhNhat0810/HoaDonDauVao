@@ -6,17 +6,18 @@ import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { NotificationContext } from "../../../contexts/notification.context";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import https from "../../../libs/https";
 import {
   convertCksNguoiBan,
   convertToVnd,
   convertXmlToJson,
-  exportToExcel,
 } from "../../../libs/common";
 import { AppContext } from "../../../contexts/app.context";
 import { isEmpty } from "lodash";
 import ViewInvoiceModal from "../../../components/CustomModal/ViewInvoiceModal";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { templateDauVao } from "../../../libs/common/excel-template";
 
 type DownloadHoaDonType = {
   nbmst: string;
@@ -26,6 +27,7 @@ type DownloadHoaDonType = {
 };
 
 dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 export default function HoaDonDauVao() {
   const [dataInvoices, setDataInvoices] = useState<any[]>([]);
@@ -71,6 +73,15 @@ export default function HoaDonDauVao() {
   });
   const [openViewAction, setOpenViewAction] = useState(false);
   const [dataDetail, setDataDetail] = useState<any>(null);
+  const [selectedRowKey, setSelectedRowKey] = useState(null);
+
+  const handleRowClick = (record: any) => {
+    setSelectedRowKey(record.key);
+  };
+
+  const rowClassName = (record: any) => {
+    return record.key === selectedRowKey ? "!bg-[#D4D4D6]" : "";
+  };
 
   const handleChange = (e: any) => {
     setSearchValue(e);
@@ -270,6 +281,8 @@ export default function HoaDonDauVao() {
           ttcktmai: item?.ttcktmai,
           tthai: item?.tthai,
           ttxly: item?.ttxly,
+          tgtphi: item?.tgtphi,
+          tgtkhac: item?.tgtkhac,
           nbcks: item?.nbcks,
           tdlhdgoc: item?.tdlhdgoc,
           thtttoan: item?.thtttoan,
@@ -365,7 +378,7 @@ export default function HoaDonDauVao() {
         newData = initialData.filter((item) => {
           const tdlapDate = dayjs(item.tdlap, "DD/MM/YYYY HH:mm:ss");
           return (
-            tdlapDate.isAfter(date[0].startOf("day")) &&
+            tdlapDate.isSameOrAfter(date[0].startOf("day")) &&
             tdlapDate.isSameOrBefore(date[1].endOf("day"))
           );
         });
@@ -446,7 +459,7 @@ export default function HoaDonDauVao() {
     try {
       setOpenInvoiceModal(true);
       setInvoiceDetail(data);
-      handleOpenCheckInvoiceModal();
+      handleOpenCheckInvoiceModal(data);
     } catch (error) {
       console.log(error);
     }
@@ -499,13 +512,13 @@ export default function HoaDonDauVao() {
     }
   };
 
-  const handleOpenCheckInvoiceModal = async () => {
+  const handleOpenCheckInvoiceModal = async (data: any) => {
     try {
       setIsLoadingCheckStatus(true);
 
       await Promise.all([
-        getTrangThaiMST(invoiceDetail?.thongTinNguoiBan?.mst),
-        getTrangThaiMST(invoiceDetail?.thongTinNguoiMua?.nmmst),
+        getTrangThaiMST(data?.thongTinNguoiBan?.mst),
+        getTrangThaiMST(data?.thongTinNguoiMua?.nmmst),
       ]).then((responses: any) => {
         setInvoiceDetail((prev: any) => {
           return {
@@ -581,8 +594,7 @@ export default function HoaDonDauVao() {
         "Mẫu số / Ký hiệu / Số HĐ": `${item?.khmshdon} / ${item?.khhdon} / ${item?.shdon}`,
         "Ngày lập": item?.tdlap,
         "Ngày ký": item?.nky,
-        "Tổng thanh toán": item?.tongThanhToan?.toString(),
-        "Trạng thái HĐ": item?.tthd === 1 ? "Hợp lệ" : "Không hợp lệ",
+        "Tổng tiền": item?.tongThanhToan?.toString(),
         "Ngày cấp mã CQT": item?.ncnhat,
         "Hình thức HĐ": `${
           HTHDO_Options.find((ele) => ele.value === item?.hthuc)?.label
@@ -593,7 +605,10 @@ export default function HoaDonDauVao() {
       };
     });
 
-    exportToExcel(excelData, fileName);
+    templateDauVao({
+      data: excelData,
+      fileName,
+    });
   }, [filterData, searchValue, fileName]);
 
   return (
@@ -648,16 +663,16 @@ export default function HoaDonDauVao() {
         handlePageChange={handlePageChange}
         currentPage={page.current}
         total={page.total}
-        handleDownload={handleDownload}
-        handleViewInvoice={handleViewInvoice}
         onRow={(record) => {
           return {
             onClick: () => {
               setOpenViewAction(true);
               setDataDetail(record);
+              handleRowClick(record);
             },
           };
         }}
+        rowClassName={rowClassName}
       />
 
       {openInvoiceModal && (

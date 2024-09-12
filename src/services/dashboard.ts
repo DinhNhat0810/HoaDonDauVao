@@ -1,19 +1,20 @@
 import { convertXmlToJson } from "../libs/common";
+import { API_URL } from "../libs/constants";
 import https from "../libs/https";
 
-export const Thongtintainguyen = async ({ mstnban }: { mstnban: string }) => {
+export const Thongtintainguyen = async ({ madonvi }: { madonvi: string }) => {
   try {
     const soapRequest = `
     <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
     <soap12:Body>
         <Thongtintainguyen  xmlns="http://tempuri.org/">
-        <mstnban>${mstnban}</mstnban>
+        <madonvi>${madonvi}</madonvi>
         </Thongtintainguyen >
     </soap12:Body>
     </soap12:Envelope>`;
 
     const response: any = await https({
-      baseURL: `http://10.0.0.168:8010/apiquanlyhoadon.asmx`,
+      baseURL: API_URL,
       method: "post",
       headers: {
         "Content-Type": "application/soap+xml;charset=UTF-8",
@@ -27,12 +28,14 @@ export const Thongtintainguyen = async ({ mstnban }: { mstnban: string }) => {
         "ThongtintainguyenResult"
       ];
 
-    console.log(DocumentElement);
+    if (DocumentElement) {
+      return JSON.parse(DocumentElement);
+    }
 
-    return DocumentElement;
+    return null;
   } catch (error: any) {
     console.log(error);
-    return "0";
+    return null;
   }
 };
 
@@ -58,7 +61,7 @@ export const TongHDDaxuly = async ({
       </soap12:Envelope>`;
 
     const response: any = await https({
-      baseURL: `http://10.0.0.168:8010/apiquanlyhoadon.asmx`,
+      baseURL: API_URL,
       method: "post",
       headers: {
         "Content-Type": "application/soap+xml;charset=UTF-8",
@@ -105,7 +108,7 @@ export const TongHDKhonghople = async ({
         </soap12:Envelope>`;
 
     const response: any = await https({
-      baseURL: `http://10.0.0.168:8010/apiquanlyhoadon.asmx`,
+      baseURL: API_URL,
       method: "post",
       headers: {
         "Content-Type": "application/soap+xml;charset=UTF-8",
@@ -152,7 +155,7 @@ export const TongHDHople = async ({
         </soap12:Envelope>`;
 
     const response: any = await https({
-      baseURL: `http://10.0.0.168:8010/apiquanlyhoadon.asmx`,
+      baseURL: API_URL,
       method: "post",
       headers: {
         "Content-Type": "application/soap+xml;charset=UTF-8",
@@ -199,7 +202,7 @@ export const BieudoSSGTHDon = async ({
           </soap12:Envelope>`;
 
     const response: any = await https({
-      baseURL: `http://10.0.0.168:8010/apiquanlyhoadon.asmx`,
+      baseURL: API_URL,
       method: "post",
       headers: {
         "Content-Type": "application/soap+xml;charset=UTF-8",
@@ -251,7 +254,7 @@ export const BieudoSSTongGTHDon_NCC = async ({
             </soap12:Envelope>`;
 
     const response: any = await https({
-      baseURL: `http://10.0.0.168:8010/apiquanlyhoadon.asmx`,
+      baseURL: API_URL,
       method: "post",
       headers: {
         "Content-Type": "application/soap+xml;charset=UTF-8",
@@ -305,7 +308,7 @@ export const BieudonhanHD = async ({
 </soap12:Envelope>`;
 
     const response: any = await https({
-      baseURL: `http://10.0.0.168:8010/apiquanlyhoadon.asmx`,
+      baseURL: API_URL,
       method: "post",
       headers: {
         "Content-Type": "application/soap+xml;charset=UTF-8",

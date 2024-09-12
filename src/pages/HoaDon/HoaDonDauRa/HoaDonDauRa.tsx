@@ -113,6 +113,8 @@ export default function HoaDonDauRa() {
 
       callback();
 
+      return;
+
       const response: any = await https({
         baseURL: `https://hoadondientu.gdt.gov.vn:30000/query/invoices/sold?sort=tdlap:desc,khmshdon:asc,shdon:desc&size=15&search=tdlap=ge=${dayjs(
           values.tungay

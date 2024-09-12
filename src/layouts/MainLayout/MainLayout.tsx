@@ -11,6 +11,7 @@ import SettingIcon from "../../components/Icon/setting";
 import Header from "./Header";
 import { CaretDownOutlined } from "@ant-design/icons";
 import { set } from "lodash";
+import { ConfigProvider, Popover } from "antd";
 
 type Props = {
   children?: React.ReactNode;
@@ -61,6 +62,14 @@ const MainLayout = ({ children }: Props) => {
     ROUTE.DANHMUC,
     ROUTE.HETHONG,
   ]);
+
+  const [openPopover, setOpenPopover] = useState<any>({
+    [ROUTE.TQ]: false,
+    [ROUTE.HD]: false,
+    [ROUTE.BAOCAO]: false,
+    [ROUTE.DANHMUC]: false,
+    [ROUTE.HETHONG]: false,
+  });
 
   const items: ItemsType[] = [
     {
@@ -217,6 +226,13 @@ const MainLayout = ({ children }: Props) => {
       navigate(item.children?.[0].key || "");
     }
     setIsFirstLoad(false);
+
+    if (collapsed) {
+      setOpenPopover({
+        ...openPopover,
+        [item.key]: !openPopover[item.key],
+      });
+    }
   };
 
   const handleSelectSubMenu = (item: ItemsType) => {
@@ -237,22 +253,55 @@ const MainLayout = ({ children }: Props) => {
           </div>
           <ul className="flex-1">
             {items.map((item, index) => (
-              <li
-                className="text-[13px] font-semibold flex flex-col items-center cursor-pointer mb-4"
+              <ConfigProvider
+                theme={{
+                  token: {
+                    colorBgElevated: "#343436",
+                  },
+                }}
                 key={index}
-                onClick={() => handleSelectItem(item)}
               >
-                <div
-                  className={`relative ${
-                    !isFirstLoad && active === item.key
-                      ? "before:block"
-                      : "before:hidden"
-                  } before:content-[''] before:w-4 before:top-1 before:bottom-1 before:left-[-34px] before:rounded-md before:bg-primary-color before:absolute`}
+                <Popover
+                  placement="right"
+                  trigger="click"
+                  content={
+                    <div
+                      className="w-[200px]
+                  "
+                    >
+                      {subMenu.map((item, index) => (
+                        <li
+                          className={`text-[13px] py-3 leading-[14px] rounded-md font-semibold flex flex-col items-start cursor-pointer hover:text-white
+                     ${
+                       activeSubMenu === item.key
+                         ? "text-white bg-[#1E1E1E]"
+                         : "text-[#ffffff80]"
+                     }`}
+                          key={index}
+                          onClick={() => handleSelectSubMenu(item)}
+                        >
+                          <span className="pl-2">{item.label}</span>
+                        </li>
+                      ))}
+                    </div>
+                  }
+                  open={openPopover[item.key] && collapsed}
+                  onOpenChange={() => handleSelectItem(item)}
                 >
-                  {item.icon}
-                </div>
-                <span className="text-white mt-2">{item.label}</span>
-              </li>
+                  <li className="text-[13px] font-semibold flex flex-col items-center cursor-pointer mb-4">
+                    <div
+                      className={`relative ${
+                        !isFirstLoad && active === item.key
+                          ? "before:block"
+                          : "before:hidden"
+                      } before:content-[''] before:w-4 before:top-1 before:bottom-1 before:left-[-34px] before:rounded-md before:bg-primary-color before:absolute`}
+                    >
+                      {item.icon}
+                    </div>
+                    <span className="text-white mt-2">{item.label}</span>
+                  </li>
+                </Popover>
+              </ConfigProvider>
             ))}
           </ul>
 
@@ -303,26 +352,28 @@ const MainLayout = ({ children }: Props) => {
                         {item.label}
                       </div>
 
-                      <ul className="w-full">
-                        {item.children?.map((child, index) => (
-                          <li
-                            className={`text-[13px] py-3 leading-[14px] rounded-md font-semibold flex flex-col items-start cursor-pointer hover:text-white ${
-                              activeSubMenu === child.key
-                                ? "text-white bg-[#1E1E1E]"
-                                : "text-[#ffffff80]"
-                            }`}
-                            key={index}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSelectSubMenu(child);
-                            }}
-                          >
-                            <span className="pl-2 w-full block">
-                              {child.label}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
+                      {menusSelected.includes(item.key) && (
+                        <ul className="w-full">
+                          {item.children?.map((child, index) => (
+                            <li
+                              className={`text-[13px] py-3 leading-[14px] rounded-md font-semibold flex flex-col items-start cursor-pointer hover:text-white ${
+                                activeSubMenu === child.key
+                                  ? "text-white bg-[#1E1E1E]"
+                                  : "text-[#ffffff80]"
+                              }`}
+                              key={index}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSelectSubMenu(child);
+                              }}
+                            >
+                              <span className="pl-2 w-full block">
+                                {child.label}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </li>
                   ))
                 : subMenu.map((item, index) => (

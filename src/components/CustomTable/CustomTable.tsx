@@ -13,6 +13,7 @@ type CustomTableProps = {
   total?: number;
   showPagination?: boolean;
   onRow?: (record: any) => any;
+  rowClassName?: (record: any) => string;
   [key: string]: any;
 };
 
@@ -30,6 +31,7 @@ export default function CustomTable(props: CustomTableProps) {
     total,
     showPagination = true,
     onRow,
+    rowClassName,
     ...rest
   } = props;
   return (
@@ -61,6 +63,7 @@ export default function CustomTable(props: CustomTableProps) {
           className="mb-16 flex-1"
           loading={loading}
           onRow={onRow}
+          rowClassName={rowClassName}
           {...rest}
         />
       </ConfigProvider>

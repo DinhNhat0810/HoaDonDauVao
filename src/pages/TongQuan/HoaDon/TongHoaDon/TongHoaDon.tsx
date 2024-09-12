@@ -153,11 +153,11 @@ export default function TongHoaDon() {
                       },
                       {
                         label: "Lệ phí",
-                        value: res[0]?.Tongchuathue || 0,
+                        value: res[0]?.Tongphi || 0,
                       },
                       {
                         label: "Giảm trừ khác",
-                        value: res[0]?.Tongchuathue || 0,
+                        value: res[0]?.Tongkhac || 0,
                       },
                       {
                         label: "Tổng tiền TT",
@@ -182,11 +182,11 @@ export default function TongHoaDon() {
                       },
                       {
                         label: "Lệ phí",
-                        value: res[1]?.Tongchuathue || 0,
+                        value: res[1]?.Tongphi || 0,
                       },
                       {
                         label: "Giảm trừ khác",
-                        value: res[1]?.Tongchuathue || 0,
+                        value: res[1]?.Tongkhac || 0,
                       },
                       {
                         label: "Tổng tiền TT",
@@ -211,11 +211,11 @@ export default function TongHoaDon() {
                       },
                       {
                         label: "Lệ phí",
-                        value: res[2]?.Tongchuathue || 0,
+                        value: res[2]?.Tongphi || 0,
                       },
                       {
                         label: "Giảm trừ khác",
-                        value: res[2]?.Tongchuathue || 0,
+                        value: res[2]?.Tongkhac || 0,
                       },
                       {
                         label: "Tổng tiền TT",

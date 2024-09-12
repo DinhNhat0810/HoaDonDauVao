@@ -1769,3 +1769,62 @@ export const templateDauRaMISA = async ({
   const buffer = await workbook.xlsx.writeBuffer();
   saveAs(new Blob([buffer]), `${fileName}.xlsx`);
 };
+
+export const templateDauVao = async ({
+  data,
+  fileName,
+}: {
+  data: any;
+  fileName: string;
+}) => {
+  if (isEmpty(data)) return;
+
+  const response = await fetch("/template/HDDV_TEMPLATE.xlsx"); // Tải file từ thư mục public
+
+  const arrayBuffer = await response.arrayBuffer(); // Chuyển đổi response thành ArrayBuffer
+
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.load(arrayBuffer);
+
+  // Chọn worksheet đầu tiên
+  const worksheet = workbook.worksheets[0];
+
+  const alignment: any = {
+    wrapText: true,
+    vertical: "top",
+    horizontal: "left",
+  };
+
+  // Cập nhật dữ liệu vào template
+  data.forEach((item: any, index: number) => {
+    const rowIndex = index + 2;
+
+    worksheet.getCell(`A${rowIndex}`).value = item["STT"];
+    worksheet.getCell(`B${rowIndex}`).value = item["Thông tin người bán"];
+    worksheet.getCell(`C${rowIndex}`).value = item["Mẫu số / Ký hiệu / Số HĐ"];
+    worksheet.getCell(`D${rowIndex}`).value = item["Ngày lập"];
+    worksheet.getCell(`E${rowIndex}`).value = item["Ngày ký"];
+    worksheet.getCell(`F${rowIndex}`).value = item["Tổng tiền"];
+    worksheet.getCell(`G${rowIndex}`).value = item["Ngày cấp mã CQT"];
+    worksheet.getCell(`H${rowIndex}`).value = item["Hình thức HĐ"];
+    worksheet.getCell(`I${rowIndex}`).value = item["Trạng thái MST người bán"];
+
+    worksheet.getCell(`A${rowIndex}`).alignment = {
+      wrapText: true,
+      vertical: "middle",
+      horizontal: "center",
+    };
+    worksheet.getCell(`B${rowIndex}`).alignment = alignment;
+    worksheet.getCell(`C${rowIndex}`).alignment = alignment;
+    worksheet.getCell(`D${rowIndex}`).alignment = alignment;
+    worksheet.getCell(`E${rowIndex}`).alignment = alignment;
+    worksheet.getCell(`F${rowIndex}`).alignment = alignment;
+    worksheet.getCell(`G${rowIndex}`).alignment = alignment;
+    worksheet.getCell(`H${rowIndex}`).alignment = alignment;
+    worksheet.getCell(`I${rowIndex}`).alignment = alignment;
+  });
+
+  // Tạo file mới và lưu
+  const updatedBuffer = await workbook.xlsx.writeBuffer();
+  saveAs(new Blob([updatedBuffer]), `${fileName}.xlsx`);
+};

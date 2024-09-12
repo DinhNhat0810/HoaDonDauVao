@@ -8,33 +8,21 @@ const TableHoaDon = ({
   handlePageChange,
   currentPage,
   total,
-  handleDownload,
-  handleViewInvoice,
   onRow,
+  rowClassName,
 }: {
   loading: boolean;
   data: any[];
   handlePageChange: (newPage: number) => void;
   currentPage: number;
   total: number;
-  handleDownload: (values: any) => void;
-  handleViewInvoice?: (values: any, record: any) => void;
   onRow?: (record: any) => any;
+  rowClassName?: (record: any) => string;
 }) => {
-  const [openPopover, setOpenPopover] = useState("");
-
-  const handleTogglePopover = (key: string) => {
-    if (openPopover === key) {
-      setOpenPopover("");
-    } else {
-      setOpenPopover(key);
-    }
-  };
-
   const columns: any = useMemo(() => {
     return columnsTable();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openPopover]);
+  }, []);
 
   return (
     <CustomTable
@@ -45,6 +33,7 @@ const TableHoaDon = ({
       loading={loading}
       onRow={onRow}
       total={total}
+      rowClassName={rowClassName}
     />
   );
 };

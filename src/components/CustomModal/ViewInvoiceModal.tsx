@@ -1,4 +1,4 @@
-import { Modal, Skeleton } from "antd";
+import { Modal, Skeleton, Tooltip } from "antd";
 import React, { memo, useEffect, useState } from "react";
 import ErrorIcon from "../Icon/error";
 import SuccessIcon from "../Icon/success";
@@ -17,6 +17,31 @@ const TrangThaiMST = ({ style }: any): JSX.Element => {
 };
 const TrangThaiHD = ({ style }: PropsTrangThaiHD): JSX.Element => {
   return <div className={`w-3 h-3 rounded-md`} style={style} />;
+};
+
+const InforIcon = ({ isSuccess = true }: any): JSX.Element => {
+  return (
+    <Tooltip
+      title={
+        <div className="flex items-center gap-2">
+          {isSuccess ? (
+            <SuccessIcon className="!relative" classNameSVG="w-4 h-4" />
+          ) : (
+            <ErrorIcon className="!relative" classNameSVG="w-4 h-4" />
+          )}
+          <span>Thông tin {!isSuccess && "chưa"} hợp lệ</span>
+        </div>
+      }
+    >
+      <div>
+        {isSuccess ? (
+          <SuccessIcon className="!relative" classNameSVG="w-4 h-4" />
+        ) : (
+          <ErrorIcon className="!relative" classNameSVG="w-4 h-4" />
+        )}
+      </div>
+    </Tooltip>
+  );
 };
 
 const LabelValuePair = ({ label, value }: { label: string; value: string }) => (
@@ -129,7 +154,7 @@ function ViewInvoiceModal({
               <div className="flex flex-col items-start relative self-stretch w-full flex-[0_0_auto]">
                 <div className="flex items-center relative self-stretch w-full flex-[0_0_auto]">
                   <div className="flex w-[126px] items-center gap-1 relative">
-                    <SuccessIcon className="!relative" classNameSVG="w-4 h-4" />
+                    <InforIcon />
                     <div className="relative w-[115px] mt-[-1.00px] mr-[-5.00px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] [font-style:var(--body-small-regular-font-style)]">
                       Tên đơn vị:
                     </div>
@@ -141,7 +166,7 @@ function ViewInvoiceModal({
               </div>
               <div className="flex items-center relative self-stretch w-full flex-[0_0_auto]">
                 <div className="flex w-[126px] items-center gap-1 relative">
-                  <SuccessIcon className="!relative" classNameSVG="w-4 h-4" />
+                  <InforIcon />
                   <div className="relative w-[63px] mt-[-1.00px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] [font-style:var(--body-small-regular-font-style)]">
                     MST:
                   </div>
@@ -154,9 +179,9 @@ function ViewInvoiceModal({
                   </div>
                 </div>
               </div>
-              <div className="flex items-center relative self-stretch w-full flex-[0_0_auto]">
+              <div className="mb-2 flex items-center relative self-stretch w-full flex-[0_0_auto]">
                 <div className="flex w-[126px] items-center gap-1 relative">
-                  <SuccessIcon className="!relative" classNameSVG="w-4 h-4" />
+                  <InforIcon />
                   <div className="relative w-[63px] mt-[-1.00px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] [font-style:var(--body-small-regular-font-style)]">
                     Địa chỉ:
                   </div>
@@ -167,7 +192,7 @@ function ViewInvoiceModal({
               </div>
               <div className="flex items-center relative self-stretch w-full flex-[0_0_auto]">
                 <div className="flex w-[126px] items-center gap-1 relative">
-                  <SuccessIcon className="!relative" classNameSVG="w-4 h-4" />
+                  <InforIcon />
                   <div className="relative w-[63px] mt-[-1.00px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] [font-style:var(--body-small-regular-font-style)]">
                     Tình trạng:
                   </div>
@@ -208,7 +233,7 @@ function ViewInvoiceModal({
             <div className="flex flex-col items-start gap-1 relative self-stretch w-full flex-[0_0_auto]">
               <div className="flex items-center relative self-stretch w-full flex-[0_0_auto]">
                 <div className="flex w-[126px] items-center gap-1 relative">
-                  <SuccessIcon className="!relative " classNameSVG="w-4 h-4" />
+                  <InforIcon />
                   <div className="relative w-fit mt-[-1.00px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] whitespace-nowrap [font-style:var(--body-small-regular-font-style)]">
                     Tên đơn vị:
                   </div>
@@ -219,7 +244,7 @@ function ViewInvoiceModal({
               </div>
               <div className="flex items-center relative self-stretch w-full flex-[0_0_auto]">
                 <div className="flex w-[126px] items-center gap-1 relative">
-                  <SuccessIcon className="!relative" classNameSVG="w-4 h-4" />
+                  <InforIcon />
                   <div className="relative w-[63px] mt-[-1.00px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] [font-style:var(--body-small-regular-font-style)]">
                     MST:
                   </div>
@@ -232,9 +257,9 @@ function ViewInvoiceModal({
                   </div>
                 </div>
               </div>
-              <div className="flex items-center relative self-stretch w-full flex-[0_0_auto]">
+              <div className="mb-2 flex items-center relative self-stretch w-full flex-[0_0_auto]">
                 <div className="flex w-[126px] items-center gap-1 relative">
-                  <SuccessIcon className="!relative" classNameSVG="w-4 h-4" />
+                  <InforIcon />
                   <div className="relative w-[63px] mt-[-1.00px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] [font-style:var(--body-small-regular-font-style)]">
                     Địa chỉ:
                   </div>
@@ -245,7 +270,7 @@ function ViewInvoiceModal({
               </div>
               <div className="flex items-center relative self-stretch w-full flex-[0_0_auto]">
                 <div className="flex w-[126px] items-center gap-1 relative">
-                  <SuccessIcon className="!relative" classNameSVG="w-4 h-4" />
+                  <InforIcon />
                   <div className="relative w-[63px] mt-[-1.00px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] [font-style:var(--body-small-regular-font-style)]">
                     Tình trạng:
                   </div>
@@ -286,7 +311,7 @@ function ViewInvoiceModal({
             <div className="flex flex-col items-start gap-1 relative self-stretch w-full flex-[0_0_auto]">
               <div className="flex items-center relative self-stretch w-full flex-[0_0_auto]">
                 <div className="flex w-[126px] items-center gap-1 relative">
-                  <SuccessIcon className="!relative" classNameSVG="w-4 h-4" />
+                  <InforIcon />
                   <div className="relative w-fit mt-[-1.00px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] whitespace-nowrap [font-style:var(--body-small-regular-font-style)]">
                     Thông tin CKS:
                   </div>
@@ -297,7 +322,7 @@ function ViewInvoiceModal({
               </div>
               <div className="flex items-center relative self-stretch w-full flex-[0_0_auto]">
                 <div className="flex w-[126px] items-center gap-1 relative">
-                  <SuccessIcon className="!relative" classNameSVG="w-4 h-4" />
+                  <InforIcon />
                   <div className="relative w-fit mt-[-1.00px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] whitespace-nowrap [font-style:var(--body-small-regular-font-style)]">
                     CTS của NNT:
                   </div>

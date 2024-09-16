@@ -134,17 +134,17 @@ const RenderFilter = ({
       type: dataFilter.type,
       date: newDate,
     });
-    setActive({
-      tthai: {
-        value: "",
-      },
-      tthd: {
-        value: "",
-      },
-      hthuc: {
-        value: "",
-      },
-    });
+    // setActive({
+    //   tthai: {
+    //     value: "",
+    //   },
+    //   tthd: {
+    //     value: "",
+    //   },
+    //   hthuc: {
+    //     value: "",
+    //   },
+    // });
     setDataFilter((prev: any) => ({
       ...prev,
       date: newDate,

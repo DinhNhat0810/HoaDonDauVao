@@ -81,7 +81,9 @@ export default function ThongTinTaiNguyen() {
           return (
             <div key={index} className="pl-3 border-l-[3px] border-l-[#e2e2e7]">
               <p className="text-[#505052]">{item.title}</p>
-              <p className="text-3xl text-[#505052] font-bold">{item.value}</p>
+              <p className="text-3xl text-[#505052] font-bold">
+                {new Intl.NumberFormat("vi-VN").format(Number(item.value))}
+              </p>
             </div>
           );
         })}

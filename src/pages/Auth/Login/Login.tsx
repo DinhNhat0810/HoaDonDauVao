@@ -35,42 +35,42 @@ const Login = () => {
     });
   };
 
-  useEffect(() => {
-    fetch("https://hoadondientu.gdt.gov.vn:30000/captcha")
-      .then((response) => response.json())
-      .then((data) => {
-        const key = data.key;
-        let contentCaptcha = data.content;
-        contentCaptcha = contentCaptcha.replace(/="/g, '="');
+  // useEffect(() => {
+  //   fetch("https://hoadondientu.gdt.gov.vn:30000/captcha")
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       const key = data.key;
+  //       let contentCaptcha = data.content;
+  //       contentCaptcha = contentCaptcha.replace(/="/g, '="');
 
-        if (contentCaptcha.trim().startsWith("<svg")) {
-          const parser = new DOMParser();
-          const svgDoc = parser.parseFromString(
-            contentCaptcha,
-            "image/svg+xml"
-          );
-          const svgElement = svgDoc.querySelector("svg");
-          if (svgElement) {
-            svgElement.setAttribute("width", "100%");
-            svgElement.setAttribute("height", "80px");
+  //       if (contentCaptcha.trim().startsWith("<svg")) {
+  //         const parser = new DOMParser();
+  //         const svgDoc = parser.parseFromString(
+  //           contentCaptcha,
+  //           "image/svg+xml"
+  //         );
+  //         const svgElement = svgDoc.querySelector("svg");
+  //         if (svgElement) {
+  //           svgElement.setAttribute("width", "100%");
+  //           svgElement.setAttribute("height", "80px");
 
-            const serializer = new XMLSerializer();
-            const serializedSvg = serializer.serializeToString(svgElement);
-            const imgCapcha: any = document.querySelector(".captcha_img");
-            imgCapcha.innerHTML = serializedSvg;
+  //           const serializer = new XMLSerializer();
+  //           const serializedSvg = serializer.serializeToString(svgElement);
+  //           const imgCapcha: any = document.querySelector(".captcha_img");
+  //           imgCapcha.innerHTML = serializedSvg;
 
-            setCaptcha({
-              content: serializedSvg,
-              key,
-            });
-          }
-        } else {
-          console.warn("Unsafe HTML content blocked.");
-        }
-      })
-      .catch((error) => console.error(error));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadCapcha]);
+  //           setCaptcha({
+  //             content: serializedSvg,
+  //             key,
+  //           });
+  //         }
+  //       } else {
+  //         console.warn("Unsafe HTML content blocked.");
+  //       }
+  //     })
+  //     .catch((error) => console.error(error));
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [loadCapcha]);
 
   const handleLogin = async (values: any) => {
     setLoadCapcha(!loadCapcha);
@@ -220,7 +220,7 @@ const Login = () => {
               </span>
             </div>
 
-            <div className="relative border border-[#d9d9d9] rounded-md pb-2 mt-2 mb-4">
+            {/* <div className="relative border border-[#d9d9d9] rounded-md pb-2 mt-2 mb-4">
               <div
                 className="captcha_img"
                 style={{
@@ -231,9 +231,9 @@ const Login = () => {
                 className="cursor-pointer absolute bottom-2 right-2"
                 onClick={() => setLoadCapcha(!loadCapcha)}
               />
-            </div>
+            </div> */}
 
-            <CustomInput
+            {/* <CustomInput
               name="cvalue"
               placeholder="Mã captcha"
               configBoderRadius={6}
@@ -250,7 +250,7 @@ const Login = () => {
               }}
               className="py-[15px]"
               labelInside="Mã captcha"
-            />
+            /> */}
 
             <div className="text-center mt-8">
               <button

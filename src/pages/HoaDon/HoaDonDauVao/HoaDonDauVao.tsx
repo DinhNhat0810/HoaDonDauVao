@@ -2,7 +2,14 @@ import { ConfigProvider, Modal, Tabs, TabsProps } from "antd";
 import { COLORS, HTHDO_Options, TTMST_Options } from "../../../libs/constants";
 import ToolBar from "../../../components/ToolBar";
 import TableHoaDon from "../components/Table";
-import { useCallback, useContext, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { NotificationContext } from "../../../contexts/notification.context";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
@@ -35,7 +42,7 @@ export default function HoaDonDauVao() {
   const { handleOpenNotification } = useContext(NotificationContext);
   const [fileName, setFileName] = useState("");
   const [tab, setTab] = useState("5");
-  const { token } = useContext(AppContext);
+  const { taikhoanthue } = useContext(AppContext);
   const [page, setPage] = useState({
     current: 1,
     pageSize: 10,
@@ -86,20 +93,6 @@ export default function HoaDonDauVao() {
   const handleChange = (e: any) => {
     setSearchValue(e);
   };
-
-  const handlePageChange = useCallback(
-    (newPage: number) => {
-      if (newPage >= 1 && newPage <= Math.ceil(page.total / 10)) {
-        setPage((prev) => ({ ...prev, current: newPage }));
-        const displayedItems = filterData.slice(
-          (newPage - 1) * 10,
-          newPage * 10
-        );
-        setDataInvoices(displayedItems);
-      }
-    },
-    [page.total, filterData]
-  );
 
   const items: TabsProps["items"] = [
     {
@@ -159,7 +152,7 @@ export default function HoaDonDauVao() {
         method: "get",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
+          Authorization: "Bearer " + taikhoanthue?.token,
         },
       });
 
@@ -327,6 +320,21 @@ export default function HoaDonDauVao() {
     setDataInvoices([]);
   };
 
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      if (newPage >= 1 && newPage <= Math.ceil(page.total / 10)) {
+        setPage((prev) => ({ ...prev, current: newPage }));
+        const displayedItems = filterData.slice(
+          (newPage - 1) * 10,
+          newPage * 10
+        );
+
+        setDataInvoices(displayedItems);
+      }
+    },
+    [page.total, filterData]
+  );
+
   const handleSearch = useCallback(
     (value: string, filteredData: any[] = filterData) => {
       const data = value
@@ -350,13 +358,28 @@ export default function HoaDonDauVao() {
           })
         : filteredData;
 
-      const displayedItems = data.slice(
-        (page.current - 1) * 10,
-        page.current * 10
-      );
+      const totalItems = data.length;
 
-      setDataInvoices(displayedItems);
-      setPage((prev) => ({ ...prev, total: data.length }));
+      const totalPages = Math.ceil(totalItems / page.pageSize);
+      let currentPage = page.current;
+
+      // Kiểm tra và cập nhật trang hiện tại nếu cần thiết
+      if (currentPage > totalPages) {
+        currentPage = 1; // Quay về trang 1 nếu trang hiện tại vượt quá số trang
+      }
+
+      // Cập nhật dữ liệu và trang hiện tại
+      if (totalItems <= page.pageSize) {
+        setDataInvoices(data);
+        setPage({ ...page, current: 1, total: totalItems });
+      } else {
+        const startIndex = (currentPage - 1) * page.pageSize;
+        const endIndex = currentPage * page.pageSize;
+        const displayedItems = data.slice(startIndex, endIndex);
+
+        setDataInvoices(displayedItems);
+        setPage({ ...page, current: currentPage, total: totalItems });
+      }
     },
     [filterData, page]
   );
@@ -436,7 +459,7 @@ export default function HoaDonDauVao() {
         method: "get",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
+          Authorization: "Bearer " + taikhoanthue?.token,
         },
         responseType: "arraybuffer",
       });
@@ -540,32 +563,7 @@ export default function HoaDonDauVao() {
       console.log(error);
       setIsLoadingCheckStatus(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   };
-
-  // const filterQuery = ({
-  //   value,
-  //   filteredData,
-  // }: {
-  //   value: string;
-  //   filteredData: any[];
-  // }) => {
-  //   const newData = filteredData.filter((item) => {
-  //     return (
-  //       item.shdon?.toString()?.toLowerCase()?.includes(value.toLowerCase()) ||
-  //       item.khmshdon
-  //         ?.toString()
-  //         ?.toLowerCase()
-  //         ?.includes(value.toLowerCase()) ||
-  //       item.thongTinNguoiBan?.nbten
-  //         ?.toLowerCase()
-  //         ?.includes(value.toLowerCase()) ||
-  //       item.thongTinNguoiBan?.mst?.toLowerCase()?.includes(value.toLowerCase())
-  //     );
-  //   });
-
-  //   return newData;
-  // };
 
   const handleExportExcel = useCallback(() => {
     const newData = filterData.filter((item) => {

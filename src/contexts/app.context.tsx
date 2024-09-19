@@ -5,22 +5,27 @@ type AppContextType = {
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   mst?: string;
-  token?: string;
   expiredAt?: number;
   setUserData?: React.Dispatch<React.SetStateAction<any>>;
+  taikhoanthue?: any;
+  setTaikhoanthue?: React.Dispatch<React.SetStateAction<any>>;
 };
 
 const user = JSON.parse(localStorage.getItem("user") || "{}");
+const taikhoanthueLocal = JSON.parse(
+  localStorage.getItem("taikhoanthue") || "{}"
+);
 
-const checkToken = !isEmpty(user?.token);
+const checkToken = !isEmpty(user);
 
 const inititalAppContext: AppContextType = {
   isAuthenticated: checkToken,
   setIsAuthenticated: () => null,
   mst: user?.mst,
-  token: user?.token,
   expiredAt: user?.expiredAt,
   setUserData: () => null,
+  taikhoanthue: taikhoanthueLocal,
+  setTaikhoanthue: () => null,
 };
 
 export const AppContext = createContext<AppContextType>(inititalAppContext);
@@ -29,21 +34,23 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
     inititalAppContext.isAuthenticated
   );
-  // const [userData, setUserData] = useState<any>(user);
+  const [taikhoanthue, setTaikhoanthue] = useState<any>(taikhoanthueLocal);
 
   useEffect(() => {
     if (user?.expiredAt < Date.now()) {
       localStorage.removeItem("user");
+      localStorage.removeItem("taikhoanthue");
+      setTaikhoanthue({});
       setIsAuthenticated(false);
-      // setUserData({});
       return;
     }
 
     const interval = setInterval(() => {
       if (user?.expiredAt < Date.now()) {
         localStorage.removeItem("user");
+        localStorage.removeItem("taikhoanthue");
+        setTaikhoanthue({});
         setIsAuthenticated(false);
-        // setUserData({});
       }
     }, 10000);
 
@@ -52,15 +59,37 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.expiredAt]);
 
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (isEmpty(event.key)) {
+        setTaikhoanthue({});
+        setIsAuthenticated(false);
+        return;
+      }
+
+      if (event.key === "taikhoanthue") {
+        if (isEmpty(JSON.parse(event.newValue || "{}"))) {
+          setTaikhoanthue({});
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
         isAuthenticated,
         setIsAuthenticated,
         mst: user?.mst,
-        token: user?.token,
         expiredAt: user?.expiredAt,
-        // setUserData,
+        setTaikhoanthue,
+        taikhoanthue: taikhoanthue,
       }}
     >
       {children}

@@ -9,8 +9,6 @@ import AuthLayout from "../layouts/AuthLayout";
 
 import Logout from "../pages/Auth/Logout";
 import { ROUTE } from "../libs/constants";
-import HoaDonMuaVao from "../pages/HoaDonMuaVao";
-import HoaDonBanRa from "../pages/HoaDonBanRa";
 import HoaDon from "../pages/TongQuan/HoaDon";
 import HoaDonDauVao from "../pages/HoaDon/HoaDonDauVao";
 import HoaDonDauRa from "../pages/HoaDon/HoaDonDauRa/HoaDonDauRa";

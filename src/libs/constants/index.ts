@@ -7,7 +7,9 @@ import chplay from "../../assets/images/auth/chplay.svg";
 import appstore from "../../assets/images/auth/appstore.svg";
 import signAuth from "../../assets/images/auth/sign-auth.png";
 
-export const API_URL = "http://10.253.214.26:8010/apiquanlyhoadon.asmx";
+// export const API_URL = "http://10.253.214.26:8010/apiquanlyhoadon.asmx";
+
+export const API_URL = "http://10.0.0.168:8010/apiquanlyhoadon.asmx";
 
 export const ROUTE = {
   HOME: "/",

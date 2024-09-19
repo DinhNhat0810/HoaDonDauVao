@@ -73,14 +73,19 @@ export default function CustomPagination(props: CustomPaginationProps) {
         </ConfigProvider>
         <DoubleRightOutlined
           className={`w-8 h-8 flex items-center justify-center cursor-pointer translate-y-[1px] ${
-            currentPage === maxPage ? "text-[#cecece]" : ""
+            currentPage === maxPage || maxPage === 0 ? "text-[#cecece]" : ""
           }`}
-          disabled={currentPage === maxPage}
+          disabled={currentPage === maxPage || maxPage === 0}
           onClick={() => {
-            currentPage !== maxPage && handlePageChange(maxPage);
+            currentPage !== maxPage &&
+              maxPage !== 0 &&
+              handlePageChange(maxPage);
           }}
           style={{
-            cursor: currentPage === maxPage ? "not-allowed" : "pointer",
+            cursor:
+              currentPage === maxPage || maxPage === 0
+                ? "not-allowed"
+                : "pointer",
           }}
         />
       </div>

@@ -94,35 +94,35 @@ export const HTHDO_Options = [
     value: 9999,
   },
   {
-    label: "Hóa đơn mới",
-    color: "#7C7C7E",
-    value: 1,
+    label: "Không mã",
+    color: "#A9A9A9",
+    value: 0,
   },
   {
-    label: "Hóa đơn điều chỉnh",
-    color: COLORS.infor,
-    value: 2,
+    label: "Có mã",
+    color: "#1E90FF",
+    value: 1,
   },
 
   {
-    label: "Hóa đơn thay thế",
-    color: COLORS.success,
+    label: "Không mã bảng kê",
+    color: "#FFD700",
+    value: 2,
+  },
+  {
+    label: "Có mã theo lần phát sinh",
+    color: "#FFA500",
     value: 3,
   },
   {
-    label: "Hóa đơn bị điều chỉnh",
-    color: COLORS.warning,
+    label: "Hóa đơn đặt in bảng tổng hợp",
+    color: "#32CD32",
     value: 4,
   },
   {
-    label: "Hóa đơn bị thay thế",
-    color: "#FF6E40",
+    label: "Hóa đơn có mã từ máy tính tiền",
+    color: "#FF4500",
     value: 5,
-  },
-  {
-    label: "Hóa đơn bị hủy",
-    color: "#E03400",
-    value: 6,
   },
 ];
 
@@ -177,13 +177,13 @@ export const TTMST_Options: any = [
   },
   {
     label: "Địa chỉ không khớp",
-    color: COLORS.infor,
+    color: "#7d7d7d",
     value: 6,
     desc: "MST không hoạt động tại địa chỉ đã đăng ký",
   },
   {
     label: "Chờ thủ tục phá sản",
-    color: "#7C7C7E",
+    color: "#343a40",
     value: 7,
     desc: "MST chờ làm thủ tục phá sản",
   },
@@ -215,13 +215,68 @@ export const TTHD = [
     value: 9999,
   },
   {
-    label: "Hợp lệ",
+    label: "Hóa đơn gốc ",
     color: COLORS.success,
     value: 1,
   },
   {
-    label: "Không hợp lệ",
+    label: "Hóa đơn thay thế",
     color: COLORS.error,
     value: 2,
+  },
+  {
+    label: "Hóa đơn điều chỉnh",
+    color: COLORS.infor,
+    value: 3,
+  },
+  {
+    label: " Hóa đơn đã bị thay thế",
+    color: COLORS.infor,
+    value: 4,
+  },
+
+  {
+    label: "Hóa đơn đã bị điều chỉnh",
+    color: "#FF6E40",
+    value: 5,
+  },
+  {
+    label: "Hóa đơn đã bị xóa bỏ/hủy bỏ",
+    color: "#E03400",
+    value: 6,
+  },
+];
+
+export const TTXLY = [
+  {
+    label: "Tất cả",
+    color: null,
+    value: 9999,
+  },
+  {
+    label: "CQT từ chối hóa đơn theo từng lần phát sinh",
+    color: COLORS.success,
+    value: 2,
+  },
+  {
+    label: "Hóa đơn không đủ điều kiện cấp mã",
+    color: COLORS.error,
+    value: 4,
+  },
+  {
+    label: "Đã cấp mã hóa đơn",
+    color: COLORS.infor,
+    value: 5,
+  },
+  {
+    label: "Tổng cục thuế đã nhận không mã",
+    color: "#FF6E40",
+    value: 6,
+  },
+
+  {
+    label: "Tổng cục thuế đã nhận máy tính tiền",
+    color: "#E03400",
+    value: 8,
   },
 ];

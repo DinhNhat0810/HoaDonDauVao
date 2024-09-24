@@ -5,7 +5,7 @@ import { useContext } from "react";
 import { AppContext } from "../../../contexts/app.context";
 
 export default function Header({ collapsed }: { collapsed: boolean }) {
-  const { mst } = useContext(AppContext);
+  const { mst, business_name } = useContext(AppContext);
 
   const navigate = useNavigate();
   const handleLogout = () => {
@@ -21,9 +21,7 @@ export default function Header({ collapsed }: { collapsed: boolean }) {
       `}
     >
       <div>
-        <p className="font-bold text-[#1E1E1E]">
-          Công ty Cổ phần Công nghệ Long Hoàng Phát
-        </p>
+        <p className="font-bold text-[#1E1E1E]">{business_name}</p>
         <p className="text-[13px] text-[#7C7C7E]">
           Mã số thuế{" "}
           <span className="ml-1 text-sm font-medium text-[#1E1E1E]">{mst}</span>

@@ -69,6 +69,7 @@ export default function CustomPagination(props: CustomPaginationProps) {
             onChange={handlePageChange}
             current={currentPage}
             pageSize={page.pageSize}
+            showSizeChanger={false}
           />
         </ConfigProvider>
         <DoubleRightOutlined

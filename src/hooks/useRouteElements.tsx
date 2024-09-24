@@ -11,13 +11,16 @@ import Logout from "../pages/Auth/Logout";
 import { ROUTE } from "../libs/constants";
 import HoaDon from "../pages/TongQuan/HoaDon";
 import HoaDonDauVao from "../pages/HoaDon/HoaDonDauVao";
-import HoaDonDauRa from "../pages/HoaDon/HoaDonDauRa/HoaDonDauRa";
+
 import KXBKMV from "../pages/BaoCao/KXBKMV";
 import KXBKBR from "../pages/BaoCao/KXBKBR";
 import DanhMucNCC from "../pages/DanhMuc/DanhMucNCC";
 import ThongTinDoanhNghiep from "../pages/HeThong/ThongTinDoanhNghiep";
 import QuanLyTaiNguyen from "../pages/HeThong/QuanLyTaiNguyen/QuanLyTaiNguyen";
 import NhatKyTruyCap from "../pages/HeThong/NhatKyTruyCap";
+import HoaDonDauRa from "../pages/HoaDon/HoaDonDauRa";
+import HoaDonDauVaoMTT from "../pages/HoaDon/HoaDonDauVaoMTT";
+import HoaDonDauRaMTT from "../pages/HoaDon/HoaDonDauRaMTT";
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext);
@@ -73,6 +76,23 @@ export default function useRouteElement() {
           element: (
             <MainLayout>
               <HoaDonDauRa />
+            </MainLayout>
+          ),
+        },
+
+        {
+          path: ROUTE.HDDV_MTT,
+          element: (
+            <MainLayout>
+              <HoaDonDauVaoMTT />
+            </MainLayout>
+          ),
+        },
+        {
+          path: ROUTE.HDDR_MTT,
+          element: (
+            <MainLayout>
+              <HoaDonDauRaMTT />
             </MainLayout>
           ),
         },

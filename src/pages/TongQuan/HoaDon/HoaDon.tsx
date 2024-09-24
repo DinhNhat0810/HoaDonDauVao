@@ -1,4 +1,3 @@
-import React from "react";
 import ThongTinTaiNguyen from "./ThongTinTaiNguyen";
 import TongHoaDon from "./TongHoaDon";
 import BottomChart from "./BottomChart";

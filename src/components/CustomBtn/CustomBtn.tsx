@@ -4,19 +4,19 @@ type Props = {
   className?: string;
   title: string;
   onClick?: () => void;
-  variant?: "primary" | "white"; // Thêm một thuộc tính mới để xác định biến thể của nút
+  variant?: "primary" | "white";
   prefix?: React.ReactNode;
+  loading?: boolean;
 };
 
 export default function CustomBtn({
   className,
   title,
   onClick,
-  variant = "primary", // Mặc định là biến thể "primary"
+  variant = "primary",
   prefix,
   ...props
 }: Props) {
-  // Xác định className dựa trên biến thể
   const buttonClass =
     variant === "primary"
       ? `bg-primary-color text-white border-none hover:bg-opacity-60`

@@ -139,10 +139,10 @@ export default function Sidebar({
           key: ROUTE.BAOCAO_KXBKBR,
           label: "Kết xuất bảng kê bán ra",
         },
-        {
-          key: ROUTE.BAOCAO_THKT,
-          label: "Tổng hợp khai thuế",
-        },
+        // {
+        //   key: ROUTE.BAOCAO_THKT,
+        //   label: "Tổng hợp khai thuế",
+        // },
         {
           key: ROUTE.BAOCAO_HDRR,
           label: "Hóa đơn rủi ro",

@@ -9,6 +9,7 @@ type AppContextType = {
   setUserData?: React.Dispatch<React.SetStateAction<any>>;
   taikhoanthue?: any;
   setTaikhoanthue?: React.Dispatch<React.SetStateAction<any>>;
+  business_name?: string;
 };
 
 const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -20,12 +21,14 @@ const checkToken = !isEmpty(user);
 
 const inititalAppContext: AppContextType = {
   isAuthenticated: checkToken,
+  // isAuthenticated: true,
   setIsAuthenticated: () => null,
   mst: user?.mst,
   expiredAt: user?.expiredAt,
   setUserData: () => null,
   taikhoanthue: taikhoanthueLocal,
   setTaikhoanthue: () => null,
+  business_name: user?.business_name,
 };
 
 export const AppContext = createContext<AppContextType>(inititalAppContext);
@@ -90,6 +93,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         expiredAt: user?.expiredAt,
         setTaikhoanthue,
         taikhoanthue: taikhoanthue,
+        business_name: user?.business_name,
       }}
     >
       {children}

@@ -2,7 +2,7 @@ import { convertXmlToJson } from "../libs/common";
 import { API_URL } from "../libs/constants";
 import https from "../libs/https";
 
-export const LuuTTHoadon = async ({
+export const LuutaikhoanTCT = async ({
   username,
   passwd,
 }: {

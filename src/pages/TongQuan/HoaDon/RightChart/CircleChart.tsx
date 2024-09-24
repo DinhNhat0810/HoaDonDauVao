@@ -56,12 +56,23 @@ function CircleChart({ chartData }: DonutChartProps) {
 
                 labels: {
                   usePointStyle: true,
-
                   padding: 20,
                   boxHeight: 10,
                   generateLabels: (chart: any) => {
                     const visibility: any = [];
-                    for (let i = 0; i < chart.data.labels.length; i++) {
+
+                    // Đảm bảo có ít nhất 3 nhãn
+                    const labels =
+                      chart.data.labels.length < 3
+                        ? [
+                            ...chart.data.labels,
+                            ...Array(3 - chart.data.labels.length).fill(
+                              ".................................................................."
+                            ),
+                          ]
+                        : chart.data.labels;
+
+                    for (let i = 0; i < labels.length; i++) {
                       if (chart.getDataVisibility(i)) {
                         visibility.push(false);
                       } else {
@@ -69,13 +80,15 @@ function CircleChart({ chartData }: DonutChartProps) {
                       }
                     }
 
-                    return chart.data.labels.map((label: any, index: any) => {
+                    return labels.map((label: any, index: any) => {
                       return {
                         text: label,
                         fillStyle:
-                          chart.data.datasets[0].backgroundColor[index],
+                          chart.data.datasets[0].backgroundColor[index] ||
+                          "transparent",
                         strokeStyle:
-                          chart.data.datasets[0].backgroundColor[index],
+                          chart.data.datasets[0].backgroundColor[index] ||
+                          "transparent",
                         hidden: visibility[index],
                         id: index,
                       };
@@ -178,8 +191,8 @@ function CircleChart({ chartData }: DonutChartProps) {
       <div className="chart-container flex justify-center">
         <canvas
           ref={chartRef}
-          width="300"
-          height="300"
+          width="360"
+          height="360"
           className="!w-[360px] !h-[360px]"
         />
       </div>

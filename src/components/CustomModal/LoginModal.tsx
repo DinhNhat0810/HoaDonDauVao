@@ -8,15 +8,14 @@ import { isEmpty } from "lodash";
 import { NotificationContext } from "../../contexts/notification.context";
 import CustomLoading from "../CustomLoading";
 import { AppContext } from "../../contexts/app.context";
+import { LuutaikhoanTCT } from "../../services/auth";
 
 export default function LoginModal({
   open,
   handleCancel,
-  handleFinish,
 }: {
   open: boolean;
   handleCancel: () => void;
-  handleFinish: (values: any, callback: () => void) => void;
 }) {
   const [form] = Form.useForm();
   const [loadCapcha, setLoadCapcha] = useState<boolean>(false);
@@ -73,29 +72,49 @@ export default function LoginModal({
         "https://hoadondientu.gdt.gov.vn:30000/security-taxpayer/authenticate";
 
       const res = await axios.post(url, {
-        // username: values.username,
-        // password: values.password,
-        username: "0103930279-999",
-        password: "xsw2XSW@",
+        username: values.username,
+        password: values.password,
+        // username: "0103930279-999",
+        // password: "xsw2XSW@",
         cvalue: values.cvalue,
         ckey: captcha.key,
       });
 
       if (!isEmpty(res.data.token)) {
-        setLoading(false);
+        // const result = await LuutaikhoanTCT({
+        //   // username: "0103930279-999",
+        //   // passwd: "xsw2XSW@",
+        //   username: values.username,
+        //   passwd: values.password,
+        // });
+
+        // if (result === "0" || !result) {
+        //   handleOpenNotification({
+        //     type: "error",
+        //     message: "Lỗi",
+        //     description: "Đăng nhập thất bại",
+        //   });
+
+        //   setLoading(false);
+        //   return;
+        // }
+
         if (setTaikhoanthue && res && res.data) {
           setTaikhoanthue({
             token: res.data.token,
-            mst: "0103930279-999",
+            mst: values.username,
           });
         }
+
         localStorage.setItem(
           "taikhoanthue",
           JSON.stringify({
             token: res.data.token,
-            mst: "0103930279-999",
+            mst: values.username,
           })
         );
+
+        setLoading(false);
 
         handleCancel();
         handleOpenNotification({
@@ -103,12 +122,7 @@ export default function LoginModal({
           message: "Thành công",
           description: "Đăng nhập bằng tài khoản thuế thành công",
         });
-
-        // setIsAuthenticated(true);
-        // window.location.reload();
-        // navigate("/");
       } else {
-        // openNotificationWithIcon("error", "Lỗi", "Đăng nhập thất bại");
         handleOpenNotification({
           type: "error",
           message: "Lỗi",
@@ -128,14 +142,6 @@ export default function LoginModal({
     }
   };
 
-  const handleSubmit = async () => {
-    try {
-      const validate = await form.validateFields();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   return (
     <Modal
       open={open}
@@ -145,14 +151,19 @@ export default function LoginModal({
       }}
       centered
       footer={null}
-      width={460}
+      width={500}
     >
       {loading && <CustomLoading />}
-      <h2 className="text-center text-xl my-4 font-bold">
+      <h2 className="text-center text-xl mt-4 font-bold">
         Đăng nhập tài khoản thuế
       </h2>
 
-      <div className="w-full">
+      <p className="text-center my-2">
+        Khách hàng sử dụng tài khoản của doanh nghiệp đăng ký trên Thuế để đồng
+        bộ dữ liệu từ cơ quan thuế về hệ thống quản lý hoá đơn
+      </p>
+
+      <div className="w-full mt-4">
         <Form
           style={{}}
           onFinish={(values) => {
@@ -231,29 +242,9 @@ export default function LoginModal({
             >
               Tiếp tục
             </button>
-            {/* <p className="py-4">
-              Quý khách có thể{" "}
-              <span className="underline font-semibold text-primary-color cursor-pointer">
-                Đăng ký
-              </span>{" "}
-              tại đây
-            </p> */}
           </div>
         </Form>
       </div>
-
-      {/* <div className="flex justify-center gap-2">
-        <CustomBtn
-          title="Hủy bỏ"
-          className="w-4/12"
-          onClick={() => {
-            handleCancel();
-            form.resetFields();
-          }}
-          variant="white"
-        />
-        <CustomBtn title="Đồng bộ" className="w-4/12" onClick={handleSubmit} />
-      </div> */}
     </Modal>
   );
 }

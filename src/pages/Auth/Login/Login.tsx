@@ -8,7 +8,7 @@ import { isEmpty } from "lodash";
 import CustomLoading from "../../../components/CustomLoading";
 import { IMAGES } from "../../../libs/constants";
 import ResetIcon from "../../../components/Icon/reset";
-import { DangnhapTKNCM, LuuTTHoadon } from "../../../services/auth";
+import { DangnhapTKNCM } from "../../../services/auth";
 
 type NotificationType = "success" | "info" | "warning" | "error";
 
@@ -17,6 +17,7 @@ const Login = () => {
   const [loadCapcha, setLoadCapcha] = useState<boolean>(false);
   const { setIsAuthenticated } = useContext(AppContext);
   const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const openNotificationWithIcon = (
     type: NotificationType,
@@ -35,11 +36,12 @@ const Login = () => {
     setLoading(true);
     try {
       const res = await DangnhapTKNCM({
-        username: "0103930279-999",
+        // username: "0103930279-999",
+        username: values.username,
         passwd: values.password,
       });
 
-      if (res === 1) {
+      if (!isEmpty(res)) {
         setLoading(false);
         const now = new Date();
         const endOfDay = new Date(now);
@@ -49,13 +51,15 @@ const Login = () => {
         localStorage.setItem(
           "user",
           JSON.stringify({
-            mst: "0103930279-999",
+            mst: values.username,
             expiredAt: now.getTime() + expiresIn, // Set expiredAt to end of the day
+            business_name: res,
           })
         );
         setIsAuthenticated(true);
+
+        navigate("/");
         window.location.reload();
-        // navigate("/");
       } else {
         openNotificationWithIcon("error", "Lỗi", "Đăng nhập thất bại");
         setLoading(false);
@@ -160,38 +164,6 @@ const Login = () => {
                 Quên mật khẩu
               </span>
             </div>
-            {/* 
-            <div className="relative border border-[#d9d9d9] rounded-md pb-2 mt-2 mb-4">
-              <div
-                className="captcha_img"
-                style={{
-                  marginBottom: "10px",
-                }}
-              ></div>
-              <ResetIcon
-                className="cursor-pointer absolute bottom-2 right-2"
-                onClick={() => setLoadCapcha(!loadCapcha)}
-              />
-            </div>
-
-            <CustomInput
-              name="cvalue"
-              placeholder="Mã captcha"
-              configBoderRadius={6}
-              size="large"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập captcha",
-                },
-              ]}
-              formItemStyle={{
-                marginBottom: "24px",
-                marginTop: "4px",
-              }}
-              className="py-[15px]"
-              labelInside="Mã captcha"
-            /> */}
 
             <div className="text-center mt-8">
               <button

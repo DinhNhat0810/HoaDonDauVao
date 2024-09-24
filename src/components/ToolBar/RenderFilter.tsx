@@ -77,6 +77,7 @@ export default function RenderFilter({
         ],
       });
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setOpenFilter]);
 
@@ -88,17 +89,7 @@ export default function RenderFilter({
       type: dataFilter.type,
       date: newDate,
     });
-    // setActive({
-    //   tthai: {
-    //     value: "",
-    //   },
-    //   tthd: {
-    //     value: "",
-    //   },
-    //   hthuc: {
-    //     value: "",
-    //   },
-    // });
+
     setDataFilter((prev: any) => ({
       ...prev,
       date: newDate,
@@ -144,6 +135,7 @@ export default function RenderFilter({
                           setDataFilter({
                             value: String(child.value),
                             type: option.value,
+                            date: form.getFieldValue("selectDate"),
                           });
                           setOpen("");
                           setActive((prev: any) => {

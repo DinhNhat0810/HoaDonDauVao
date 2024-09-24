@@ -3,7 +3,7 @@ import CustomInput from "../CustomInput";
 import { EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import ExcelIcon from "../Icon/excel";
 import FilterIcon from "../Icon/filter";
-import { Form, Popover } from "antd";
+import { Form, Popover, Spin } from "antd";
 import ReloadIcon from "../Icon/reload";
 import SyncInvoiceModal from "../CustomModal/SyncInvoiceModal";
 import useDebounce from "../../hooks/useDebounce";
@@ -50,6 +50,8 @@ type ToolBarProps = {
   data?: any;
   type?: string;
   showSearch?: boolean;
+  loading?: boolean;
+  dataInvoices: any;
 };
 
 const ToolBar = ({
@@ -76,9 +78,11 @@ const ToolBar = ({
   data,
   type = "buyin",
   showSearch = true,
+  loading,
+  dataInvoices,
 }: ToolBarProps) => {
   const [openSyncInvoiceModal, setOpenSyncInvoiceModal] = useState(false);
-  const debouncedValue = useDebounce(searchValue, 300);
+  const debouncedValue = useDebounce(searchValue, 500);
   const [openFilter, setOpenFilter] = useState(false);
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -137,7 +141,7 @@ const ToolBar = ({
           />
         )}
 
-        {openViewAction && (
+        {openViewAction && !isEmpty(dataInvoices) && (
           <>
             <DownloadIcon className="cursor-pointer" onClick={handleDownload} />
             <div
@@ -171,11 +175,23 @@ const ToolBar = ({
 
         {showSyncBtn && (
           <div
-            onClick={handleOpen}
-            className="flex justify-between cursor-pointer items-center border-[#D4D4D6] border p-[5px] px-4 gap-1 rounded-[4px] hover:bg-[#F6F7F9]"
+            onClick={() => {
+              if (loading) return;
+              handleOpen();
+            }}
+            className="h-9 flex justify-between cursor-pointer items-center border-[#D4D4D6] border p-[5px] px-4 gap-1 rounded-[4px] hover:bg-[#F6F7F9]"
           >
-            <ReloadIcon />
-            <span className="font-medium text-sm">Đồng bộ ngay</span>
+            {loading ? (
+              <>
+                <Spin />
+                <span className="font-medium text-sm ml-1">Đang đồng bộ</span>
+              </>
+            ) : (
+              <>
+                <ReloadIcon />
+                <span className="font-medium text-sm">Đồng bộ ngay</span>
+              </>
+            )}
           </div>
         )}
 
@@ -272,7 +288,6 @@ const ToolBar = ({
         <LoginModal
           open={isOpenModalLogin}
           handleCancel={() => setIsOpenModalLogin(false)}
-          handleFinish={handleFinish}
         />
       )}
     </div>

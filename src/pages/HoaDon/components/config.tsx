@@ -158,7 +158,7 @@ export const columnsTable = () => {
                   "transparent",
               }}
             ></div>
-            <span>
+            <span className="flex-1">
               {HTHDO_Options.find((item) => item.value === value)?.label}
             </span>
           </div>

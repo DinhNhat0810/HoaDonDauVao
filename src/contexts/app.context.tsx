@@ -20,8 +20,8 @@ const taikhoanthueLocal = JSON.parse(
 const checkToken = !isEmpty(user);
 
 const inititalAppContext: AppContextType = {
-  isAuthenticated: checkToken,
-  // isAuthenticated: true,
+  // isAuthenticated: checkToken,
+  isAuthenticated: true,
   setIsAuthenticated: () => null,
   mst: user?.mst,
   expiredAt: user?.expiredAt,

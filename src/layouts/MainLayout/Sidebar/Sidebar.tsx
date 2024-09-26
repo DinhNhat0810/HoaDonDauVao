@@ -219,8 +219,9 @@ export default function Sidebar({
   }, [location]);
 
   const handleSelectItem = (item: ItemsType) => {
+    const checkExist = item.children?.find((e) => e.key === activeSubMenu);
     if (item.key) {
-      navigate(item.children?.[0].key || "");
+      !checkExist && navigate(item.children?.[0].key || "");
     }
     setIsFirstLoad(false);
 
@@ -232,11 +233,19 @@ export default function Sidebar({
     }
   };
 
-  const handleSelectSubMenu = (item: ItemsType) => {
+  const handleSelectSubMenu = (item: ItemsType, key?: any) => {
     if (item.key) {
       navigate(item.key);
     }
+
+    if (collapsed && key) {
+      setOpenPopover({
+        ...openPopover,
+        [key]: !openPopover[key],
+      });
+    }
   };
+
   return (
     <div className="flex sticky top-0">
       <div className="bg-black-color p-3 w-[88px] min-h-screen flex justify-between flex-col">
@@ -260,22 +269,19 @@ export default function Sidebar({
                 placement="right"
                 trigger="click"
                 content={
-                  <div
-                    className="w-[200px]
-            "
-                  >
-                    {subMenu.map((item, index) => (
+                  <div className="w-[200px]">
+                    {subMenu.map((e, index) => (
                       <li
                         className={`text-[13px] py-3 leading-[14px] rounded-md font-semibold flex flex-col items-start cursor-pointer hover:text-white
-               ${
-                 activeSubMenu === item.key
-                   ? "text-white bg-[#1E1E1E]"
-                   : "text-[#ffffff80]"
-               }`}
+                          ${
+                            activeSubMenu === e.key
+                              ? "text-white bg-[#1E1E1E]"
+                              : "text-[#ffffff80]"
+                          }`}
                         key={index}
-                        onClick={() => handleSelectSubMenu(item)}
+                        onClick={() => handleSelectSubMenu(e, item.key)}
                       >
-                        <span className="pl-2">{item.label}</span>
+                        <span className="pl-2">{e.label}</span>
                       </li>
                     ))}
                   </div>

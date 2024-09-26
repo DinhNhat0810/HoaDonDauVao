@@ -32,6 +32,7 @@ export default function CustomTable(props: CustomTableProps) {
     showPagination = true,
     onRow,
     rowClassName,
+    pagination,
     ...rest
   } = props;
   return (
@@ -47,7 +48,6 @@ export default function CustomTable(props: CustomTableProps) {
             },
           },
           token: {
-            /* here is your global tokens */
             colorPrimary: "#FA4E19",
             padding: 8,
           },

@@ -1,7 +1,7 @@
 import { ConfigProvider, Tabs, TabsProps } from "antd";
 import { COLORS, HTHDO_Options, TTMST_Options } from "../../../libs/constants";
 import ToolBar from "../../../components/ToolBar";
-import TableHoaDon from "../components/Table";
+import TableHoaDon from "./Table";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { NotificationContext } from "../../../contexts/notification.context";
 import dayjs from "dayjs";
@@ -35,7 +35,7 @@ type DownloadHoaDonType = {
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-export default function ListInvoice({
+export default function ListInvoice1({
   title,
   typeInvoice,
   type,
@@ -45,7 +45,6 @@ export default function ListInvoice({
   type: string;
 }) {
   const [dataInvoices, setDataInvoices] = useState<any[]>([]);
-  const [initialData, setInitialData] = useState<any[]>([]);
   const { handleOpenNotification } = useContext(NotificationContext);
   const [fileName, setFileName] = useState("");
   const [tab, setTab] = useState("5");
@@ -56,18 +55,13 @@ export default function ListInvoice({
     total: 0,
   });
   const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
-  const [invoiceDetail, setInvoiceDetail] = useState<any>(null);
   const [filterData, setFilterData] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [isLoadingCheckStatus, setIsLoadingCheckStatus] = useState(false);
   const [rangeDate, setRangeDate] = useState<any>([]);
-  const [dataFilter, setDataFilter] = useState<any>({
-    value: String(TTMST_Options[0].value),
-    type: "tthai",
-    date: null,
-  });
+
   const [query, setQuery] = useState<any>(null);
-  const { data, refetch } = useQuery({
+  const { refetch } = useQuery({
     queryKey: ["todos", query],
     queryFn: (e) => {
       return handleFinish(
@@ -99,6 +93,14 @@ export default function ListInvoice({
     date: [],
   });
   const [stateStack, setStateStack] = useState<any>([]);
+  const [dataFilter, setDataFilter] = useState<any>({
+    value: String(TTMST_Options[0].value),
+    type: "tthai",
+    date: null,
+  });
+  const [invoiceDetail, setInvoiceDetail] = useState<any>(null);
+  const [totalRecord, setTotalRecord] = useState(0);
+  const [isFiltered, setIsFiltered] = useState(false);
 
   const handleRowClick = (record: any) => {
     setSelectedRowKey(record.key);
@@ -123,53 +125,10 @@ export default function ListInvoice({
     },
   ];
 
-  function checkWithinOneHourFromSyncTime(syncTime: string) {
-    const now = dayjs();
-    const oneHourAfterSyncTime = dayjs(syncTime).add(1, "hour"); // Tính thời điểm 1 giờ sau syncTime
-
-    // Kiểm tra nếu thời gian hiện tại nằm trong khoảng từ syncTime đến 1 giờ sau đó
-    if (now.isAfter(dayjs(syncTime)) && now.isBefore(oneHourAfterSyncTime)) {
-      return false; // Trả về false nếu thời gian hiện tại nằm trong khoảng 1 giờ sau syncTime
-    }
-    return true;
-  }
-
-  const mergeDataWithKeys = (
-    currentData: any,
-    newData: any,
-    newState?: string | null
-  ) => {
-    if (newState === null) {
-      return newData;
-    }
-
-    return [...currentData, ...newData].map((item, index) => ({
-      ...item,
-      key: index,
-    }));
-  };
-
-  function removeDuplicatesKeepLast(arr: any, key: string) {
-    const seen = new Set();
-    const result = [];
-
-    // Duyệt mảng từ cuối lên để giữ lại phần tử cuối cùng
-    for (let i = arr.length - 1; i >= 0; i--) {
-      const item = arr[i];
-      if (!seen.has(item[key])) {
-        seen.add(item[key]);
-        result.push(item);
-      }
-    }
-
-    // Đảo ngược lại để có thứ tự ban đầu
-    return result.reverse();
-  }
-
   const fetchData = async ({
     newState = {
       page: 1,
-      value: null,
+      nextStateValue: null,
     },
     typeBtn = null,
     date,
@@ -180,47 +139,16 @@ export default function ListInvoice({
   }) => {
     try {
       const checkExist = stateStack.find(
-        (item: any) => item.page === page?.current
+        (item: any) => item.page === newState.page
       );
 
-      if (page.current * 15 > page.total && typeBtn === "next") {
-        return 10;
-      }
-
-      setLoading(true);
-      let nState = newState;
-
-      if (typeBtn === "prev") {
-        if (page.current === 1) {
-          setLoading(false);
-          return;
-        }
-
-        const displayedItems = initialData.slice(
-          page.current * 15 - 30,
-          page.current * 15 - 15
-        );
-
-        setDataInvoices(displayedItems);
-
-        setPage((prev) => ({ ...prev, current: prev.current - 1 }));
-        setLoading(false);
-
+      if (typeBtn === "next" && checkExist) {
+        setPage((prev) => ({
+          ...prev,
+          current: prev.current + 1,
+        }));
         return;
-      } else if (typeBtn === "next") {
-        if (checkExist) {
-          nState = checkExist;
-        }
       }
-
-      const response = await getInvoices({
-        type: type,
-        date,
-        ttxly: tab,
-        taikhoanthue,
-        state: nState.value,
-        typeInvoice: typeInvoice,
-      });
 
       setState((prev) => {
         return {
@@ -228,192 +156,171 @@ export default function ListInvoice({
           date,
         };
       });
+      if (typeBtn === "prev") {
+        const replaceStateStack = stateStack.findIndex(
+          (item: any) => item.page === newState.page
+        );
 
-      const newResults = response?.datas;
+        setPage((prev) => ({
+          ...prev,
+          current: replaceStateStack + 1,
+        }));
 
-      setFileName(
-        `HoaDonDauVao_${dayjs(date[0]).format("DD/MM/YYYY")}-${dayjs(
-          date[1]
-        ).format("DD/MM/YYYY")}`
-      );
+        return;
+      } else {
+        const response = await getInvoices({
+          type: type,
+          date,
+          ttxly: tab,
+          taikhoanthue,
+          state: newState.nextStateValue,
+          typeInvoice: typeInvoice,
+        });
 
-      if (newResults.length > 0 && newResults) {
-        const newRes = newResults?.map((item: any, index: number) => ({
-          key: index,
-          thongTinNguoiBan: {
-            mst: item?.nbmst,
-            nbten: item?.nbten,
-            nbdchi: item?.nbdchi,
-          },
-          id: item?.id,
-          thongTinHoaDon: {
+        const newResults = response?.datas;
+
+        setTotalRecord(response?.total);
+
+        setFileName(
+          `HoaDonDauVao_${dayjs(date[0]).format("DD/MM/YYYY")}-${dayjs(
+            date[1]
+          ).format("DD/MM/YYYY")}`
+        );
+
+        if (newResults.length > 0 && newResults) {
+          const newRes = newResults?.map((item: any, index: number) => ({
+            key: stateStack.length * page.pageSize + index,
+            thongTinNguoiBan: {
+              mst: item?.nbmst,
+              nbten: item?.nbten,
+              nbdchi: item?.nbdchi,
+            },
+            id: item?.id,
+            thongTinHoaDon: {
+              thdon: item?.thdon,
+              khmshdon: item?.khmshdon,
+              khhdon: item?.khhdon,
+              shdon: item?.shdon,
+              ntao: dayjs(item?.ntao).format("DD/MM/YYYY HH:mm:ss"),
+            },
+
+            nky: dayjs(item?.nky).format("DD/MM/YYYY HH:mm:ss"),
+            ncma: dayjs(item?.ncma).format("DD/MM/YYYY HH:mm:ss"),
+            thongTinNguoiMua: {
+              nmmst: item?.nmmst,
+              nmten: item?.nmten,
+              khhdon: item?.khhdon,
+              nmdchi: item?.nmdchi,
+            },
+            tongTruocThue: convertToVnd(item?.tgtcthue),
+            thueSuat: {
+              gttsuat: item?.thttltsuat[0]?.gttsuat,
+              thtien: convertToVnd(item?.thttltsuat[0]?.thtien),
+              tsuat: convertToVnd(item?.thttltsuat[0]?.tsuat),
+              tthue: convertToVnd(item?.thttltsuat[0]?.tthue),
+            },
+            tongThue: convertToVnd(item?.tgtthue),
+            tongThanhToan: convertToVnd(item?.tgtttbso),
+            tgtttbso: item?.tgtttbso,
+            bangChu: item?.tgtttbchu,
+            cksNguoiBan: item?.nbcks,
+
+            ncnhat: dayjs(item?.ncnhat).format("DD/MM/YYYY HH:mm:ss"),
+            // tthai: item?.tthai,
+            tthai: Math.floor(Math.random() * 8),
             thdon: item?.thdon,
-            khmshdon: item?.khmshdon,
+            // khmshdon: item?.khmshdon,
+
+            khmshdon: Math.floor(Math.random() * 10) + 1,
+
             khhdon: item?.khhdon,
             shdon: item?.shdon,
             ntao: dayjs(item?.ntao).format("DD/MM/YYYY HH:mm:ss"),
-          },
 
-          nky: dayjs(item?.nky).format("DD/MM/YYYY HH:mm:ss"),
-          ncma: dayjs(item?.ncma).format("DD/MM/YYYY HH:mm:ss"),
-          thongTinNguoiMua: {
-            nmmst: item?.nmmst,
-            nmten: item?.nmten,
-            khhdon: item?.khhdon,
-            nmdchi: item?.nmdchi,
-          },
-          tongTruocThue: convertToVnd(item?.tgtcthue),
-          thueSuat: {
-            gttsuat: item?.thttltsuat[0]?.gttsuat,
-            thtien: convertToVnd(item?.thttltsuat[0]?.thtien),
-            tsuat: convertToVnd(item?.thttltsuat[0]?.tsuat),
-            tthue: convertToVnd(item?.thttltsuat[0]?.tthue),
-          },
-          tongThue: convertToVnd(item?.tgtthue),
-          tongThanhToan: convertToVnd(item?.tgtttbso),
-          tgtttbso: item?.tgtttbso,
-          bangChu: item?.tgtttbchu,
-          cksNguoiBan: item?.nbcks,
-
-          ncnhat: dayjs(item?.ncnhat).format("DD/MM/YYYY HH:mm:ss"),
-          // tthai: item?.tthai,
-          tthai: Math.floor(Math.random() * 8),
-          thdon: item?.thdon,
-          // khmshdon: item?.khmshdon,
-
-          khmshdon: Math.floor(Math.random() * 10) + 1,
-
-          khhdon: item?.khhdon,
-          shdon: item?.shdon,
-          ntao: dayjs(item?.ntao).format("DD/MM/YYYY HH:mm:ss"),
-
-          thttltsuat: item?.thttltsuat,
-          msttcgp: item?.msttcgp,
-          mtdtchieu: item?.mtdtchieu,
-          mhdon: item?.mhdon,
-          thttlphi: item?.thttlphi,
-          shdgoc: item?.shdgoc,
-          tdlhdgoc: item?.tdlhdgoc,
-          khmshdgoc: item?.khmshdgoc,
-          khhdgoc: item?.khhdgoc,
-
-          nhaCungCap: {
+            thttltsuat: item?.thttltsuat,
             msttcgp: item?.msttcgp,
-            ngcnhat: item?.ngcnhat,
-          },
-          tdlap: dayjs(item?.tdlap).format("DD/MM/YYYY HH:mm:ss"),
-          cksNguoiBanObj: convertCksNguoiBan(item?.nbcks),
+            mtdtchieu: item?.mtdtchieu,
+            mhdon: item?.mhdon,
+            thttlphi: item?.thttlphi,
+            shdgoc: item?.shdgoc,
+            tdlhdgoc: item?.tdlhdgoc,
+            khmshdgoc: item?.khmshdgoc,
+            khhdgoc: item?.khhdgoc,
 
-          hthuc: Math.floor(Math.random() * 5) + 1,
-          tthd: Math.floor(Math.random() * 2) + 1,
-        }));
-        const oldData = stateStack.flatMap((item: any) => item.data);
+            nhaCungCap: {
+              msttcgp: item?.msttcgp,
+              ngcnhat: item?.ngcnhat,
+            },
+            tdlap: dayjs(item?.tdlap).format("DD/MM/YYYY HH:mm:ss"),
+            cksNguoiBanObj: convertCksNguoiBan(item?.nbcks),
 
-        console.log(oldData, "oldData");
+            hthuc: Math.floor(Math.random() * 5) + 1,
+            tthd: Math.floor(Math.random() * 2) + 1,
+          }));
 
-        const displayedItems = mergeDataWithKeys(
-          oldData,
-          newRes,
-          newState
-        ).slice(oldData.length, oldData.length + 15);
+          setStateStack((prev: any) => {
+            return [
+              ...prev,
+              {
+                page: prev?.length + 1,
+                data: newRes,
+                nextStateValue: response?.state,
+                currentStateValue: newState.nextStateValue,
+                nextPage:
+                  response?.state &&
+                  (prev?.length + 1) * page.pageSize < response.total
+                    ? prev?.length + 2
+                    : null,
+              },
+            ];
+          });
 
-        console.log(displayedItems);
-
-        // Use the utility function to update state
-        setInitialData(mergeDataWithKeys(initialData, newRes));
-        setDataInvoices(displayedItems);
-        setFilterData(mergeDataWithKeys(filterData, newRes));
-        setPage((prev) => ({
-          ...prev,
-          total: response.total,
-          current: typeBtn === "next" ? prev.current + 1 : prev.current,
-        }));
-
-        if (stateStack.length > 0) {
-          if (typeBtn === "next") {
-            const stack: any = [...stateStack];
-            stack.push({
-              page: nState?.page + 1,
-              value: response?.state,
-              data: displayedItems,
-            });
-
-            const removeDuplicate = removeDuplicatesKeepLast(stack, "page");
-
-            console.log(removeDuplicate, "removeDuplicate");
-
-            setStateStack(removeDuplicate);
-          }
-        } else {
-          setStateStack([
+          setDataInvoices((prev: any) => [
+            ...prev,
             {
-              page: page.current,
-              value: response?.state,
-              data: displayedItems,
+              page: prev?.length + 1,
+              data: newRes,
+              nextStateValue: response?.state,
+              currentStateValue: newState.nextStateValue,
+              nextPage:
+                response?.state &&
+                (prev?.length + 1) * page.pageSize < response.total
+                  ? prev?.length + 2
+                  : null,
             },
           ]);
+          setFilterData((prev: any) => [
+            ...prev,
+            {
+              page: prev?.length + 1,
+              data: newRes,
+              nextStateValue: response?.state,
+              currentStateValue: newState.nextStateValue,
+              nextPage:
+                response?.state &&
+                (prev?.length + 1) * page.pageSize < response.total
+                  ? prev?.length + 2
+                  : null,
+            },
+          ]);
+          setPage((prev) => ({
+            ...prev,
+            total: response.total,
+            current: typeBtn === "next" ? prev.current + 1 : prev.current,
+          }));
+        } else {
+          setDataInvoices([]);
+          setFilterData([]);
+          setPage((prev) => ({
+            ...prev,
+            total: response.total,
+            current: typeBtn === "next" ? prev.current + 1 : prev.current,
+          }));
         }
-
-        const payload = newResults?.map((item: any) => ({
-          nbmst: item?.nbmst,
-          khmshdon: item?.khmshdon,
-          khhdon: item?.khhdon,
-          shdon: item?.shdon,
-          hthdon: item?.hthdon,
-          khhdgoc: item?.khhdgoc,
-          khmshdgoc: item?.khmshdgoc,
-          mhdon: item?.mhdon,
-          mtdtchieu: item?.mtdtchieu,
-          nbdchi: item?.nbdchi,
-          nbten: item?.nbten,
-          ncma: item?.ncma,
-          ncnhat: item?.ncnhat,
-          ngcnhat: item?.ngcnhat,
-          nky: item?.nky,
-          nmdchi: item?.nmdchi,
-          nmmst: item?.nmmst,
-          nmten: item?.nmten,
-          shdgoc: item?.shdgoc,
-          tchat: item?.tchat,
-          tdlap: item?.tdlap,
-          tgtcthue: item?.tgtcthue,
-          tgtthue: item?.tgtthue,
-          tgtttbchu: item?.tgtttbchu,
-          tgtttbso: item?.tgtttbso,
-          thdon: item?.thdon,
-          thttlphi: item?.thttlphi,
-          thttltsuat: item?.thttltsuat,
-          ttcktmai: item?.ttcktmai,
-          tthai: item?.tthai,
-          ttxly: item?.ttxly,
-          tgtphi: item?.tgtphi,
-          tgtkhac: item?.tgtkhac,
-          nbcks: item?.nbcks,
-          tdlhdgoc: item?.tdlhdgoc,
-          thtttoan: item?.thtttoan,
-          msttcgp: item?.msttcgp,
-          cqtcks: item?.cqtcks,
-        }));
-        console.log({
-          LoaiHD: 1,
-          dsHoadon: payload,
-        });
-      } else {
-        setDataInvoices([]);
-        setInitialData([]);
-        setFilterData([]);
-        setPage((prev) => ({
-          ...prev,
-          total: response.total,
-          current: typeBtn === "next" ? prev.current + 1 : prev.current,
-        }));
       }
 
       setRangeDate(date);
 
-      // await Luulogtruyxuatdl({
-      //   madv: taikhoanthue?.mst,
-      // });
       setLoading(false);
 
       return true;
@@ -462,31 +369,6 @@ export default function ListInvoice({
 
       callback();
 
-      // const syncTime = await LayTGDongboDLcuoi({
-      //   madv: taikhoanthue?.mst,
-      // });
-
-      // if (syncTime) {
-      //   const checkSyncTime = checkWithinOneHourFromSyncTime(syncTime);
-
-      //   if (!checkSyncTime) {
-      //     handleOpenNotification({
-      //       type: "error",
-      //       message: "Lỗi",
-      //       description:
-      //         "Dữ liệu đã được đồng bộ trong vòng 1 giờ, vui lòng thử lại sau",
-      //     });
-      //     return [];
-      //   }
-      // } else {
-      //   handleOpenNotification({
-      //     type: "error",
-      //     message: "Lỗi",
-      //     description: "Không thể lấy thời gian đồng bộ cuối cùng",
-      //   });
-      //   return [];
-      // }
-
       const res = await fetchData({
         date,
         newState: {
@@ -521,7 +403,6 @@ export default function ListInvoice({
   const onChangeTabs = (key: string) => {
     setTab(key);
     setDataInvoices([]);
-    setInitialData([]);
     setFilterData([]);
     setPage((prev) => ({ ...prev, total: 0 }));
     setRangeDate([]);
@@ -540,31 +421,91 @@ export default function ListInvoice({
   );
 
   const handleSearch = useCallback(
-    (value: string, filteredData: any[] = filterData) => {
+    (
+      value: string,
+      filteredDataParam: any,
+      isReset = false,
+      isFilter = false
+    ) => {
       const data = value
-        ? filteredData.filter((item) => {
+        ? filteredDataParam.filter((item: any) => {
             return (
-              item.shdon
+              item?.shdon
                 ?.toString()
                 ?.toLowerCase()
                 ?.includes(value.toLowerCase()?.trim()) ||
-              item.khmshdon
+              item?.khmshdon
                 ?.toString()
                 ?.toLowerCase()
                 ?.includes(value.toLowerCase()?.trim()) ||
-              item.thongTinNguoiBan?.nbten
+              item?.thongTinNguoiBan?.nbten
                 ?.toLowerCase()
                 ?.includes(value.toLowerCase()?.trim()) ||
-              item.thongTinNguoiBan?.mst
+              item?.thongTinNguoiBan?.mst
                 ?.toLowerCase()
                 ?.includes(value.toLowerCase()?.trim())
             );
           })
-        : filteredData;
+        : filteredDataParam;
 
-      setDataInvoices(data.slice((page.current - 1) * 15, page.current * 15));
+      const chunkSize: number = page.pageSize;
+      const newRes: any[] = [];
+      const totalChunks = Math.ceil(data.length / chunkSize);
+
+      for (let i = 0; i < totalChunks; i++) {
+        const chunk = data.slice(i * chunkSize, i * chunkSize + chunkSize);
+        newRes.push({
+          page: i + 1,
+          data: chunk,
+        });
+      }
+
+      setDataInvoices(newRes);
+
+      if (isReset) {
+        if (isEmpty(value)) {
+          setPage((prev) => ({
+            ...prev,
+            total: totalRecord,
+            current: 1,
+          }));
+        } else {
+          setPage((prev) => ({
+            ...prev,
+            total: data.length,
+            current: 1,
+          }));
+        }
+
+        return;
+      }
+
+      if (isFilter) {
+        if (isEmpty(value)) {
+          setPage((prev) => ({
+            ...prev,
+            total: data.length,
+            current: 1,
+          }));
+        } else {
+          setPage((prev) => ({
+            ...prev,
+            total: data.length,
+            current: 1,
+          }));
+        }
+
+        return;
+      }
+
+      setPage((prev) => ({
+        ...prev,
+        total: isEmpty(value) && !isFiltered ? totalRecord : data.length,
+        current: 1,
+      }));
     },
-    [filterData, page]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [filterData, page, stateStack]
   );
 
   const handleFilter = useCallback(
@@ -577,11 +518,11 @@ export default function ListInvoice({
       type: any;
       date: any;
     }) => {
-      if (!value || isEmpty(initialData)) return;
+      if (!value || isEmpty(stateStack)) return;
 
-      let newData: any = initialData;
+      let newData: any = stateStack.flatMap((item: any) => item.data);
       if (date) {
-        newData = initialData.filter((item) => {
+        newData = newData.filter((item: any) => {
           const tdlapDate = dayjs(item.tdlap, "DD/MM/YYYY HH:mm:ss");
           return (
             tdlapDate.isSameOrAfter(date[0].startOf("day")) &&
@@ -619,15 +560,32 @@ export default function ListInvoice({
 
       updatedFilter[type] = value;
 
-      setFilterData(newData);
-      handleSearch(searchValue, newData);
+      const chunkSize: number = page.pageSize;
+      const newRes: any[] = [];
+      const totalChunks = Math.ceil(newData.length / chunkSize);
+
+      for (let i = 0; i < totalChunks; i++) {
+        const chunk = newData.slice(i * chunkSize, i * chunkSize + chunkSize);
+        newRes.push({
+          page: i + 1,
+          data: chunk,
+        });
+      }
+      setIsFiltered(true);
+      setFilterData(newRes);
+      handleSearch(searchValue, newData, false, true);
     },
-    [initialData, searchValue, handleSearch]
+    [stateStack, searchValue, handleSearch, page.pageSize]
   );
 
   const handleResetFilter = () => {
-    setFilterData(initialData);
-    handleSearch(searchValue, initialData);
+    setFilterData(stateStack);
+    setIsFiltered(false);
+    handleSearch(
+      searchValue,
+      stateStack.flatMap((item: any) => item.data),
+      true
+    );
     setDataFilter({
       value: String(TTMST_Options[0].value),
       type: "tthai",
@@ -825,24 +783,26 @@ export default function ListInvoice({
   };
 
   const handleExportExcel = useCallback(() => {
-    const newData = filterData.filter((item) => {
-      return (
-        item.shdon
-          ?.toString()
-          ?.toLowerCase()
-          ?.includes(searchValue.toLowerCase()) ||
-        item.khmshdon
-          ?.toString()
-          ?.toLowerCase()
-          ?.includes(searchValue.toLowerCase()) ||
-        item.thongTinNguoiBan?.nbten
-          ?.toLowerCase()
-          ?.includes(searchValue.toLowerCase()) ||
-        item.thongTinNguoiBan?.mst
-          ?.toLowerCase()
-          ?.includes(searchValue.toLowerCase())
-      );
-    });
+    const newData = filterData
+      .flatMap((item: any) => item.data)
+      .filter((item) => {
+        return (
+          item.shdon
+            ?.toString()
+            ?.toLowerCase()
+            ?.includes(searchValue.toLowerCase()) ||
+          item.khmshdon
+            ?.toString()
+            ?.toLowerCase()
+            ?.includes(searchValue.toLowerCase()) ||
+          item.thongTinNguoiBan?.nbten
+            ?.toLowerCase()
+            ?.includes(searchValue.toLowerCase()) ||
+          item.thongTinNguoiBan?.mst
+            ?.toLowerCase()
+            ?.includes(searchValue.toLowerCase())
+        );
+      });
 
     const excelData = newData?.map((item, index) => {
       return {
@@ -892,7 +852,12 @@ export default function ListInvoice({
         setQuery={(values, callback) => {
           setQuery({ values, callback });
         }}
-        handleSearch={handleSearch}
+        handleSearch={(value) =>
+          handleSearch(
+            value,
+            filterData.flatMap((item: any) => item.data)
+          )
+        }
         handleFilter={handleFilter}
         handleChange={handleChange}
         searchValue={searchValue}
@@ -918,8 +883,8 @@ export default function ListInvoice({
       />
       <TableHoaDon
         data={
-          stateStack.length > 0
-            ? stateStack.find((item: any) => item.page === page.current)?.data
+          dataInvoices.length > 0
+            ? dataInvoices.find((item: any) => item.page === page.current)?.data
             : []
         }
         loading={loading}
@@ -938,7 +903,7 @@ export default function ListInvoice({
         rowClassName={rowClassName}
         state={state}
         stateStack={stateStack}
-        initialData={initialData}
+        initialData={stateStack.flatMap((item: any) => item.data)}
         currrentPage={page.current}
       />
 

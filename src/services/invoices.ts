@@ -103,7 +103,7 @@ export const getInvoices = async ({
 
     let baseURL = `${
       API_URL[typeInvoice]
-    }/${type}?sort=tdlap:desc,khmshdon:asc,shdon:desc&size=50&search=tdlap=ge=${dayjs(
+    }/${type}?sort=tdlap:desc,khmshdon:asc,shdon:desc&size=15&search=tdlap=ge=${dayjs(
       date[0]
     ).format("DD/MM/YYYY")}T00:00:00;tdlap=le=${dayjs(date[1]).format(
       "DD/MM/YYYY"

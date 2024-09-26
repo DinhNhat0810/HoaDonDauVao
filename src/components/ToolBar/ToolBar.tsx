@@ -1,9 +1,13 @@
 import { memo, useContext, useEffect, useState } from "react";
 import CustomInput from "../CustomInput";
-import { EyeOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  EyeOutlined,
+  LoadingOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import ExcelIcon from "../Icon/excel";
 import FilterIcon from "../Icon/filter";
-import { Form, Popover, Spin } from "antd";
+import { Form, Popover } from "antd";
 import ReloadIcon from "../Icon/reload";
 import SyncInvoiceModal from "../CustomModal/SyncInvoiceModal";
 import useDebounce from "../../hooks/useDebounce";
@@ -183,7 +187,7 @@ const ToolBar = ({
           >
             {loading ? (
               <>
-                <Spin />
+                <LoadingOutlined />
                 <span className="font-medium text-sm ml-1">Đang đồng bộ</span>
               </>
             ) : (

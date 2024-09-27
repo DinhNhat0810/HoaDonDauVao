@@ -353,51 +353,6 @@ export default function ListInvoice({
             },
           ]);
         }
-
-        const payload = newResults?.map((item: any) => ({
-          nbmst: item?.nbmst,
-          khmshdon: item?.khmshdon,
-          khhdon: item?.khhdon,
-          shdon: item?.shdon,
-          hthdon: item?.hthdon,
-          khhdgoc: item?.khhdgoc,
-          khmshdgoc: item?.khmshdgoc,
-          mhdon: item?.mhdon,
-          mtdtchieu: item?.mtdtchieu,
-          nbdchi: item?.nbdchi,
-          nbten: item?.nbten,
-          ncma: item?.ncma,
-          ncnhat: item?.ncnhat,
-          ngcnhat: item?.ngcnhat,
-          nky: item?.nky,
-          nmdchi: item?.nmdchi,
-          nmmst: item?.nmmst,
-          nmten: item?.nmten,
-          shdgoc: item?.shdgoc,
-          tchat: item?.tchat,
-          tdlap: item?.tdlap,
-          tgtcthue: item?.tgtcthue,
-          tgtthue: item?.tgtthue,
-          tgtttbchu: item?.tgtttbchu,
-          tgtttbso: item?.tgtttbso,
-          thdon: item?.thdon,
-          thttlphi: item?.thttlphi,
-          thttltsuat: item?.thttltsuat,
-          ttcktmai: item?.ttcktmai,
-          tthai: item?.tthai,
-          ttxly: item?.ttxly,
-          tgtphi: item?.tgtphi,
-          tgtkhac: item?.tgtkhac,
-          nbcks: item?.nbcks,
-          tdlhdgoc: item?.tdlhdgoc,
-          thtttoan: item?.thtttoan,
-          msttcgp: item?.msttcgp,
-          cqtcks: item?.cqtcks,
-        }));
-        console.log({
-          LoaiHD: 1,
-          dsHoadon: payload,
-        });
       } else {
         setDataInvoices([]);
         setInitialData([]);

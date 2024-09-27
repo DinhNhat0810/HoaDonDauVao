@@ -46,6 +46,7 @@ export default function ListInvoice1({
 }) {
   const [dataInvoices, setDataInvoices] = useState<any[]>([]);
   const { handleOpenNotification } = useContext(NotificationContext);
+  const { setTaikhoanthue } = useContext(AppContext);
   const [fileName, setFileName] = useState("");
   const [tab, setTab] = useState("5");
   const { taikhoanthue } = useContext(AppContext);
@@ -102,6 +103,19 @@ export default function ListInvoice1({
   const [totalRecord, setTotalRecord] = useState(0);
   const [isFiltered, setIsFiltered] = useState(false);
 
+  useEffect(() => {
+    const SLHDCL = localStorage.getItem("SLHDCL");
+
+    if (isEmpty(SLHDCL) || Number(SLHDCL) <= 0) {
+      handleOpenNotification({
+        type: "error",
+        message: "Lỗi",
+        description: "Đã hết số hóa đơn đăng ký",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleRowClick = (record: any) => {
     setSelectedRowKey(record.key);
   };
@@ -113,6 +127,17 @@ export default function ListInvoice1({
   const handleChange = (e: any) => {
     setSearchValue(e);
   };
+
+  function checkWithinOneHourFromSyncTime(syncTime: string) {
+    const now = dayjs();
+    const oneHourAfterSyncTime = dayjs(syncTime).add(1, "hour"); // Tính thời điểm 1 giờ sau syncTime
+
+    // Kiểm tra nếu thời gian hiện tại nằm trong khoảng từ syncTime đến 1 giờ sau đó
+    if (now.isAfter(dayjs(syncTime)) && now.isBefore(oneHourAfterSyncTime)) {
+      return false; // Trả về false nếu thời gian hiện tại nằm trong khoảng 1 giờ sau syncTime
+    }
+    return true;
+  }
 
   const items: TabsProps["items"] = [
     {
@@ -138,6 +163,7 @@ export default function ListInvoice1({
     date: any;
   }) => {
     try {
+      setLoading(true);
       const checkExist = stateStack.find(
         (item: any) => item.page === newState.page
       );
@@ -147,6 +173,7 @@ export default function ListInvoice1({
           ...prev,
           current: prev.current + 1,
         }));
+        setLoading(false);
         return;
       }
 
@@ -165,7 +192,7 @@ export default function ListInvoice1({
           ...prev,
           current: replaceStateStack + 1,
         }));
-
+        setLoading(false);
         return;
       } else {
         const response = await getInvoices({
@@ -176,6 +203,18 @@ export default function ListInvoice1({
           state: newState.nextStateValue,
           typeInvoice: typeInvoice,
         });
+
+        if (response?.status === 401) {
+          setTaikhoanthue && setTaikhoanthue({});
+          localStorage.removeItem("taikhoanthue");
+          handleOpenNotification({
+            type: "error",
+            message: "Lỗi",
+            description: response.message,
+          });
+          setLoading(false);
+          return false;
+        }
 
         const newResults = response?.datas;
 
@@ -308,6 +347,51 @@ export default function ListInvoice1({
             total: response.total,
             current: typeBtn === "next" ? prev.current + 1 : prev.current,
           }));
+
+          const payload = newResults?.map((item: any) => ({
+            nbmst: item?.nbmst,
+            khmshdon: item?.khmshdon,
+            khhdon: item?.khhdon,
+            shdon: item?.shdon,
+            hthdon: item?.hthdon,
+            khhdgoc: item?.khhdgoc,
+            khmshdgoc: item?.khmshdgoc,
+            mhdon: item?.mhdon,
+            mtdtchieu: item?.mtdtchieu,
+            nbdchi: item?.nbdchi,
+            nbten: item?.nbten,
+            ncma: item?.ncma,
+            ncnhat: item?.ncnhat,
+            ngcnhat: item?.ngcnhat,
+            nky: item?.nky,
+            nmdchi: item?.nmdchi,
+            nmmst: item?.nmmst,
+            nmten: item?.nmten,
+            shdgoc: item?.shdgoc,
+            tchat: item?.tchat,
+            tdlap: item?.tdlap,
+            tgtcthue: item?.tgtcthue,
+            tgtthue: item?.tgtthue,
+            tgtttbchu: item?.tgtttbchu,
+            tgtttbso: item?.tgtttbso,
+            thdon: item?.thdon,
+            thttlphi: item?.thttlphi,
+            thttltsuat: item?.thttltsuat,
+            ttcktmai: item?.ttcktmai,
+            tthai: item?.tthai,
+            ttxly: item?.ttxly,
+            tgtphi: item?.tgtphi,
+            tgtkhac: item?.tgtkhac,
+            nbcks: item?.nbcks,
+            tdlhdgoc: item?.tdlhdgoc,
+            thtttoan: item?.thtttoan,
+            msttcgp: item?.msttcgp,
+            cqtcks: item?.cqtcks,
+          }));
+          console.log({
+            LoaiHD: type === "purchase" ? 1 : 2,
+            dsHoadon: payload,
+          });
         } else {
           setDataInvoices([]);
           setFilterData([]);
@@ -320,6 +404,10 @@ export default function ListInvoice1({
       }
 
       setRangeDate(date);
+
+      await Luulogtruyxuatdl({
+        madv: taikhoanthue?.mst,
+      });
 
       setLoading(false);
 
@@ -368,6 +456,31 @@ export default function ListInvoice1({
       }
 
       callback();
+
+      // const syncTime = await LayTGDongboDLcuoi({
+      //   madv: taikhoanthue?.mst,
+      // });
+
+      // if (syncTime) {
+      //   const checkSyncTime = checkWithinOneHourFromSyncTime(syncTime);
+
+      //   if (!checkSyncTime) {
+      //     handleOpenNotification({
+      //       type: "error",
+      //       message: "Lỗi",
+      //       description:
+      //         "Dữ liệu đã được đồng bộ trong vòng 1 giờ, vui lòng thử lại sau",
+      //     });
+      //     return [];
+      //   }
+      // } else {
+      //   handleOpenNotification({
+      //     type: "error",
+      //     message: "Lỗi",
+      //     description: "Không thể lấy thời gian đồng bộ cuối cùng",
+      //   });
+      //   return [];
+      // }
 
       const res = await fetchData({
         date,

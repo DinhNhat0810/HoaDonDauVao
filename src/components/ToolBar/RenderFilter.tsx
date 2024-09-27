@@ -32,7 +32,7 @@ const fileterOptions = [
 export default function RenderFilter({
   handleFilter,
   setOpenFilter,
-  rangeDate,
+  rangeDate = [],
   setDataFilter,
   dataFilter,
   form,

@@ -20,6 +20,7 @@ import RenderFilter from "./RenderFilter";
 import LoginModal from "../CustomModal/LoginModal";
 import { AppContext } from "../../contexts/app.context";
 import { isEmpty } from "lodash";
+import { NotificationContext } from "../../contexts/notification.context";
 
 type ToolBarProps = {
   className?: string;
@@ -103,6 +104,7 @@ const ToolBar = ({
     },
   });
   const { taikhoanthue } = useContext(AppContext);
+  const SLHDCL = localStorage.getItem("SLHDCL");
 
   const handleOpen = () => {
     if (isEmpty(taikhoanthue?.token)) {
@@ -180,10 +182,18 @@ const ToolBar = ({
         {showSyncBtn && (
           <div
             onClick={() => {
-              if (loading) return;
+              if (loading || isEmpty(SLHDCL) || Number(SLHDCL) <= 0) return;
               handleOpen();
             }}
-            className="h-9 flex justify-between cursor-pointer items-center border-[#D4D4D6] border p-[5px] px-4 gap-1 rounded-[4px] hover:bg-[#F6F7F9]"
+            className={`h-9 flex justify-between items-center border-[#D4D4D6] border p-[5px] px-4 gap-1 rounded-[4px]
+              
+              ${
+                isEmpty(SLHDCL) || Number(SLHDCL) <= 0
+                  ? "cursor-not-allowed bg-slate-200 "
+                  : "cursor-pointer hover:bg-[#F6F7F9]"
+              }
+              
+              `}
           >
             {loading ? (
               <>

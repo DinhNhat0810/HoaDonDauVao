@@ -41,7 +41,7 @@ const Login = () => {
         passwd: values.password,
       });
 
-      if (!isEmpty(res)) {
+      if (!isEmpty(res) && res != 0) {
         setLoading(false);
         const now = new Date();
         const endOfDay = new Date(now);

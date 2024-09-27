@@ -29,22 +29,28 @@ export default function ThongTinTaiNguyen() {
       setLoading(true);
       await Thongtintainguyen({
         madonvi: mst,
-      }).then((res) => {
-        setData([
-          {
-            title: "Hóa đơn đã mua",
-            value: res?.SoluongDK || 0,
-          },
-          {
-            title: "Hóa đơn đã sử dụng",
-            value: res?.SLHDonSD || 0,
-          },
-          {
-            title: "Hóa đơn còn lại",
-            value: res?.SLConlai || 0,
-          },
-        ]);
-      });
+      })
+        .then((res) => {
+          setData([
+            {
+              title: "Hóa đơn đã mua",
+              value: res?.SoluongDK || 0,
+            },
+            {
+              title: "Hóa đơn đã sử dụng",
+              value: res?.SLHDonSD || 0,
+            },
+            {
+              title: "Hóa đơn còn lại",
+              value: res?.SLConlai || 0,
+            },
+          ]);
+          localStorage.setItem("SLHDCL", res?.SLConlai || "0");
+        })
+        .catch((error) => {
+          console.error(error);
+          localStorage.setItem("SLHDCL", "0");
+        });
       setLoading(false);
     }
   };

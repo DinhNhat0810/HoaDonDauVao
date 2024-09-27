@@ -219,17 +219,17 @@ export default function Sidebar({
   }, [location]);
 
   const handleSelectItem = (item: ItemsType) => {
-    const checkExist = item.children?.find((e) => e.key === activeSubMenu);
-    if (item.key) {
-      !checkExist && navigate(item.children?.[0].key || "");
-    }
     setIsFirstLoad(false);
-
     if (collapsed) {
       setOpenPopover({
         ...openPopover,
         [item.key]: !openPopover[item.key],
       });
+    }
+
+    const checkExist = item.children?.find((e) => e.key === activeSubMenu);
+    if (item.key) {
+      !checkExist && navigate(item.children?.[0].key || "");
     }
   };
 

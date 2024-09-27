@@ -3,14 +3,9 @@ import { isEmpty } from "lodash";
 
 export default function PrevNextPagination1({
   total = 0,
-  state = {
-    prev: null,
-    next: null,
-  },
   handleChangePage = () => {},
   stateStack,
   loading,
-  initialData,
   currrentPage,
 }: {
   total: number | string;
@@ -70,7 +65,8 @@ export default function PrevNextPagination1({
             ${
               stateStack.length !== 1 &&
               !isEmpty(stateStack) &&
-              currrentPage !== 1
+              currrentPage !== 1 &&
+              !loading
                 ? "bg-[#F6F7F9] cursor-pointer"
                 : "text-[#cecece] cursor-not-allowed"
             }
@@ -86,7 +82,8 @@ export default function PrevNextPagination1({
             ${
               stateStack[stateStack.length - 1] &&
               !isEmpty(stateStack) &&
-              currrentPage * 15 < +total
+              currrentPage * 15 < +total &&
+              !loading
                 ? "bg-[#F6F7F9] cursor-pointer"
                 : "text-[#cecece] cursor-not-allowed"
             }

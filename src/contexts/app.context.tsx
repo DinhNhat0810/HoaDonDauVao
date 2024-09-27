@@ -17,11 +17,11 @@ const taikhoanthueLocal = JSON.parse(
   localStorage.getItem("taikhoanthue") || "{}"
 );
 
-const checkToken = !isEmpty(user);
+const checkIsLogin = !isEmpty(user);
 
 const inititalAppContext: AppContextType = {
-  // isAuthenticated: checkToken,
-  isAuthenticated: true,
+  isAuthenticated: checkIsLogin,
+  // isAuthenticated: true,
   setIsAuthenticated: () => null,
   mst: user?.mst,
   expiredAt: user?.expiredAt,
@@ -82,7 +82,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
-  }, []);
+  }, [taikhoanthue]);
 
   return (
     <AppContext.Provider

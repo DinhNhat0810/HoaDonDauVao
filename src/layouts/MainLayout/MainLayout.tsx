@@ -11,7 +11,7 @@ type Props = {
 const MainLayout = ({ children }: Props) => {
   const [collapsed, setCollapsed] = useState(false);
 
-  const { mst, token } = useContext(AppContext);
+  const { mst } = useContext(AppContext);
 
   return (
     <div className="flex h-screen overflow-hidden">

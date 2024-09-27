@@ -124,7 +124,14 @@ export const getInvoices = async ({
 
     return response;
   } catch (error: any) {
-    console.log(error);
+    if (error?.response?.data?.status === 401) {
+      return {
+        status: 401,
+        message:
+          "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại bằng tài khoản thuế",
+      };
+    }
+
     return null;
   }
 };

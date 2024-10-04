@@ -94,35 +94,58 @@ export const getInvoices = async ({
   typeInvoice?: string;
 }) => {
   try {
-    const API_URL: {
-      [key: string]: string;
+    const hdmaytinhtien: {
+      [key: string]: number;
     } = {
-      hddt: "https://hoadondientu.gdt.gov.vn:30000/query/invoices",
-      hdmtt: "https://hoadondientu.gdt.gov.vn:30000/sco-query/invoices",
+      hddt: 0,
+      hdmtt: 1,
     };
 
-    let baseURL = `${
-      API_URL[typeInvoice]
-    }/${type}?sort=tdlap:desc,khmshdon:asc,shdon:desc&size=15&search=tdlap=ge=${dayjs(
-      date[0]
-    ).format("DD/MM/YYYY")}T00:00:00;tdlap=le=${dayjs(date[1]).format(
-      "DD/MM/YYYY"
-    )}T23:59:59;ttxly==${ttxly}`;
-
-    if (state) {
-      baseURL = baseURL.concat(`&state=${state}`);
-    }
+    const soapRequest = `
+      <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+        <soap12:Body>
+          <GetDuLieuTuThue xmlns="http://tempuri.org/">
+            <ttxly>${ttxly}</ttxly>
+            <tungay>${dayjs(date[0]).format("DD/MM/YYYY")}T00:00:00</tungay>
+            <denngay>${dayjs(date[1]).format("DD/MM/YYYY")}T23:59:59</denngay>
+            <code>${state || ""}</code>
+            <token>${taikhoanthue?.token}</token>
+            <type>${type}</type>
+            <madv>${taikhoanthue?.mst}</madv>
+            <hdmaytinhtien>${hdmaytinhtien[typeInvoice]}</hdmaytinhtien>
+          </GetDuLieuTuThue>
+        </soap12:Body>
+      </soap12:Envelope>
+    `;
 
     const response: any = await https({
-      baseURL: baseURL,
-      method: "get",
+      baseURL: API_URL,
+      method: "post",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + taikhoanthue?.token,
+        "Content-Type": "application/soap+xml;charset=UTF-8",
       },
+      data: soapRequest,
     });
 
-    return response;
+    const dataJson = convertXmlToJson(response);
+    const DocumentElement =
+      dataJson["soap:Envelope"]["soap:Body"]["GetDuLieuTuThueResponse"][
+        "GetDuLieuTuThueResult"
+      ];
+
+    if (!isEmpty(DocumentElement)) {
+      if (JSON.parse(DocumentElement)?.status === 401) {
+        return {
+          status: 401,
+          message:
+            "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại bằng tài khoản thuế",
+        };
+      }
+
+      return JSON.parse(DocumentElement);
+    }
+
+    return null;
   } catch (error: any) {
     if (error?.response?.data?.status === 401) {
       return {

@@ -9,7 +9,9 @@ import signAuth from "../../assets/images/auth/sign-auth.png";
 
 // export const API_URL = "http://10.253.214.26:8010/apiquanlyhoadon.asmx";
 
-export const API_URL = "http://10.0.0.168:8010/apiquanlyhoadon.asmx";
+// export const API_URL = "http://10.0.0.168:8010/apiquanlyhoadon.asmx";
+
+export const API_URL = "https://localhost:44392/WebService1.asmx";
 
 export const ROUTE = {
   HOME: "/",

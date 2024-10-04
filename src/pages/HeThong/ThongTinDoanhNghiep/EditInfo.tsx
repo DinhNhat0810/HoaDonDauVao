@@ -7,7 +7,7 @@ import { Form } from "antd";
 
 export default function EditInfo() {
   const [isEdit, setIsEdit] = useState(false);
-  const { mst } = useContext(AppContext);
+  const { mst, business_name } = useContext(AppContext);
   const [form] = Form.useForm();
 
   const handleSubmit = async () => {
@@ -23,17 +23,17 @@ export default function EditInfo() {
 
   return (
     <div className="mt-4">
-      <div>
+      {/* <div>
         <EditIcon
           className="p-2 border border-[#D4D4D6] inline-block rounded-md cursor-pointer"
           onClick={() => setIsEdit(true)}
         />
-      </div>
+      </div> */}
       <Form form={form}>
         <div className="flex flex-col items-start relative mt-2">
           <div className="flex items-center justify-between px-4 py-5 self-stretch w-full bg-neutral-50 rounded-[8px_8px_0px_0px] relative flex-[0_0_auto]">
             <p className="relative w-fit font-heading-h3 font-[number:var(--heading-h3-font-weight)] text-neutral-800 text-[length:var(--heading-h3-font-size)] tracking-[var(--heading-h3-letter-spacing)] leading-[var(--heading-h3-line-height)] whitespace-nowrap [font-style:var(--heading-h3-font-style)]">
-              Công ty Cổ phần Công nghệ Long Hoàng Phát
+              {business_name}
             </p>
             <div className="inline-flex items-center justify-center gap-2.5 px-2.5 py-1.5 bg-[#9B9B9E] rounded relative flex-[0_0_auto]">
               <div className="relative w-fit mt-[-1.00px] font-body-large-medium font-[number:var(--body-large-medium-font-weight)] text-white text-[length:var(--body-large-medium-font-size)] tracking-[var(--body-large-medium-letter-spacing)] leading-[var(--body-large-medium-line-height)] whitespace-nowrap [font-style:var(--body-large-medium-font-style)]">

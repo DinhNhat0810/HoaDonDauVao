@@ -57,6 +57,7 @@ type ToolBarProps = {
   showSearch?: boolean;
   loading?: boolean;
   dataInvoices: any;
+  placeholderSearchBox?: string;
 };
 
 const ToolBar = ({
@@ -85,6 +86,7 @@ const ToolBar = ({
   showSearch = true,
   loading,
   dataInvoices,
+  placeholderSearchBox = "Nhập từ khóa để tìm",
 }: ToolBarProps) => {
   const [openSyncInvoiceModal, setOpenSyncInvoiceModal] = useState(false);
   const debouncedValue = useDebounce(searchValue, 500);
@@ -138,7 +140,7 @@ const ToolBar = ({
       <div className="flex gap-2">
         {showSearch && (
           <CustomInput
-            placeholder="Nhập từ khóa để tìm"
+            placeholder={placeholderSearchBox}
             prefix={<SearchOutlined className="cursor-pointer" />}
             configBoderRadius={4}
             className="w-60 py-[6px]"

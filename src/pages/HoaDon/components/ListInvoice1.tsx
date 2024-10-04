@@ -103,6 +103,8 @@ export default function ListInvoice1({
   const [totalRecord, setTotalRecord] = useState(0);
   const [isFiltered, setIsFiltered] = useState(false);
 
+  console.log(stateStack);
+
   useEffect(() => {
     const SLHDCL = localStorage.getItem("SLHDCL");
 
@@ -240,7 +242,7 @@ export default function ListInvoice1({
               khmshdon: item?.khmshdon,
               khhdon: item?.khhdon,
               shdon: item?.shdon,
-              ntao: dayjs(item?.ntao).format("DD/MM/YYYY HH:mm:ss"),
+              ntao: dayjs(item?.tdlap).format("DD/MM/YYYY HH:mm:ss"),
             },
 
             nky: dayjs(item?.nky).format("DD/MM/YYYY HH:mm:ss"),
@@ -274,7 +276,7 @@ export default function ListInvoice1({
 
             khhdon: item?.khhdon,
             shdon: item?.shdon,
-            ntao: dayjs(item?.ntao).format("DD/MM/YYYY HH:mm:ss"),
+            ntao: dayjs(item?.tdlap).format("DD/MM/YYYY HH:mm:ss"),
 
             thttltsuat: item?.thttltsuat,
             msttcgp: item?.msttcgp,
@@ -347,51 +349,6 @@ export default function ListInvoice1({
             total: response.total,
             current: typeBtn === "next" ? prev.current + 1 : prev.current,
           }));
-
-          const payload = newResults?.map((item: any) => ({
-            nbmst: item?.nbmst,
-            khmshdon: item?.khmshdon,
-            khhdon: item?.khhdon,
-            shdon: item?.shdon,
-            hthdon: item?.hthdon,
-            khhdgoc: item?.khhdgoc,
-            khmshdgoc: item?.khmshdgoc,
-            mhdon: item?.mhdon,
-            mtdtchieu: item?.mtdtchieu,
-            nbdchi: item?.nbdchi,
-            nbten: item?.nbten,
-            ncma: item?.ncma,
-            ncnhat: item?.ncnhat,
-            ngcnhat: item?.ngcnhat,
-            nky: item?.nky,
-            nmdchi: item?.nmdchi,
-            nmmst: item?.nmmst,
-            nmten: item?.nmten,
-            shdgoc: item?.shdgoc,
-            tchat: item?.tchat,
-            tdlap: item?.tdlap,
-            tgtcthue: item?.tgtcthue,
-            tgtthue: item?.tgtthue,
-            tgtttbchu: item?.tgtttbchu,
-            tgtttbso: item?.tgtttbso,
-            thdon: item?.thdon,
-            thttlphi: item?.thttlphi,
-            thttltsuat: item?.thttltsuat,
-            ttcktmai: item?.ttcktmai,
-            tthai: item?.tthai,
-            ttxly: item?.ttxly,
-            tgtphi: item?.tgtphi,
-            tgtkhac: item?.tgtkhac,
-            nbcks: item?.nbcks,
-            tdlhdgoc: item?.tdlhdgoc,
-            thtttoan: item?.thtttoan,
-            msttcgp: item?.msttcgp,
-            cqtcks: item?.cqtcks,
-          }));
-          console.log({
-            LoaiHD: type === "purchase" ? 1 : 2,
-            dsHoadon: payload,
-          });
         } else {
           setDataInvoices([]);
           setFilterData([]);
@@ -404,10 +361,6 @@ export default function ListInvoice1({
       }
 
       setRangeDate(date);
-
-      await Luulogtruyxuatdl({
-        madv: taikhoanthue?.mst,
-      });
 
       setLoading(false);
 
@@ -993,6 +946,7 @@ export default function ListInvoice1({
         }}
         loading={loading}
         dataInvoices={dataInvoices}
+        placeholderSearchBox="MST, ký hiệu hđ, số hđ, tên người bán"
       />
       <TableHoaDon
         data={

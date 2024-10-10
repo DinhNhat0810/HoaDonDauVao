@@ -1,17 +1,13 @@
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { isEmpty } from "lodash";
 
-export default function PrevNextPagination({
+export default function PrevNextPaginationTest({
   total = 0,
-  state = {
-    prev: null,
-    next: null,
-  },
   handleChangePage = () => {},
   stateStack,
   loading,
-  initialData,
   currrentPage,
+  initialData,
 }: {
   total: number | string;
   state: {
@@ -25,18 +21,28 @@ export default function PrevNextPagination({
   currrentPage: number;
 }) {
   const handlePrev = () => {
-    console.log(stateStack);
-
-    if (stateStack.length === 1 || isEmpty(stateStack) || loading) return;
-    const newState = stateStack[stateStack.length - 3];
-    handleChangePage(newState, "prev");
+    if (isEmpty(initialData) || loading || currrentPage === 1) return;
+    const newState = stateStack[stateStack.length - 2];
+    handleChangePage(
+      {
+        ...newState,
+        page: currrentPage - 1,
+      },
+      "prev"
+    );
   };
 
   const handleNext = () => {
     const newState = stateStack[stateStack.length - 1];
 
-    if (isEmpty(newState) || loading || currrentPage * 15 >= +total) return;
-    handleChangePage(newState, "next");
+    if (isEmpty(initialData) || loading || currrentPage * 15 >= +total) return;
+    handleChangePage(
+      {
+        ...newState,
+        page: currrentPage + 1,
+      },
+      "next"
+    );
   };
 
   return (
@@ -52,9 +58,7 @@ export default function PrevNextPagination({
           onClick={handlePrev}
           className={` 
             ${
-              stateStack.length !== 1 &&
-              !isEmpty(stateStack) &&
-              currrentPage !== 1
+              !isEmpty(initialData) && currrentPage !== 1 && !loading
                 ? "bg-[#F6F7F9] cursor-pointer"
                 : "text-[#cecece] cursor-not-allowed"
             }
@@ -68,9 +72,7 @@ export default function PrevNextPagination({
           onClick={handleNext}
           className={`
             ${
-              stateStack[stateStack.length - 1] &&
-              !isEmpty(stateStack) &&
-              currrentPage * 15 < +total
+              !isEmpty(initialData) && currrentPage * 15 < +total && !loading
                 ? "bg-[#F6F7F9] cursor-pointer"
                 : "text-[#cecece] cursor-not-allowed"
             }

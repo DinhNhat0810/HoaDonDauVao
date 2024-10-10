@@ -2,8 +2,8 @@ import React, { memo, useEffect, useMemo, useState } from "react";
 import { columnsTable } from "./config";
 import CustomTable from "../../../components/CustomTable/CustomTable";
 import CustomPagination from "../../../components/CustomPagination";
-import PrevNextPagination from "../../../components/CustomPagination/PrevNextPagination";
 import PrevNextPagination1 from "../../../components/CustomPagination/PrevNextPagination1";
+import PrevNextPaginationTest from "../../../components/CustomPagination/PrevNextPaginationTest";
 
 const TableHoaDon = ({
   loading,
@@ -39,7 +39,17 @@ const TableHoaDon = ({
 
   return (
     <div className="flex flex-col gap-4">
-      <PrevNextPagination1
+      {/* <PrevNextPagination1
+        handleChangePage={handleChangePage}
+        total={total}
+        state={state}
+        stateStack={stateStack}
+        loading={loading}
+        initialData={initialData}
+        currrentPage={currentPage}
+      /> */}
+
+      <PrevNextPaginationTest
         handleChangePage={handleChangePage}
         total={total}
         state={state}

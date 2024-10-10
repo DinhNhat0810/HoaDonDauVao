@@ -9,77 +9,6 @@ export const columnsTable = () => {
       width: "40px",
       align: "center",
     },
-    // {
-    //   title: "Chức năng",
-    //   dataIndex: "action",
-    //   render: (_: any, record: any) => {
-    //     return (
-    //       <Popover
-    //         open={
-    //           openPopover === record?.key
-    //             ? true
-    //             : openPopover === ""
-    //             ? false
-    //             : false
-    //         }
-    //         onOpenChange={(visible) => {
-    //           if (!visible) {
-    //             handleTogglePopover("");
-    //           } else {
-    //             handleTogglePopover(record?.key);
-    //           }
-    //         }}
-    //         content={
-    //           <div>
-    //             <div
-    //               className="flex items-center cursor-pointer px-2 py-1 hover:bg-gray-200 rounded-md"
-    //               onClick={() => {
-    //                 handleDownload({
-    //                   nbmst: record?.thongTinNguoiBan?.mst,
-    //                   khhdon: record?.thongTinHoaDon?.khhdon,
-    //                   shdon: record?.thongTinHoaDon?.shdon,
-    //                   khmshdon: record?.thongTinHoaDon?.khmshdon,
-    //                 });
-    //                 handleTogglePopover("");
-    //               }}
-    //             >
-    //               <div className="w-6">
-    //                 <DownloadOutlined />
-    //               </div>
-    //               <span className="text-sm flex-1">Tải xuống</span>
-    //             </div>
-
-    //             <div
-    //               className="flex items-center cursor-pointer px-2 py-1 hover:bg-gray-200 rounded-md"
-    //               onClick={() => {
-    //                 handleViewInvoice(record);
-    //                 handleTogglePopover("");
-    //               }}
-    //             >
-    //               <div className="w-6">
-    //                 <EyeOutlined />
-    //               </div>
-    //               <span className="text-sm flex-1">Xem chi tiết</span>
-    //             </div>
-    //           </div>
-    //         }
-    //         trigger="click"
-    //         placement="bottomRight"
-    //       >
-    //         <img
-    //           src={IMAGES.icon.dots}
-    //           alt="dots"
-    //           className="cursor-pointer w-9 h-9"
-    //           onClick={() => {
-    //             handleTogglePopover(record?.key);
-    //           }}
-    //         />
-    //       </Popover>
-    //     );
-    //   },
-    //   fixed: "left",
-    //   width: "60px",
-    // },
 
     {
       title: "Thông tin người bán",
@@ -169,7 +98,7 @@ export const columnsTable = () => {
 
     {
       title: "Trạng thái MST người bán", //pending
-      dataIndex: "tthai",
+      dataIndex: "trangthaiMst",
       render: (value: any) => {
         return (
           <div className="flex items-center">

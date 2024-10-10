@@ -145,7 +145,7 @@ export default function Sidebar({
         // },
         {
           key: ROUTE.BAOCAO_HDRR,
-          label: "Hóa đơn rủi ro",
+          label: "Báo cáo hóa đơn rủi ro",
         },
       ],
     },
@@ -193,14 +193,14 @@ export default function Sidebar({
           key: ROUTE.HETHONG_QLTN,
           label: "Quản lý tài nguyên",
         },
-        {
-          key: ROUTE.HETHONG_KNCQT,
-          label: "Kết nối cơ quan thuế",
-        },
-        {
-          key: ROUTE.HETHONG_NKTC,
-          label: "Nhật ký truy cập",
-        },
+        // {
+        //   key: ROUTE.HETHONG_KNCQT,
+        //   label: "Kết nối cơ quan thuế",
+        // },
+        // {
+        //   key: ROUTE.HETHONG_NKTC,
+        //   label: "Nhật ký truy cập",
+        // },
       ],
     },
   ];

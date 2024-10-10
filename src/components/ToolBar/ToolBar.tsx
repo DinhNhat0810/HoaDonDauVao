@@ -21,6 +21,7 @@ import LoginModal from "../CustomModal/LoginModal";
 import { AppContext } from "../../contexts/app.context";
 import { isEmpty } from "lodash";
 import { NotificationContext } from "../../contexts/notification.context";
+import RangerPickerToolbar from "./RangerPickerToolbar";
 
 type ToolBarProps = {
   className?: string;
@@ -52,12 +53,14 @@ type ToolBarProps = {
   showExportBtn?: boolean;
   showExportTemplateBtn?: boolean;
   showRangerPicker?: boolean;
-  data?: any;
+  excelData?: any;
   type?: string;
   showSearch?: boolean;
   loading?: boolean;
   dataInvoices: any;
   placeholderSearchBox?: string;
+  onChangeRange?: (value: any) => void;
+  disableRange?: boolean;
 };
 
 const ToolBar = ({
@@ -81,12 +84,14 @@ const ToolBar = ({
   showExportBtn = true,
   showExportTemplateBtn = false,
   showRangerPicker = false,
-  data,
+  excelData,
   type = "buyin",
   showSearch = true,
   loading,
   dataInvoices,
   placeholderSearchBox = "Nhập từ khóa để tìm",
+  onChangeRange = () => {},
+  disableRange = false,
 }: ToolBarProps) => {
   const [openSyncInvoiceModal, setOpenSyncInvoiceModal] = useState(false);
   const debouncedValue = useDebounce(searchValue, 500);
@@ -95,7 +100,7 @@ const ToolBar = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenModalLogin, setIsOpenModalLogin] = useState(false);
   const [active, setActive] = useState<any>({
-    tthai: {
+    trangthaiMst: {
       value: "",
     },
     tthd: {
@@ -163,11 +168,9 @@ const ToolBar = ({
 
         {showRangerPicker && (
           <div className="flex">
-            <CustomInput
-              placeholder={["Từ ngày", "Đến ngày"]}
-              configBoderRadius={4}
-              type="rangePicker"
-              className="py-[6px] w-60"
+            <RangerPickerToolbar
+              onChangeRange={onChangeRange}
+              disableRange={disableRange}
             />
           </div>
         )}
@@ -252,7 +255,7 @@ const ToolBar = ({
                   ],
                 });
                 setActive({
-                  tthai: {
+                  trangthaiMst: {
                     value: "",
                   },
                   tthd: {
@@ -282,7 +285,7 @@ const ToolBar = ({
 
       {showExportTemplateBtn && (
         <SelectTemplateModal
-          data={data}
+          excelData={excelData}
           fileName={"fileName"}
           type={type}
           isModalOpen={isModalOpen}

@@ -12,7 +12,7 @@ const fileterOptions = [
     label: "Trạng thái MST người bán",
     children: TTMST_Options,
     type: "square",
-    value: "tthai",
+    value: "trangthaiMst",
     tooltip: true,
   },
   // {

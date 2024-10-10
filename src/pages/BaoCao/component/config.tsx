@@ -1,41 +1,10 @@
-import { render } from "react-dom";
 import { convertToVnd } from "../../../libs/common";
-import { HTHDO_Options, IMAGES, TTMST_Options } from "../../../libs/constants";
-import { DownloadOutlined, EyeOutlined } from "@ant-design/icons";
-import { Popover } from "antd";
-
-export const data = Array.from({ length: 10 }, (_, index) => {
-  return {
-    key: index,
-    khmshdon: "Công ty cổ phần công nghệ Nacencomm",
-    shdon: "HD001",
-    hthuc: (index % 3) + 1, // Giá trị hthuc luân phiên từ 1 đến 3
-    tongThanhToan: "100000000000",
-    thueSuat: "10%",
-    ncnhat: "01/01/2021",
-    tdlap: "01/01/2021",
-    tthai: "Đã kích hoạt",
-    ttmst: (index % 3) + 1,
-    thongTinHoaDon: {
-      khmshdon: "khách hàng mua sỉ hóa đơn" + index + 1,
-      khhdon: "ký hiệu hóa đơn" + index + 1,
-      shdon: "số hóa đơn" + index + 1,
-      ntao: "Ngày tạo" + index + 1,
-    },
-    thongTinNguoiBan: {
-      nbten: "Tên người bán" + index + 1,
-      mst: "MST" + index + 1,
-    },
-    tongTruocThue: "1000000",
-    nky: "01/01/2021",
-    ghiChu: "Ghi chú" + index + 1,
-  };
-});
+import { TTHD, TTMST_Options } from "../../../libs/constants";
 
 export const columnsTable = ({
   handleOpenModal,
 }: {
-  handleOpenModal?: () => void;
+  handleOpenModal: (data: any) => void;
 }) => {
   return [
     {
@@ -48,11 +17,14 @@ export const columnsTable = ({
     },
     {
       title: "Nhà cung cấp",
-      dataIndex: "khmshdon",
+      dataIndex: "tenncc",
       width: "200px",
-      render: (value: any) => {
+      render: (value: any, record: any) => {
         return (
-          <p onClick={handleOpenModal} className="underline cursor-pointer">
+          <p
+            onClick={() => handleOpenModal(record)}
+            className="underline cursor-pointer"
+          >
             {value}
           </p>
         );
@@ -60,12 +32,12 @@ export const columnsTable = ({
     },
     {
       title: "MST",
-      dataIndex: "shdon",
-      width: "120px",
+      dataIndex: "mstnban",
+      width: "140px",
     },
     {
       title: "Ngày hóa đơn",
-      dataIndex: "hthuc",
+      dataIndex: "ntao",
       width: "140px",
     },
     {
@@ -75,17 +47,17 @@ export const columnsTable = ({
     },
     {
       title: "Mẫu số",
-      dataIndex: "hthuc",
-      width: "120px",
+      dataIndex: "khmshdon",
+      width: "100px",
     },
     {
       title: "Ký hiệu",
-      dataIndex: "hthuc",
-      width: "120px",
+      dataIndex: "khhdon",
+      width: "100px",
     },
     {
       title: "Tổng tiền trước thuế",
-      dataIndex: "tongThanhToan",
+      dataIndex: "tgtcthue",
       render: (value: any) => {
         return <p>{convertToVnd(Number(value))}</p>;
       },
@@ -94,7 +66,7 @@ export const columnsTable = ({
 
     {
       title: "Tổng thanh toán",
-      dataIndex: "tongThanhToan",
+      dataIndex: "tgtttbso",
       render: (value: any) => {
         return <p>{convertToVnd(Number(value))}</p>;
       },
@@ -102,8 +74,27 @@ export const columnsTable = ({
     },
     {
       title: "Trạng thái HĐ",
-      dataIndex: "tongThanhToan",
-      width: "120px",
+      dataIndex: "tthai",
+      width: "140px",
+      render: (value: any) => {
+        return (
+          <div>
+            <div className="flex items-center">
+              <div
+                className="w-3 h-3 rounded-[2px] mr-3"
+                style={{
+                  backgroundColor:
+                    TTHD.find((item: any) => item.value === value)?.color ||
+                    "transparent",
+                }}
+              ></div>
+              <span className="flex-1">
+                {TTHD.find((item: any) => item.value === value)?.label}
+              </span>
+            </div>
+          </div>
+        );
+      },
     },
 
     {
@@ -114,7 +105,31 @@ export const columnsTable = ({
 
     {
       title: "Kết quả kiểm tra",
-      dataIndex: "tdlap",
+      dataIndex: "kqKiemTra",
+      render: (value: any) => {
+        return (
+          <div>
+            <div className="flex items-center">
+              <div
+                className="w-3 h-3 rounded-[2px] mr-2"
+                style={{
+                  backgroundColor:
+                    TTMST_Options.find((item: any) => item.desc === value?.kq)
+                      ?.color || "transparent",
+                }}
+              ></div>
+              <span>
+                {
+                  TTMST_Options.find((item: any) => item.desc === value?.kq)
+                    ?.desc
+                }
+              </span>
+            </div>
+
+            <div className="ml-5">{value?.HDRuiro}</div>
+          </div>
+        );
+      },
     },
   ];
 };

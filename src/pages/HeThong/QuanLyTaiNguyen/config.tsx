@@ -6,26 +6,22 @@ export const columnsTableQLTN = () => {
       render: (value: any) => value + 1,
       fixed: "left",
       width: "60px",
-    },
-
-    {
-      title: "Tên gói",
-      dataIndex: "tengoi",
+      align: "center",
     },
 
     {
       title: "Số lượng hóa đơn",
-      dataIndex: "sl",
+      dataIndex: "SoluongDK",
     },
 
     {
       title: "Hóa đơn đã sử dụng",
-      dataIndex: "daSD",
+      dataIndex: "SLHDonSD",
     },
 
     {
       title: "Hóa đơn còn lại",
-      dataIndex: "conLai",
+      dataIndex: "SLConlai",
     },
   ];
 };
@@ -38,21 +34,22 @@ export const columnsTableLSGD = () => {
       render: (value: any) => value + 1,
       fixed: "left",
       width: "60px",
+      align: "center",
     },
 
     {
       title: "Tên gói",
-      dataIndex: "tengoi",
+      dataIndex: "Goidv",
     },
 
     {
       title: "Thông tin người mua",
-      dataIndex: "sl",
+      dataIndex: "Nguoiyc",
     },
 
     {
       title: "Ngày mua",
-      dataIndex: "daSD",
+      dataIndex: "NgayPS",
     },
   ];
 };

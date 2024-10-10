@@ -1,18 +1,66 @@
 import { ConfigProvider, Table, Tabs } from "antd";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { COLORS } from "../../../libs/constants";
 import { TabsProps } from "antd/lib";
 import CustomBtn from "../../../components/CustomBtn";
 import TableQuanLyTaiNguyen from "./components/QLTN";
 import TableLichSuGiaoDich from "./components/LSGD";
+import {
+  GetLichsudangkyGDV,
+  GetThongtintainguyen,
+} from "../../../services/hethong";
+import { isEmpty } from "lodash";
+import dayjs from "dayjs";
+import { Thongtintainguyen } from "../../../services/dashboard";
+import { AppContext } from "../../../contexts/app.context";
 
 export default function QuanLyTaiNguyen() {
   const [tab, setTab] = useState("1");
+  const [historyData, setHistoryData] = useState<any[]>([]);
+  const [data, setData] = useState<any[]>([]);
+  const { mst } = useContext(AppContext);
 
   const onChangeTabs = (key: string) => {
     setTab(key);
     // setDataInvoices([]);
   };
+
+  const getHistory = async () => {
+    const res = await GetLichsudangkyGDV();
+    if (!isEmpty(res)) {
+      const newRes = res.map((item: any, index: number) => {
+        return {
+          ...item,
+          key: index,
+          NgayPS: dayjs(item.NgayPS).format("DD/MM/YYYY"),
+        };
+      });
+      setHistoryData(newRes);
+    }
+  };
+
+  const getThongtintainguyen = async () => {
+    if (mst) {
+      const res = await Thongtintainguyen({
+        madonvi: mst,
+      });
+      if (!isEmpty(res)) {
+        const newRes = [res].map((item: any, index: number) => {
+          return {
+            ...item,
+            key: index,
+          };
+        });
+        setData(newRes);
+      }
+    }
+  };
+
+  useEffect(() => {
+    getHistory();
+    getThongtintainguyen();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const items: TabsProps["items"] = [
     {
@@ -51,8 +99,8 @@ export default function QuanLyTaiNguyen() {
       </div>
 
       <div>
-        {tab === "1" && <TableQuanLyTaiNguyen />}
-        {tab === "2" && <TableLichSuGiaoDich />}
+        {tab === "1" && <TableQuanLyTaiNguyen data={data} />}
+        {tab === "2" && <TableLichSuGiaoDich data={historyData} />}
       </div>
     </div>
   );

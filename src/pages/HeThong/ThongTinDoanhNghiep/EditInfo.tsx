@@ -5,7 +5,7 @@ import CustomInput from "../../../components/CustomInput";
 import { AppContext } from "../../../contexts/app.context";
 import { Form } from "antd";
 
-export default function EditInfo() {
+export default function EditInfo(data: any) {
   const [isEdit, setIsEdit] = useState(false);
   const { mst, business_name } = useContext(AppContext);
   const [form] = Form.useForm();
@@ -47,8 +47,7 @@ export default function EditInfo() {
                 Địa chỉ:
               </div>
               <p className="relative w-[523px] mt-[-1.00px] font-body-large-medium font-[number:var(--body-large-medium-font-weight)] text-neutral-800 text-[length:var(--body-large-medium-font-size)] tracking-[var(--body-large-medium-letter-spacing)] leading-[var(--body-large-medium-line-height)] [font-style:var(--body-large-medium-font-style)]">
-                Tầng 5 số 02 Chùa Bộc, Phường Trung Tự, Quận Đống Đa, <br />
-                Thành Phố Hà Nội, Việt Nam
+                {data?.Diachi}
               </p>
             </div>
             <div className="flex items-center gap-7 self-stretch w-full relative flex-[0_0_auto]">
@@ -56,23 +55,23 @@ export default function EditInfo() {
                 Điện thoại
               </div>
               <div className="relative w-[523px] mt-[-1.00px] font-body-large-medium font-[number:var(--body-large-medium-font-weight)] text-neutral-800 text-[length:var(--body-large-medium-font-size)] tracking-[var(--body-large-medium-letter-spacing)] leading-[var(--body-large-medium-line-height)] [font-style:var(--body-large-medium-font-style)]">
-                +84 967352347
+                {data?.Dienthoai}
               </div>
             </div>
-            <div className="flex items-center gap-7 self-stretch w-full relative flex-[0_0_auto]">
+            {/* <div className="flex items-center gap-7 self-stretch w-full relative flex-[0_0_auto]">
               <div className="relative w-[78px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] [font-style:var(--body-small-regular-font-style)]">
                 Số Fax
               </div>
               <div className="relative w-[523px] mt-[-1.00px] font-body-large-medium font-[number:var(--body-large-medium-font-weight)] text-neutral-800 text-[length:var(--body-large-medium-font-size)] tracking-[var(--body-large-medium-letter-spacing)] leading-[var(--body-large-medium-line-height)] [font-style:var(--body-large-medium-font-style)]">
-                111111111
+                {data?.fax}
               </div>
-            </div>
+            </div> */}
             <div className="flex items-center gap-7 self-stretch w-full relative flex-[0_0_auto]">
               <div className="relative w-[78px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] [font-style:var(--body-small-regular-font-style)]">
                 Email
               </div>
               <div className="relative w-[523px] mt-[-1.00px] font-body-large-medium font-[number:var(--body-large-medium-font-weight)] text-neutral-800 text-[length:var(--body-large-medium-font-size)] tracking-[var(--body-large-medium-letter-spacing)] leading-[var(--body-large-medium-line-height)] [font-style:var(--body-large-medium-font-style)]">
-                Nacencomm@gmail.com
+                {data?.Email}
               </div>
             </div>
           </div>
@@ -93,7 +92,7 @@ export default function EditInfo() {
                     className="w-full border border-solid border-neutral-200 rounded-md px-2 py-1.5"
                   />
                 ) : (
-                  "Nguyễn Văn A"
+                  data?.DaidienPL
                 )}
               </div>
             </div>
@@ -109,7 +108,7 @@ export default function EditInfo() {
                     className="w-full border border-solid border-neutral-200 rounded-md px-2 py-1.5"
                   />
                 ) : (
-                  "Giám đốc"
+                  data?.Chucvu
                 )}
               </div>
             </div>
@@ -132,12 +131,12 @@ export default function EditInfo() {
                     className="w-full border border-solid border-neutral-200 rounded-md px-2 py-1.5"
                   />
                 ) : (
-                  "1234567892"
+                  data?.Sotaikhoan
                 )}
               </div>
             </div>
 
-            <div className="flex gap-7 self-stretch w-full relative flex-[0_0_auto] mb-2">
+            {/* <div className="flex gap-7 self-stretch w-full relative flex-[0_0_auto] mb-2">
               <div className="relative w-[78px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] [font-style:var(--body-small-regular-font-style)]">
                 Chủ STK
               </div>
@@ -152,7 +151,7 @@ export default function EditInfo() {
                   "Nguyễn Văn A"
                 )}
               </div>
-            </div>
+            </div> */}
 
             <div className="flex gap-7 self-stretch w-full relative flex-[0_0_auto] mb-2">
               <div className="relative w-[78px] font-body-small-regular font-[number:var(--body-small-regular-font-weight)] text-neutral900-character-primary text-[length:var(--body-small-regular-font-size)] tracking-[var(--body-small-regular-letter-spacing)] leading-[var(--body-small-regular-line-height)] [font-style:var(--body-small-regular-font-style)]">
@@ -166,7 +165,7 @@ export default function EditInfo() {
                     className="w-full border border-solid border-neutral-200 rounded-md px-2 py-1.5"
                   />
                 ) : (
-                  "Techcombank"
+                  data?.Tennganhang
                 )}
               </div>
             </div>
@@ -178,7 +177,7 @@ export default function EditInfo() {
                 Cơ quan thuế
               </div>
               <div className="relative w-[523px] mt-[-1.00px] font-body-large-medium font-[number:var(--body-large-medium-font-weight)] text-neutral-800 text-[length:var(--body-large-medium-font-size)] tracking-[var(--body-large-medium-letter-spacing)] leading-[var(--body-large-medium-line-height)] [font-style:var(--body-large-medium-font-style)]">
-                ABC
+                {data?.CQThueQL}
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import { ConfigProvider, Tabs, TabsProps } from "antd";
 import { COLORS, HTHDO_Options, TTMST_Options } from "../../../libs/constants";
 import ToolBar from "../../../components/ToolBar";
-import TableHoaDon from "../components/Table";
+import TableHoaDon from "./Table";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { NotificationContext } from "../../../contexts/notification.context";
 import dayjs from "dayjs";
@@ -14,15 +14,18 @@ import {
   convertXmlToJson,
 } from "../../../libs/common";
 import { AppContext } from "../../../contexts/app.context";
-import { isEmpty, set } from "lodash";
+import { forEach, isEmpty, set } from "lodash";
 import ViewInvoiceModal from "../../../components/CustomModal/ViewInvoiceModal";
 import { useQuery } from "@tanstack/react-query";
 import { templateDauVao } from "../../../libs/common/excel-template";
 import JSZip from "jszip";
 import {
+  GetDLT6,
+  GetInvoiceDataAsync,
   getInvoices,
   LayTGDongboDLcuoi,
   Luulogtruyxuatdl,
+  LuuTTHoadon,
 } from "../../../services/invoices";
 
 type DownloadHoaDonType = {
@@ -35,7 +38,7 @@ type DownloadHoaDonType = {
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-export default function ListInvoice({
+export default function ListInvoiceTest({
   title,
   typeInvoice,
   type,
@@ -45,8 +48,8 @@ export default function ListInvoice({
   type: string;
 }) {
   const [dataInvoices, setDataInvoices] = useState<any[]>([]);
-  const [initialData, setInitialData] = useState<any[]>([]);
   const { handleOpenNotification } = useContext(NotificationContext);
+  const { setTaikhoanthue } = useContext(AppContext);
   const [fileName, setFileName] = useState("");
   const [tab, setTab] = useState("5");
   const { taikhoanthue } = useContext(AppContext);
@@ -56,18 +59,13 @@ export default function ListInvoice({
     total: 0,
   });
   const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
-  const [invoiceDetail, setInvoiceDetail] = useState<any>(null);
   const [filterData, setFilterData] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [isLoadingCheckStatus, setIsLoadingCheckStatus] = useState(false);
   const [rangeDate, setRangeDate] = useState<any>([]);
-  const [dataFilter, setDataFilter] = useState<any>({
-    value: String(TTMST_Options[0].value),
-    type: "tthai",
-    date: null,
-  });
+
   const [query, setQuery] = useState<any>(null);
-  const { data, refetch } = useQuery({
+  const { refetch } = useQuery({
     queryKey: ["todos", query],
     queryFn: (e) => {
       return handleFinish(
@@ -99,6 +97,29 @@ export default function ListInvoice({
     date: [],
   });
   const [stateStack, setStateStack] = useState<any>([]);
+  const [dataFilter, setDataFilter] = useState<any>({
+    value: String(TTMST_Options[0].value),
+    type: "trangthaiMst",
+    date: null,
+  });
+  const [invoiceDetail, setInvoiceDetail] = useState<any>(null);
+  const [totalRecord, setTotalRecord] = useState(0);
+  const [isFiltered, setIsFiltered] = useState(false);
+
+  const [initialData, setInitialData] = useState<any>([]);
+
+  useEffect(() => {
+    const SLHDCL = localStorage.getItem("SLHDCL");
+
+    if (isEmpty(SLHDCL) || Number(SLHDCL) <= 0) {
+      handleOpenNotification({
+        type: "error",
+        message: "Lỗi",
+        description: "Đã hết số hóa đơn đăng ký",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleRowClick = (record: any) => {
     setSelectedRowKey(record.key);
@@ -112,17 +133,46 @@ export default function ListInvoice({
     setSearchValue(e);
   };
 
-  const items: TabsProps["items"] = [
-    {
-      key: "5",
-      label: "Hóa đơn hợp lệ",
-    },
-    {
-      key: "4",
-      label: "Hóa đơn không hợp lệ",
-    },
-  ];
+  async function fetchAllInvoices(newResults: any[]) {
+    const results = [];
 
+    for (const item of newResults) {
+      try {
+        const response: any = await https({
+          baseURL: `https://hoadondientu.gdt.gov.vn:30000/query/invoices/export-xml?nbmst=${item.nbmst}&khhdon=${item.khhdon}&shdon=${item.shdon}&khmshdon=${item.khmshdon}`,
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + taikhoanthue?.token,
+          },
+          responseType: "arraybuffer",
+        });
+
+        const blob = new Blob([response], { type: "application/zip" });
+        const zip = new JSZip();
+        const zipFiles: any = await zip.loadAsync(blob);
+        const content = await zipFiles.file("invoice.xml").async("text");
+        const dataJson = convertXmlToJson(content);
+
+        results.push({
+          data: dataJson["HDon"]["DLHDon"]["NDHDon"]["DSHHDVu"]["HHDVu"],
+          nbmst: item.nbmst,
+          khhdon: item.khhdon,
+          shdon: item.shdon,
+          khmshdon: item.khmshdon,
+        });
+
+        // Wait for 1 second before making the next call
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      } catch (error) {
+        console.error("An error occurred:", error);
+        // Optionally, decide how to handle errors for individual calls
+        // For example, you might want to push an error object to results or continue to the next iteration
+      }
+    }
+
+    return results;
+  }
   function checkWithinOneHourFromSyncTime(syncTime: string) {
     const now = dayjs();
     const oneHourAfterSyncTime = dayjs(syncTime).add(1, "hour"); // Tính thời điểm 1 giờ sau syncTime
@@ -134,42 +184,21 @@ export default function ListInvoice({
     return true;
   }
 
-  const mergeDataWithKeys = (
-    currentData: any,
-    newData: any,
-    newState?: string | null
-  ) => {
-    if (newState === null) {
-      return newData;
-    }
-
-    return [...currentData, ...newData].map((item, index) => ({
-      ...item,
-      key: index,
-    }));
-  };
-
-  function removeDuplicatesKeepLast(arr: any, key: string) {
-    const seen = new Set();
-    const result = [];
-
-    // Duyệt mảng từ cuối lên để giữ lại phần tử cuối cùng
-    for (let i = arr.length - 1; i >= 0; i--) {
-      const item = arr[i];
-      if (!seen.has(item[key])) {
-        seen.add(item[key]);
-        result.push(item);
-      }
-    }
-
-    // Đảo ngược lại để có thứ tự ban đầu
-    return result.reverse();
-  }
+  const items: TabsProps["items"] = [
+    {
+      key: "5",
+      label: "Hóa đơn hợp lệ",
+    },
+    {
+      key: "4",
+      label: "Hóa đơn không hợp lệ",
+    },
+  ];
 
   const fetchData = async ({
     newState = {
       page: 1,
-      value: null,
+      nextStateValue: null,
     },
     typeBtn = null,
     date,
@@ -179,57 +208,34 @@ export default function ListInvoice({
     date: any;
   }) => {
     try {
-      const checkExist = stateStack.find(
-        (item: any) => item.page === page?.current
-      );
-
-      if (page.current * 15 > page.total && typeBtn === "next") {
-        return 10;
-      }
-
       setLoading(true);
-      let nState = newState;
 
-      if (typeBtn === "prev") {
-        if (page.current === 1) {
-          setLoading(false);
-          return;
-        }
-
-        const displayedItems = initialData.slice(
-          page.current * 15 - 30,
-          page.current * 15 - 15
-        );
-
-        setDataInvoices(displayedItems);
-
-        setPage((prev) => ({ ...prev, current: prev.current - 1 }));
-        setLoading(false);
-
-        return;
-      } else if (typeBtn === "next") {
-        if (checkExist) {
-          nState = checkExist;
-        }
-      }
-
-      const response = await getInvoices({
+      const response = await GetDLT6({
         type: type,
         date,
         ttxly: tab,
         taikhoanthue,
-        state: nState.value,
+        state: newState.nextStateValue,
         typeInvoice: typeInvoice,
       });
 
-      setState((prev) => {
-        return {
-          ...prev,
-          date,
-        };
-      });
+      if (response?.status === 401) {
+        setTaikhoanthue && setTaikhoanthue({});
+        localStorage.removeItem("taikhoanthue");
+        handleOpenNotification({
+          type: "error",
+          message: "Lỗi",
+          description: response.message,
+        });
+        setLoading(false);
+        return false;
+      }
 
-      const newResults = response?.datas;
+      const newResults = response || [];
+
+      setTotalRecord(response?.length || 0);
+
+      // Gọi hàm fetchAllInvoices và truyền vào newResults
 
       setFileName(
         `HoaDonDauVao_${dayjs(date[0]).format("DD/MM/YYYY")}-${dayjs(
@@ -239,9 +245,9 @@ export default function ListInvoice({
 
       if (newResults.length > 0 && newResults) {
         const newRes = newResults?.map((item: any, index: number) => ({
-          key: index,
+          key: stateStack.length * page.pageSize + index,
           thongTinNguoiBan: {
-            mst: item?.nbmst,
+            mst: item?.mstnban,
             nbten: item?.nbten,
             nbdchi: item?.nbdchi,
           },
@@ -251,7 +257,7 @@ export default function ListInvoice({
             khmshdon: item?.khmshdon,
             khhdon: item?.khhdon,
             shdon: item?.shdon,
-            ntao: dayjs(item?.ntao).format("DD/MM/YYYY HH:mm:ss"),
+            ntao: dayjs(item?.tdlap).format("DD/MM/YYYY HH:mm:ss"),
           },
 
           nky: dayjs(item?.nky).format("DD/MM/YYYY HH:mm:ss"),
@@ -263,11 +269,12 @@ export default function ListInvoice({
             nmdchi: item?.nmdchi,
           },
           tongTruocThue: convertToVnd(item?.tgtcthue),
+
           thueSuat: {
-            gttsuat: item?.thttltsuat[0]?.gttsuat,
-            thtien: convertToVnd(item?.thttltsuat[0]?.thtien),
-            tsuat: convertToVnd(item?.thttltsuat[0]?.tsuat),
-            tthue: convertToVnd(item?.thttltsuat[0]?.tthue),
+            gttsuat: JSON.parse(item?.dsthuesuat)[0]?.gttsuat,
+            thtien: convertToVnd(JSON.parse(item?.dsthuesuat)[0]?.thtien),
+            tsuat: convertToVnd(JSON.parse(item?.dsthuesuat)[0]?.tsuat),
+            tthue: convertToVnd(JSON.parse(item?.dsthuesuat)[0]?.tthue),
           },
           tongThue: convertToVnd(item?.tgtthue),
           tongThanhToan: convertToVnd(item?.tgtttbso),
@@ -276,13 +283,9 @@ export default function ListInvoice({
           cksNguoiBan: item?.nbcks,
 
           ncnhat: dayjs(item?.ncnhat).format("DD/MM/YYYY HH:mm:ss"),
-          // tthai: item?.tthai,
-          tthai: Math.floor(Math.random() * 8),
+          tthai: item?.tthai,
           thdon: item?.thdon,
-          // khmshdon: item?.khmshdon,
-
-          khmshdon: Math.floor(Math.random() * 10) + 1,
-
+          khmshdon: item?.khmshdon,
           khhdon: item?.khhdon,
           shdon: item?.shdon,
           ntao: dayjs(item?.ntao).format("DD/MM/YYYY HH:mm:ss"),
@@ -301,74 +304,38 @@ export default function ListInvoice({
             msttcgp: item?.msttcgp,
             ngcnhat: item?.ngcnhat,
           },
-          tdlap: dayjs(item?.tdlap).format("DD/MM/YYYY HH:mm:ss"),
+          tdlap: dayjs(item?.ntao).format("DD/MM/YYYY HH:mm:ss"),
           cksNguoiBanObj: convertCksNguoiBan(item?.nbcks),
 
+          // hthuc: item?.hthdon,
+
           hthuc: Math.floor(Math.random() * 5) + 1,
-          tthd: Math.floor(Math.random() * 2) + 1,
+          trangthaiMst: Math.floor(Math.random() * 8),
         }));
-        const oldData = stateStack.flatMap((item: any) => item.data);
 
-        console.log(oldData, "oldData");
+        const displayedData = newRes?.slice(0, page.pageSize);
 
-        const displayedItems = mergeDataWithKeys(
-          oldData,
-          newRes,
-          newState
-        ).slice(oldData.length, oldData.length + 15);
-
-        console.log(displayedItems);
-
-        // Use the utility function to update state
-        setInitialData(mergeDataWithKeys(initialData, newRes));
-        setDataInvoices(displayedItems);
-        setFilterData(mergeDataWithKeys(filterData, newRes));
+        setDataInvoices(displayedData);
+        setFilterData(newRes);
+        setInitialData(newRes);
         setPage((prev) => ({
           ...prev,
-          total: response.total,
-          current: typeBtn === "next" ? prev.current + 1 : prev.current,
+          total: response?.length,
+          current: 1,
         }));
-
-        if (stateStack.length > 0) {
-          if (typeBtn === "next") {
-            const stack: any = [...stateStack];
-            stack.push({
-              page: nState?.page + 1,
-              value: response?.state,
-              data: displayedItems,
-            });
-
-            const removeDuplicate = removeDuplicatesKeepLast(stack, "page");
-
-            console.log(removeDuplicate, "removeDuplicate");
-
-            setStateStack(removeDuplicate);
-          }
-        } else {
-          setStateStack([
-            {
-              page: page.current,
-              value: response?.state,
-              data: displayedItems,
-            },
-          ]);
-        }
       } else {
         setDataInvoices([]);
-        setInitialData([]);
         setFilterData([]);
+        setInitialData([]);
         setPage((prev) => ({
           ...prev,
-          total: response.total,
-          current: typeBtn === "next" ? prev.current + 1 : prev.current,
+          total: response?.length,
+          current: 1,
         }));
       }
 
       setRangeDate(date);
 
-      // await Luulogtruyxuatdl({
-      //   madv: taikhoanthue?.mst,
-      // });
       setLoading(false);
 
       return true;
@@ -417,31 +384,6 @@ export default function ListInvoice({
 
       callback();
 
-      // const syncTime = await LayTGDongboDLcuoi({
-      //   madv: taikhoanthue?.mst,
-      // });
-
-      // if (syncTime) {
-      //   const checkSyncTime = checkWithinOneHourFromSyncTime(syncTime);
-
-      //   if (!checkSyncTime) {
-      //     handleOpenNotification({
-      //       type: "error",
-      //       message: "Lỗi",
-      //       description:
-      //         "Dữ liệu đã được đồng bộ trong vòng 1 giờ, vui lòng thử lại sau",
-      //     });
-      //     return [];
-      //   }
-      // } else {
-      //   handleOpenNotification({
-      //     type: "error",
-      //     message: "Lỗi",
-      //     description: "Không thể lấy thời gian đồng bộ cuối cùng",
-      //   });
-      //   return [];
-      // }
-
       const res = await fetchData({
         date,
         newState: {
@@ -484,48 +426,107 @@ export default function ListInvoice({
 
   const handleChangePage = useCallback(
     (newState: string | null, type: "prev" | "next") => {
-      fetchData({
-        date: state.date,
-        newState: newState,
-        typeBtn: type,
-      });
+      setDataInvoices(
+        initialData.slice(
+          type === "prev"
+            ? (page.current - 2) * page.pageSize
+            : page.current * page.pageSize,
+          type === "prev"
+            ? (page.current - 1) * page.pageSize
+            : page.current * page.pageSize + page.pageSize
+        )
+      );
+      setPage((prev) => ({
+        ...prev,
+        current: type === "prev" ? prev.current - 1 : prev.current + 1,
+      }));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [state, page]
   );
 
   const handleSearch = useCallback(
-    (value: string, filteredData: any[] = filterData) => {
+    (
+      value: string,
+      filteredDataParam: any,
+      isReset = false,
+      isFilter = false
+    ) => {
       const data = value
-        ? filteredData.filter((item) => {
+        ? filteredDataParam.filter((item: any) => {
             return (
-              item.shdon
+              item?.shdon
                 ?.toString()
                 ?.toLowerCase()
                 ?.includes(value.toLowerCase()?.trim()) ||
-              item.khmshdon
+              item?.khmshdon
                 ?.toString()
                 ?.toLowerCase()
                 ?.includes(value.toLowerCase()?.trim()) ||
-              item.thongTinNguoiBan?.nbten
+              item?.thongTinNguoiBan?.nbten
                 ?.toLowerCase()
                 ?.includes(value.toLowerCase()?.trim()) ||
-              item.thongTinNguoiBan?.mst
+              item?.thongTinNguoiBan?.mst
                 ?.toLowerCase()
                 ?.includes(value.toLowerCase()?.trim())
             );
           })
-        : filteredData;
+        : filteredDataParam;
 
-      setDataInvoices(data.slice((page.current - 1) * 15, page.current * 15));
+      const newRes = data.slice(0, page.pageSize);
+
+      setDataInvoices(newRes);
+
+      if (isReset) {
+        if (isEmpty(value)) {
+          setPage((prev) => ({
+            ...prev,
+            total: totalRecord,
+            current: 1,
+          }));
+        } else {
+          setPage((prev) => ({
+            ...prev,
+            total: data.length,
+            current: 1,
+          }));
+        }
+
+        return;
+      }
+
+      if (isFilter) {
+        if (isEmpty(value)) {
+          setPage((prev) => ({
+            ...prev,
+            total: data.length,
+            current: 1,
+          }));
+        } else {
+          setPage((prev) => ({
+            ...prev,
+            total: data.length,
+            current: 1,
+          }));
+        }
+
+        return;
+      }
+
+      setPage((prev) => ({
+        ...prev,
+        total: isEmpty(value) && !isFiltered ? totalRecord : data.length,
+        current: 1,
+      }));
     },
-    [filterData, page]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [filterData, page, stateStack]
   );
 
   const handleFilter = useCallback(
     ({
       value = "9999",
-      type = "tthai",
+      type = "trangthaiMst",
       date,
     }: {
       value: string;
@@ -536,8 +537,9 @@ export default function ListInvoice({
 
       let newData: any = initialData;
       if (date) {
-        newData = initialData.filter((item) => {
-          const tdlapDate = dayjs(item.tdlap, "DD/MM/YYYY HH:mm:ss");
+        newData = newData.filter((item: any) => {
+          const tdlapDate = dayjs(item.ntao, "DD/MM/YYYY HH:mm:ss");
+
           return (
             tdlapDate.isSameOrAfter(date[0].startOf("day")) &&
             tdlapDate.isSameOrBefore(date[1].endOf("day"))
@@ -546,7 +548,7 @@ export default function ListInvoice({
       }
 
       const updatedFilter: any = {
-        tthai: "",
+        trangthaiMst: "",
         tthd: "",
         hthuc: "",
       };
@@ -556,13 +558,13 @@ export default function ListInvoice({
 
         const typeToPropMap: any = {
           hthuc: "hthuc",
-          tthai: "tthai",
+          trangthaiMst: "trangthaiMst",
           tthd: "tthd",
         };
 
         const propName: any = typeToPropMap[type];
 
-        if (type === "tthai" && (value === "0" || value === "4")) {
+        if (type === "trangthaiMst" && (value === "0" || value === "4")) {
           return (
             item[propName]?.toString() === value ||
             item[propName]?.toString() === "4"
@@ -574,18 +576,20 @@ export default function ListInvoice({
 
       updatedFilter[type] = value;
 
+      setIsFiltered(true);
       setFilterData(newData);
-      handleSearch(searchValue, newData);
+      handleSearch(searchValue, newData, false, true);
     },
     [initialData, searchValue, handleSearch]
   );
 
   const handleResetFilter = () => {
     setFilterData(initialData);
-    handleSearch(searchValue, initialData);
+    setIsFiltered(false);
+    handleSearch(searchValue, initialData, true);
     setDataFilter({
       value: String(TTMST_Options[0].value),
-      type: "tthai",
+      type: "trangthaiMst",
       date: null,
     });
   };
@@ -611,8 +615,18 @@ export default function ListInvoice({
       document.body.appendChild(link);
       link.click();
       link.remove();
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      if (error?.response?.status === 401) {
+        setTaikhoanthue && setTaikhoanthue({});
+        localStorage.removeItem("taikhoanthue");
+        handleOpenNotification({
+          type: "error",
+          message: "Lỗi",
+          description: "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại",
+        });
+        setLoading(false);
+        return false;
+      }
     }
   };
 
@@ -627,6 +641,7 @@ export default function ListInvoice({
         },
         responseType: "arraybuffer",
       });
+
       const blob = new Blob([response], { type: "application/zip" });
       const zip = new JSZip();
       zip.loadAsync(blob).then((zipFiles: any) => {
@@ -697,8 +712,18 @@ export default function ListInvoice({
       setOpenInvoiceModal(true);
       setInvoiceDetail(data);
       handleOpenCheckInvoiceModal(data);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      if (error?.response?.status === 401) {
+        setTaikhoanthue && setTaikhoanthue({});
+        localStorage.removeItem("taikhoanthue");
+        handleOpenNotification({
+          type: "error",
+          message: "Lỗi",
+          description: "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại",
+        });
+        setLoading(false);
+        return false;
+      }
     }
   };
 
@@ -812,8 +837,8 @@ export default function ListInvoice({
           HTHDO_Options.find((ele) => ele.value === item?.hthuc)?.label
         }`,
         "Trạng thái MST người bán": TTMST_Options.find(
-          (ele: any) => ele.value === item.tthai
-        )?.label,
+          (ele: any) => ele.value === item.trangthaiMst
+        )?.desc,
       };
     });
 
@@ -847,7 +872,7 @@ export default function ListInvoice({
         setQuery={(values, callback) => {
           setQuery({ values, callback });
         }}
-        handleSearch={handleSearch}
+        handleSearch={(value) => handleSearch(value, filterData)}
         handleFilter={handleFilter}
         handleChange={handleChange}
         searchValue={searchValue}
@@ -870,13 +895,10 @@ export default function ListInvoice({
         }}
         loading={loading}
         dataInvoices={dataInvoices}
+        placeholderSearchBox="MST, ký hiệu hđ, số hđ, tên người bán"
       />
       <TableHoaDon
-        data={
-          stateStack.length > 0
-            ? stateStack.find((item: any) => item.page === page.current)?.data
-            : []
-        }
+        data={dataInvoices.length > 0 ? dataInvoices : []}
         loading={loading}
         handleChangePage={handleChangePage}
         currentPage={page.current}

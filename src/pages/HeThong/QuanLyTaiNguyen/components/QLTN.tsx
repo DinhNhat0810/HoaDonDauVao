@@ -2,16 +2,7 @@ import React, { memo, useEffect, useMemo, useState } from "react";
 import { columnsTableQLTN } from "../config";
 import CustomTable from "../../../../components/CustomTable/CustomTable";
 
-const TableQLTN = ({
-  loading,
-  data,
-}: {
-  loading?: boolean;
-  data: any[];
-  handlePageChange: (newPage: number) => void;
-  currentPage: number;
-  total: number;
-}) => {
+const TableQLTN = ({ loading, data }: { loading?: boolean; data: any[] }) => {
   const columns: any = useMemo(() => {
     return columnsTableQLTN();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -23,10 +14,6 @@ const TableQLTN = ({
       columns={columns}
       data={data}
       loading={loading}
-      rowSelection={{
-        type: "checkbox",
-        //   ...rowSelection,
-      }}
       scroll={{ x: 800 }}
     />
   );

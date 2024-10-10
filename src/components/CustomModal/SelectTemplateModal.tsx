@@ -1,6 +1,5 @@
-import { Button, ConfigProvider, Form, Modal, Radio } from "antd";
-import React, { useState } from "react";
-import type { RadioChangeEvent } from "antd";
+import { Form, Modal } from "antd";
+
 import {
   templateBanRaTCT,
   templateBanRaTongHop,
@@ -11,39 +10,19 @@ import {
   templateMuaVaoTCT,
   templateMuaVaoTongHop,
 } from "../../libs/common/excel-template";
-import { saveAs } from "file-saver";
-import ExcelJS from "exceljs";
 
-import usePopupWindow from "../../hooks/usePopupWindow";
-import ReactDOM from "react-dom";
-import {
-  CaretDownOutlined,
-  DownloadOutlined,
-  EyeOutlined,
-} from "@ant-design/icons";
-import {
-  viewTemplateMuaVaoFAST,
-  viewTemplateMuaVaoMISA,
-  viewTemplateMuaVaoTCT,
-  viewTemplateMuaVaoTongHop,
-} from "../../libs/common/view-template-buyin";
-import {
-  viewTemplateBanRaFAST,
-  viewTemplateBanRaMISA,
-  viewTemplateBanRaTCT,
-  viewTemplateBanRaTongHop,
-} from "../../libs/common/view-template-soldout";
+import { CaretDownOutlined } from "@ant-design/icons";
 import CustomInput from "../CustomInput";
 import CustomBtn from "../CustomBtn";
 
 export default function SelectTemplateModal({
-  data,
+  excelData,
   fileName,
   type,
   isModalOpen,
   handleCancel = () => {},
 }: {
-  data: any;
+  excelData: any;
   fileName: string;
   type: string;
   isModalOpen: boolean;
@@ -77,23 +56,6 @@ export default function SelectTemplateModal({
 
       if (validate.format) {
         let templates: any;
-
-        // if (action === "view") {
-        //   templates = {
-        //     buyin: {
-        //       1: viewTemplateMuaVaoTongHop,
-        //       2: viewTemplateMuaVaoTCT,
-        //       3: viewTemplateMuaVaoFAST,
-        //       4: viewTemplateMuaVaoMISA,
-        //     },
-        //     sell: {
-        //       1: viewTemplateBanRaTongHop,
-        //       2: viewTemplateBanRaTCT,
-        //       3: viewTemplateBanRaFAST,
-        //       4: viewTemplateBanRaMISA,
-        //     },
-        //   };
-        // }
 
         if (action === "download") {
           templates = {
@@ -133,8 +95,8 @@ export default function SelectTemplateModal({
 
         if (templateFunction && baseFileName) {
           templateFunction({
-            data,
-            fileName: `${baseFileName}_${fileName}`,
+            data: excelData,
+            fileName: `${baseFileName}`,
           });
         }
 

@@ -14,15 +14,17 @@ import {
   convertXmlToJson,
 } from "../../../libs/common";
 import { AppContext } from "../../../contexts/app.context";
-import { isEmpty, set } from "lodash";
+import { forEach, isEmpty, set } from "lodash";
 import ViewInvoiceModal from "../../../components/CustomModal/ViewInvoiceModal";
 import { useQuery } from "@tanstack/react-query";
 import { templateDauVao } from "../../../libs/common/excel-template";
 import JSZip from "jszip";
 import {
+  GetInvoiceDataAsync,
   getInvoices,
   LayTGDongboDLcuoi,
   Luulogtruyxuatdl,
+  LuuTTHoadon,
 } from "../../../services/invoices";
 
 type DownloadHoaDonType = {
@@ -103,7 +105,7 @@ export default function ListInvoice1({
   const [totalRecord, setTotalRecord] = useState(0);
   const [isFiltered, setIsFiltered] = useState(false);
 
-  console.log(stateStack);
+  // console.log(stateStack);
 
   useEffect(() => {
     const SLHDCL = localStorage.getItem("SLHDCL");
@@ -130,6 +132,46 @@ export default function ListInvoice1({
     setSearchValue(e);
   };
 
+  async function fetchAllInvoices(newResults: any[]) {
+    const results = [];
+
+    for (const item of newResults) {
+      try {
+        const response: any = await https({
+          baseURL: `https://hoadondientu.gdt.gov.vn:30000/query/invoices/export-xml?nbmst=${item.nbmst}&khhdon=${item.khhdon}&shdon=${item.shdon}&khmshdon=${item.khmshdon}`,
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + taikhoanthue?.token,
+          },
+          responseType: "arraybuffer",
+        });
+
+        const blob = new Blob([response], { type: "application/zip" });
+        const zip = new JSZip();
+        const zipFiles: any = await zip.loadAsync(blob);
+        const content = await zipFiles.file("invoice.xml").async("text");
+        const dataJson = convertXmlToJson(content);
+
+        results.push({
+          data: dataJson["HDon"]["DLHDon"]["NDHDon"]["DSHHDVu"]["HHDVu"],
+          nbmst: item.nbmst,
+          khhdon: item.khhdon,
+          shdon: item.shdon,
+          khmshdon: item.khmshdon,
+        });
+
+        // Wait for 1 second before making the next call
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      } catch (error) {
+        console.error("An error occurred:", error);
+        // Optionally, decide how to handle errors for individual calls
+        // For example, you might want to push an error object to results or continue to the next iteration
+      }
+    }
+
+    return results;
+  }
   function checkWithinOneHourFromSyncTime(syncTime: string) {
     const now = dayjs();
     const oneHourAfterSyncTime = dayjs(syncTime).add(1, "hour"); // Tính thời điểm 1 giờ sau syncTime
@@ -222,6 +264,8 @@ export default function ListInvoice1({
 
         setTotalRecord(response?.total);
 
+        // Gọi hàm fetchAllInvoices và truyền vào newResults
+
         setFileName(
           `HoaDonDauVao_${dayjs(date[0]).format("DD/MM/YYYY")}-${dayjs(
             date[1]
@@ -229,6 +273,85 @@ export default function ListInvoice1({
         );
 
         if (newResults.length > 0 && newResults) {
+          const lisHangHoa = await fetchAllInvoices(newResults);
+
+          if (!isEmpty(lisHangHoa)) {
+            const newResultWithHH = newResults.map(
+              (item: any, index: number) => {
+                if (
+                  item.nbmst === lisHangHoa[index].nbmst &&
+                  item.khhdon === lisHangHoa[index].khhdon &&
+                  item.shdon === lisHangHoa[index].shdon &&
+                  item.khmshdon === lisHangHoa[index].khmshdon
+                ) {
+                  return {
+                    ...item,
+                    lisHangHoa: lisHangHoa[index].data,
+                  };
+                }
+
+                return item;
+              }
+            );
+
+            const payload = {
+              dsHoadon: newResultWithHH?.map((item: any) => ({
+                nbmst: item?.nbmst || "",
+                khmshdon: item?.khmshdon,
+                khhdon: item?.khhdon,
+                shdon: item?.shdon,
+                hthdon: item?.hthdon,
+                khhdgoc: item?.khhdgoc,
+                khmshdgoc: item?.khmshdgoc,
+                mhdon: item?.mhdon,
+                mtdtchieu: item?.mtdtchieu,
+                nbdchi: item?.nbdchi || "",
+                nbten: item?.nbten || "",
+                ncma: item?.ncma,
+                ncnhat: item?.ncnhat,
+                ngcnhat: item?.ngcnhat,
+                nky: item?.nky,
+                nmdchi: item?.nmdchi || "",
+                nmmst: item?.nmmst || "",
+                nmten: item?.nmten || "",
+                shdgoc: item?.shdgoc,
+                tchat: item?.tchat,
+                tdlap: item?.tdlap,
+                tgtcthue: item?.tgtcthue,
+                tgtthue: item?.tgtthue,
+                tgtttbchu: item?.tgtttbchu,
+                tgtttbso: item?.tgtttbso,
+                thdon: item?.thdon,
+                thttlphi: item?.thttlphi,
+                thttltsuat: item?.thttltsuat,
+                ttcktmai: item?.ttcktmai,
+                tthai: item?.tthai,
+                ttxly: item?.ttxly,
+                tgtphi: item?.tgtphi,
+                tgtkhac: item?.tgtkhac,
+                nbcks: item?.nbcks,
+                tdlhdgoc: item?.tdlhdgoc,
+                thtttoan: item?.thtttoan,
+                msttcgp: item?.msttcgp,
+                cqtcks: item?.cqtcks,
+                dshanghoa:
+                  item?.lisHangHoa?.length > 1
+                    ? item?.lisHangHoa
+                    : [item?.lisHangHoa],
+                gchu: item?.gchu,
+                dvtte: item?.dvtte,
+                tgia: item?.tgia,
+              })),
+              LoaiHD: type === "purchase" ? 1 : 2,
+            };
+
+            const luutthdRes = await LuuTTHoadon({
+              jslstHoadon: JSON.stringify(payload),
+
+              hdmaytinhtien: typeInvoice === "hdmtt" ? 1 : 0,
+            });
+          }
+
           const newRes = newResults?.map((item: any, index: number) => ({
             key: stateStack.length * page.pageSize + index,
             thongTinNguoiBan: {
@@ -696,6 +819,7 @@ export default function ListInvoice1({
         },
         responseType: "arraybuffer",
       });
+
       const blob = new Blob([response], { type: "application/zip" });
       const zip = new JSZip();
       zip.loadAsync(blob).then((zipFiles: any) => {

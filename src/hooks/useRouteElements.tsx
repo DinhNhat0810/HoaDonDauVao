@@ -21,6 +21,8 @@ import NhatKyTruyCap from "../pages/HeThong/NhatKyTruyCap";
 import HoaDonDauRa from "../pages/HoaDon/HoaDonDauRa";
 import HoaDonDauVaoMTT from "../pages/HoaDon/HoaDonDauVaoMTT";
 import HoaDonDauRaMTT from "../pages/HoaDon/HoaDonDauRaMTT";
+import DanhMucKhachHang from "../pages/DanhMuc/DanhMucKhachHang";
+import BCHDRR from "../pages/BaoCao/BCHDRR";
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext);
@@ -125,7 +127,11 @@ export default function useRouteElement() {
         },
         {
           path: ROUTE.BAOCAO_HDRR,
-          element: <MainLayout></MainLayout>,
+          element: (
+            <MainLayout>
+              <BCHDRR />
+            </MainLayout>
+          ),
         },
 
         {
@@ -143,7 +149,11 @@ export default function useRouteElement() {
         },
         {
           path: ROUTE.DANHMUC_KH,
-          element: <MainLayout></MainLayout>,
+          element: (
+            <MainLayout>
+              <DanhMucKhachHang />
+            </MainLayout>
+          ),
         },
 
         {
@@ -167,18 +177,18 @@ export default function useRouteElement() {
           ),
         },
 
-        {
-          path: ROUTE.HETHONG_KNCQT,
-          element: <MainLayout></MainLayout>,
-        },
-        {
-          path: ROUTE.HETHONG_NKTC,
-          element: (
-            <MainLayout>
-              <NhatKyTruyCap />
-            </MainLayout>
-          ),
-        },
+        // {
+        //   path: ROUTE.HETHONG_KNCQT,
+        //   element: <MainLayout></MainLayout>,
+        // },
+        // {
+        //   path: ROUTE.HETHONG_NKTC,
+        //   element: (
+        //     <MainLayout>
+        //       <NhatKyTruyCap />
+        //     </MainLayout>
+        //   ),
+        // },
       ],
     },
 

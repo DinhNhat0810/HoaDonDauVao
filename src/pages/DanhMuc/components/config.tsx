@@ -1,67 +1,64 @@
 import { TTMST_Options } from "../../../libs/constants";
 
-export const data = Array.from({ length: 10 }, (_, index) => {
-  return {
-    key: index,
-    khmshdon: "01GTKT0/001",
-    shdon: "HD001",
-    hthuc: (index % 3) + 1, // Giá trị hthuc luân phiên từ 1 đến 3
-    tongThanhToan: "1000000",
-    thueSuat: "10%",
-    ncnhat: "01/01/2021",
-    tdlap: "01/01/2021",
-    tthai: "Đã kích hoạt",
-    ttmst: (index % 3) + 1, // Giá trị ttmst luân phiên từ 1 đến 3
-  };
-});
-
-export const columnsTable = [
+export const columnsTableNCC = [
   {
     title: "STT",
     dataIndex: "key",
     render: (value: any) => value + 1,
     fixed: "left",
     width: "30px",
+    align: "center",
   },
 
   {
-    title: "Tên khách hàng",
-    dataIndex: "khmshdon",
-    width: "80px",
+    title: "Tên nhà cung cấp",
+    dataIndex: "thongTinNCC",
+    width: "160px",
+    render: (value: any) => {
+      return (
+        <div>
+          <div>{value?.nbten}</div>
+          {/* <div>{value?.mstnban}</div> */}
+        </div>
+      );
+    },
   },
   {
     title: "Địa chỉ",
-    dataIndex: "shdon",
-    width: "100px",
+    dataIndex: "nbdchi",
+    width: "160px",
   },
 
   {
     title: "SL hoá đơn đầu vào",
-    dataIndex: "tongThanhToan",
+    dataIndex: "SLHDDauvao",
     width: "60px",
+    align: "center",
   },
 
   {
     title: "SL hoá đơn đầu ra",
-    dataIndex: "tongThanhToan",
+    dataIndex: "SLHDDaura",
     width: "60px",
+    align: "center",
   },
 
   {
     title: "Ngày kiểm tra",
-    dataIndex: "tongThanhToan",
-    width: "80px",
+    dataIndex: "ngayKiemTra",
+    width: "60px",
+    align: "center",
   },
 
   {
     title: "Kết quả kiểm tra",
-    dataIndex: "ncnhat",
-    width: "10%",
+    dataIndex: "HDRuiRo",
+    width: "60px",
   },
 
   {
     title: "Tình trạng hoạt động",
-    dataIndex: "ttmst",
+    dataIndex: "Trangthai",
     render: (value: any) => {
       return (
         <div className="flex items-center">
@@ -69,12 +66,92 @@ export const columnsTable = [
             className="w-3 h-3 rounded-[2px] mr-2"
             style={{
               backgroundColor:
-                TTMST_Options.find((item: any) => item.value === value)
-                  ?.color || "transparent",
+                TTMST_Options.find((item: any) => item.desc === value)?.color ||
+                "transparent",
             }}
           ></div>
           <span>
-            {TTMST_Options.find((item: any) => item.value === value)?.label}
+            {TTMST_Options.find((item: any) => item.desc === value)?.label}
+          </span>
+        </div>
+      );
+    },
+    width: "120px",
+  },
+];
+
+export const columnsTableKhachHang = [
+  {
+    title: "STT",
+    dataIndex: "key",
+    render: (value: any) => value + 1,
+    fixed: "left",
+    width: "30px",
+    align: "center",
+  },
+
+  {
+    title: "Tên khách hàng",
+    dataIndex: "thongTinKhachHang",
+    width: "160px",
+    render: (value: any) => {
+      return (
+        <div>
+          <div>{value?.nmten}</div>
+          {/* <div>{value?.nmmst}</div> */}
+        </div>
+      );
+    },
+  },
+  {
+    title: "Địa chỉ",
+    dataIndex: "nmdchi",
+    width: "160px",
+  },
+
+  {
+    title: "SL hoá đơn đầu vào",
+    dataIndex: "SLHDDauvao",
+    width: "60px",
+    align: "center",
+  },
+
+  {
+    title: "SL hoá đơn đầu ra",
+    dataIndex: "SLHDDaura",
+    width: "60px",
+    align: "center",
+  },
+
+  {
+    title: "Ngày kiểm tra",
+    dataIndex: "ngayKiemTra",
+    width: "60px",
+    align: "center",
+  },
+
+  {
+    title: "Kết quả kiểm tra",
+    dataIndex: "HDRuiRo",
+    width: "60px",
+  },
+
+  {
+    title: "Tình trạng hoạt động",
+    dataIndex: "Trangthai",
+    render: (value: any) => {
+      return (
+        <div className="flex items-center">
+          <div
+            className="w-3 h-3 rounded-[2px] mr-2"
+            style={{
+              backgroundColor:
+                TTMST_Options.find((item: any) => item.desc === value)?.color ||
+                "transparent",
+            }}
+          ></div>
+          <span>
+            {TTMST_Options.find((item: any) => item.desc === value)?.desc}
           </span>
         </div>
       );

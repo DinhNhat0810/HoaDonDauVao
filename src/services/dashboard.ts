@@ -217,12 +217,7 @@ export const BieudoSSGTHDon = async ({
       ];
 
     if (DocumentElement) {
-      // return JSON.parse(DocumentElement);
-
-      return {
-        ...JSON.parse(DocumentElement),
-        TongHDDaura: 1000000000,
-      };
+      return JSON.parse(DocumentElement);
     }
 
     return null;
@@ -269,14 +264,7 @@ export const BieudoSSTongGTHDon_NCC = async ({
       ];
 
     if (DocumentElement) {
-      // return JSON.parse(DocumentElement);
-
-      return JSON.parse(DocumentElement).map((item) => {
-        return {
-          ...item,
-          TongtienTTHD: item.TongtienTTHD == 0 ? 100000000 : item.TongtienTTHD,
-        };
-      });
+      return JSON.parse(DocumentElement);
     }
 
     return null;
